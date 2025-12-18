@@ -11,12 +11,13 @@ const userSchema = new mongoose.Schema({
   staffId : String,
 
   password : String,
-  pin : Number,
+  pin : String,
 
   role : {
     type : String,
     enum : ["customer","waiter","cook","admin"]
   },
+  details :Object,
 
   isBanned : {
     type : Boolean,

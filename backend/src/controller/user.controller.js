@@ -5,6 +5,7 @@ const catchAsync = require('../utils/catchAsync.js');
 const OTP = require('../model/otp.model.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const transporter = require('../utils/email.js');
 
 const {SECRET_KEY,SECRET_REFRESH_KEY} = process.env ;
 
@@ -20,8 +21,33 @@ function getRefreshToken(user){
   return jwt.sign({_id : user._id},SECRET_REFRESH_KEY,{expiresIn : "30d"});
 }
 
+function isValidEmail(email) {
+  if (!email) return false;
+
+  if (typeof email !== "string") return false;
+
+  email = email.trim().toLowerCase();
+
+  if (email.length > 254) return false;
+
+  if (email.includes(" ")) return false;
+
+  const parts = email.split("@");
+  if (parts.length !== 2) return false;
+
+  const [local, domain] = parts;
+
+  if (!local || !domain) return false;
+  if (local.length > 64) return false;
+
+  if (!domain.includes(".")) return false;
+
+  return true;
+}
+
+
 module.exports = {
-  sendOtp : catchAsync(async (req,res)=>{
+  sendUserOtp : catchAsync(async (req,res)=>{
 
     const number = req.body.number || "" ;
 
@@ -66,7 +92,7 @@ module.exports = {
 
     const refreshToken = getRefreshToken(user);
 
-    user.refreshToken = refreshToken
+    user.refreshToken = refreshToken;
     await user.save();
 
     res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});
@@ -104,5 +130,167 @@ module.exports = {
 
   }),
 
-  
+  // adminRegister : catchAsync(async (req,res)=>{
+  //   const hashedPassword = await bcrypt.hash("admin1234",10);
+  //   await User.create({
+  //     name : "Admin",
+  //     password : hashedPassword ,
+  //     email : "anjad076@gmail.com",
+  //     role : "admin"
+  //   })
+  // })
+
+  sendAdminOtp : catchAsync(async(req,res)=>{
+    const email = req.body.email;
+    if(!isValidEmail(email))throw AppError("Email is Not provided",400);
+
+    const otp = getOtp();
+
+    const hashedOtp = await bcrypt.hash(otp.toString(),10);
+    await OTP.updateOne({email},{
+      otp : hashedOtp,
+      expiresAt : new Date(Date.now() + 5 * 60 * 1000),
+      email
+    },{upsert : true});
+
+    const mailOptions = {
+      from: `<ROMS>`,
+      to: email,
+      subject: "Your OTP Code",
+      html: `
+          <h2>Email Verification</h2>
+
+          <p>Hello,</p>
+
+          <p>
+          Use the verification code below to continue.
+          </p>
+
+          <h1>${otp}</h1>
+
+          <p>
+          This code is valid for 5 minutes.
+          </p>
+
+          <p>
+          If you did not request this, you can safely ignore this email.
+          </p>
+
+          <p>
+          — ROMS
+          </p>
+      `
+
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    res.status(200).json({
+      message : "admin otp send success!",
+      status : 200
+    })
+
+  }),
+
+  adminLogin : catchAsync(async(req,res)=>{
+    const {email,password,otp} = req.body;
+    if(!isValidEmail(email) || password.trim().length < 8 || !otp)throw new AppError("Invalid Data",400);
+
+    const user = await User.findOne({email});
+    if(!user)throw new AppError("Admin Not Found",404);
+    
+    const otpDoc = await OTP.findOne({email});
+    if(!otpDoc)throw new AppError("OTP Not Found Or Expired!",404);
+    if(otpDoc.otp.expiresAt < Date.now())throw new AppError("OTP Expired!",);
+    
+    const isValid = await bcrypt.compare(otp.toString(),otpDoc.otp);
+    if(!isValid)throw new AppError("Incorrect OTP!",406);
+
+    const isValidPass = await bcrypt.compare(password,user.password);
+    if(!isValidPass)throw new AppError("Incorrect Password!",406);
+
+    await OTP.deleteMany({email});
+
+    const accessToken = getAccessToken(user);
+    const refreshToken = getRefreshToken(user);
+
+    user.refreshToken = refreshToken
+    user.login = true
+
+    await user.save();
+
+    res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});
+
+    res.cookie("refresh_token",refreshToken,{maxAge : 1000 * 60 * 60 * 24 * 30, httpOnly : true});
+
+    res.status(200).json({
+      message : "admin login successfull!",
+      status : 200,
+      accessToken
+    });
+
+  }),
+
+  createStaff : catchAsync(async(req,res)=>{
+
+    const {name,number,details,role,pin} = req.body ;
+
+    if(!name||!number || !role || !pin)throw new AppError("Invalid Data!",400);
+    if( !/^[0-9]{10}$/.test(number)) throw new AppError("Enter a valid Number",400);
+    if(pin.toString().length < 6)throw new AppError("Pin must be greater than 6",400);
+
+    const createStaffId = ()=>{
+      return`${role === "waiter"? "WTR" : "CHF"}-${number.toString().slice(-4)}`
+    }
+
+    const hashedPin = await bcrypt.hash(pin.toString(),10);
+
+    const user = await User.create({
+      name,
+      phone : number,
+      role,
+      details,
+      staffId : createStaffId(),
+      pin : hashedPin
+    });
+
+    res.status(201).json({
+      message : "staff creation successfull!",
+      status : 201,
+      staffId : user.staffId,
+      role
+    });
+
+  }),
+
+  staffLogin : catchAsync(async(req,res)=>{
+
+    const {staffId,pin} = req.body
+    if(!staffId.trim() || !pin)throw new AppError("Invalid Data!",400);
+    
+    const user = await User.findOne({staffId});
+    if(!user)throw new AppError("User Not Found!",404);
+
+    const isValid = await bcrypt.compare(pin.toString(),user.pin);
+    if(!isValid)throw new AppError("Incorrect Password",406);
+
+    const accessToken = getAccessToken(user);
+    const refreshToken = getRefreshToken(user);
+
+    user.refreshToken = refreshToken
+    user.login = true
+
+    await user.save();
+
+    res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});
+
+    res.cookie("refresh_token",refreshToken,{maxAge : 1000 * 60 * 60 * 24 * 30, httpOnly : true});
+
+    res.status(200).json({
+      message : "staff login successfull!",
+      status : 200,
+      accessToken
+    });
+  })
+
 }

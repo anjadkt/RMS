@@ -11,8 +11,18 @@ const limiter = rateLimit({
   }
 });
 
-router.post('/customer/otp',limiter,userController.sendOtp);
+router.post('/customer/otp',limiter,userController.sendUserOtp);
 router.post('/customer/login',userController.verifyUser);
-router.get('/customer/refresh',userController.handleRefreshToken)
+router.get('/customer/refresh',userController.handleRefreshToken);
+//router.get('/admin/register',userController.adminRegister);
+
+//admin routes
+router.post('/admin/otp',userController.sendAdminOtp);
+router.post('/admin/login',userController.adminLogin);
+router.get('/admin/refresh',userController.handleRefreshToken);
+router.post('/admin/staff',userController.createStaff);
+
+//staff routes
+router.post('/staff/login',userController.staffLogin);
 
 module.exports = router
