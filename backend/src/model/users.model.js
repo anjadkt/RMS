@@ -30,7 +30,18 @@ const userSchema = new mongoose.Schema({
     default : false
   },
 
-  cart : Array,
+  cart : [
+      {
+        item : {
+            type : mongoose.Schema.Types.ObjectId,
+            ref : "Item"
+          },
+        quantity : {
+          type :Number,
+          default : 1
+        }
+      }
+  ],
   orders : Array,
   notification : Array,
   tables : Array,

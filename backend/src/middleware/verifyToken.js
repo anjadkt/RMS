@@ -9,7 +9,6 @@ module.exports = (req,res,next) => {
 
   jwt.verify(access_token,SECRET_KEY,(err,data)=>{
     if(err) return next(new AppError("Invalid Token",401));
-    console.log(data.role);
     req.user = data ;
     next();
   })

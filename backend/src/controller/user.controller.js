@@ -238,24 +238,19 @@ module.exports = {
 
   createStaff : catchAsync(async(req,res)=>{
 
-    const {name,number,details,role,pin} = req.body ;
+    const {name,details,role,pin} = req.body ;
 
-    if(!name||!number || !role || !pin)throw new AppError("Invalid Data!",400);
-    if( !/^[0-9]{10}$/.test(number)) throw new AppError("Enter a valid Number",400);
+    if(!name|| !role || !pin)throw new AppError("Invalid Data!",400);
     if(pin.toString().length < 6)throw new AppError("Pin must be greater than 6",400);
 
     const createStaffId = ()=>{
       return `${role === "waiter" ? "WTR" : "CHF"}-${Date.now().toString().slice(-5)}`
     }
 
-    const isStaff = await User.findOne({phone : number,role });
-    if(isStaff)throw new AppError("Staff Already Exist!",409);
-
     const hashedPin = await bcrypt.hash(pin.toString(),10);
 
     const user = await User.create({
       name,
-      phone : number,
       role,
       details,
       staffId : createStaffId(),

@@ -30,9 +30,12 @@ app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
 
 
-//routers
+//customer routes
 const userRouter = require('./src/router/customer/customer.route.js');
 app.use('/auth/customer',userRouter);
+
+const userCartRouter = require('./src/router/customer/cart.route.js');
+app.use('/user/cart',verifyToken,verifyUser("customer","admin"),userCartRouter);
 
 const adminRouter = require('./src/router/admin/admin.route.js');
 app.use('/auth/admin',adminRouter);
@@ -48,6 +51,9 @@ app.use('/items/admin',verifyToken,verifyUser("admin"),adminProductRouter);
 
 const cookProductRouter = require('./src/router/cook/product.route.js');
 app.use('/items/cook',verifyToken,verifyUser("cook","admin"),cookProductRouter);
+
+
+
 
 
 //error handler
