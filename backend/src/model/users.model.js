@@ -5,7 +5,9 @@ const userSchema = new mongoose.Schema({
   name : String,
 
   email : String,
-  phone : Number,
+  phone : {
+    type :Number
+  },
   staffId : String,
 
   password : String,
@@ -16,13 +18,25 @@ const userSchema = new mongoose.Schema({
     enum : ["customer","waiter","cook","admin"]
   },
 
-  isBanned : Boolean,
+  isBanned : {
+    type : Boolean,
+    default : false
+  },
   isWorking : Boolean,
+  login : {
+    type : Boolean,
+    default : false
+  },
 
   cart : Array,
   orders : Array,
   notification : Array,
-  tables : Array
+  tables : Array,
+
+  refreshToken: {
+    type: String,
+    default: null
+  }
 });
 
 module.exports = mongoose.model("User",userSchema);

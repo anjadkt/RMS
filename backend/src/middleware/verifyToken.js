@@ -1,14 +1,14 @@
 const jwt = require('jsonwebtoken');
-const AppError = require('../utils/errorHandler.js');
+const AppError = require('../utils/AppError.js');
 const {SECRET_KEY} = process.env
 
 module.exports = (req,res,next) => {
 
-  const {token} = req.cookies;
-  if(!token) throw new AppError("Token Not Found!",404);
+  const access_token = req.cookies.access_token
+  if(!access_token) throw new AppError("Token Not Found!",401);
 
   jwt.verify(token,SECRET_KEY,(err,data)=>{
-    if(err)throw new AppError("Invalid Token",406);
+    if(err) return next(new AppError("Invalid Token",401));
     req.user = data ;
     next()
   })

@@ -30,8 +30,9 @@ app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
 
 
-
-
+//routers
+const userRouter = require('./src/router/users.route.js');
+app.use('/auth',userRouter);
 
 
 
@@ -44,11 +45,5 @@ app.use(cookieParser());
 
 
 //error handler
-app.use((err,req,res,next)=>{
-  res.status(err.status || 500).json({
-    message : err.message || "Internal Server Error",
-    status : err.status || 500,
-    ok : false,
-    success : false
-  });
-})
+const errorHandler = require('./src/middleware/errorHandler.js');
+app.use(errorHandler);
