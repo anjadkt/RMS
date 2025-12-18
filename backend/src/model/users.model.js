@@ -6,7 +6,8 @@ const userSchema = new mongoose.Schema({
 
   email : String,
   phone : {
-    type :Number
+    type :Number,
+    unique : true
   },
   staffId : String,
 

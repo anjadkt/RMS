@@ -4,8 +4,8 @@ const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
-const jwt = require('jsonwebtoken');
-
+const verifyToken = require('./src/middleware/verifyToken.js');
+const verifyUser = require('./src/middleware/verifyUsers.js');
 
 const {PORT,MONGO_DB_URL,USERFRONT_END_URL} = process.env
 
@@ -31,17 +31,23 @@ app.use(cookieParser());
 
 
 //routers
-const userRouter = require('./src/router/users.route.js');
-app.use('/auth',userRouter);
+const userRouter = require('./src/router/customer/customer.route.js');
+app.use('/auth/customer',userRouter);
 
+const adminRouter = require('./src/router/admin/admin.route.js');
+app.use('/auth/admin',adminRouter);
 
+const staffRouter = require('./src/router/waiter/users.route.js');
+app.use('/auth/staff',staffRouter);
 
+const productRouter = require('./src/router/customer/product.route.js');
+app.use('/items',productRouter);
 
+const adminProductRouter = require('./src/router/admin/product.route.js');
+app.use('/items/admin',verifyToken,verifyUser("admin"),adminProductRouter);
 
-
-
-
-
+const cookProductRouter = require('./src/router/cook/product.route.js');
+app.use('/items/cook',verifyToken,verifyUser("cook","admin"),cookProductRouter);
 
 
 //error handler

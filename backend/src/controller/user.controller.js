@@ -79,7 +79,7 @@ module.exports = {
 
     const otps = await OTP.findOne({phone : number});
     if(!otps)throw new AppError("OTP Not Found!",404);
-    if(otps.otp.expiresAt < Date.now())throw new AppError("OTP Expired!",);
+    if(otps.expiresAt < Date.now())throw new AppError("OTP Expired!",);
 
     const isValid = await bcrypt.compare(otp.toString(),otps.otp);
     if(!isValid)throw new AppError("Incorrect OTP!",406);
@@ -117,6 +117,11 @@ module.exports = {
 
     jwt.verify(refreshToken,SECRET_REFRESH_KEY,(error,data)=>{
       if(error)throw new AppError("Refresh Token Expired!",403);
+
+      if (user._id.toString() !== data._id) {
+        throw new AppError("Token mismatch", 403);
+      }
+
       const newAccessToken = getAccessToken(user);
 
       res.cookie("access_token",newAccessToken,{maxAge : 1000 * 60 * 30});
@@ -240,8 +245,11 @@ module.exports = {
     if(pin.toString().length < 6)throw new AppError("Pin must be greater than 6",400);
 
     const createStaffId = ()=>{
-      return`${role === "waiter"? "WTR" : "CHF"}-${number.toString().slice(-4)}`
+      return `${role === "waiter" ? "WTR" : "CHF"}-${Date.now().toString().slice(-5)}`
     }
+
+    const isStaff = await User.findOne({phone : number,role });
+    if(isStaff)throw new AppError("Staff Already Exist!",409);
 
     const hashedPin = await bcrypt.hash(pin.toString(),10);
 
