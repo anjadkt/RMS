@@ -46,16 +46,16 @@ module.exports = {
       message : "Item quantity Decreased",
       cart : update.cart 
     })
-  }),
+  // }),
 
-  emptyCart : catchAsync(async(req,res)=>{
-    const {_id} = req.user ;
-    const user = await User.findOneAndUpdate({_id},{$set : {cart : []}},{new : true});
-    if(!user)throw new AppError("User Not Found!",404);
-    res.status(200).json({
-      message : "User Cart Cleared!",
-      cart : user.cart,
-      status : 200
-    })
-  })
+  // emptyCart : catchAsync(async(req,res)=>{
+  //   const {_id} = req.user ;
+  //   const user = await User.findOneAndUpdate({_id},{$set : {cart : []}},{new : true});
+  //   if(!user)throw new AppError("User Not Found!",404);
+  //   res.status(200).json({
+  //     message : "User Cart Cleared!",
+  //     cart : user.cart,
+  //     status : 200
+  //   })
+ })
 }

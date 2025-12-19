@@ -6,8 +6,7 @@ const userSchema = new mongoose.Schema({
 
   email : String,
   phone : {
-    type :Number,
-    unique : true
+    type :Number
   },
   staffId : String,
 
@@ -42,7 +41,12 @@ const userSchema = new mongoose.Schema({
         }
       }
   ],
-  orders : Array,
+  orders : [
+    {
+      type : mongoose.Schema.Types.ObjectId,
+      ref : "Order"
+    }
+  ],
   notification : Array,
   tables : Array,
 

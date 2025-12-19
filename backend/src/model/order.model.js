@@ -3,29 +3,60 @@ const mongoose = require('mongoose');
 
 
 const orderSchema = new mongoose.Schema({
-  orderId :String,
+  orderId :{
+    type :String,
+    required : true
+  },
   orderType : {
     type : String,
     enum : ["Dine-in","Take-away"]
   },
   tableNumber:String,
+  tableId :{
+    type :mongoose.Schema.Types.ObjectId,
+    ref : "Table"
+  },
   customerId:{
      type : mongoose.Schema.Types.ObjectId,
      ref : "User"
   },
+  customerName :String,
   status : {
     type :String,
     enum : ["placed","accepted","preparing","ready","served","completed"]
   },
-  orderItems : [
+  orderItems :[
     {
-      item : {
+      itemId : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : "Item"
+        ref  : "Item"
       },
-      quantity : Number
+      name : String,
+      price : Number,
+      image : String,
+      category : String,
+      quantity : Number,
+      subTotal : Number
     }
-  ]
+  ],
+  instructions:String,
+  orderNumber :{
+    type : Number
+  },
+  orderDate : {
+    type :String,
+    require : true
+  },
+  paymentDetails :{
+    method : {
+      type : String,
+      enum : ["PREPAID", "POSTPAID"]
+    },
+    ItemTotal : Number,
+    tax :Number,
+    Discounts : Number,
+    Grandtotal : Number
+  }
 });
 
 module.exports = mongoose.model("Order",orderSchema);

@@ -1,8 +1,11 @@
 const mongoose = require('mongoose');
 
 const tableSchema = new mongoose.Schema({
-  tableNumber : String,
-  isOccupied : Boolean,
+  tableNumber : {
+    type :String,
+    unique : true,
+    require : true
+  },
   tableOrders : [
     {
       type : mongoose.Schema.Types.ObjectId,
