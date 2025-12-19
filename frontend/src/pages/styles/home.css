@@ -1,0 +1,21 @@
+*{
+  border: 1px solid red;
+}
+
+.home-main-container{
+  display: flex;
+  justify-content: center;
+  padding-top: 50px;
+  gap: 50px;
+}
+
+.home-main-title-container>h1{
+  font-size: 40px;
+}
+
+.home-main-image-container>img{
+  width: 700px;
+  height: 320px;
+  border-radius: 10px;
+  border: 1px solid black;
+}
