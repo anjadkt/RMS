@@ -68,6 +68,7 @@ module.exports = {
     res.status(201).json({
       otp,
       message : "otp created valid upto 5min",
+      ok : true ,
       status : 201
     });
   }),
@@ -102,18 +103,27 @@ module.exports = {
     res.status(201).json({
       message : "User login Successfull!",
       status : 201,
-      accessToken,
-      userData : {
-        phone : user.phone,
-        cart : user.cart,
-        login : user.login,
-        isBanned : user.isBanned,
-        notification : user.notification,
-        orders : user.orders,
-        role : user.role
-      }
+      ok : true,
+      accessToken
     });
 
+  }),
+
+  getUserData : catchAsync(async (req,res)=>{
+    const {_id} = req.user ;
+    const user = await User.findOne({_id});
+    if(!user)throw new AppError("User Not Found!",404);
+    
+    res.status(200).json({
+      message : "User Data Found!",
+      userData : {
+        login : user.login,
+        isBanned : user.isBanned,
+        role : user.role
+      },
+      status : 200,
+      ok : true
+    })
   }),
 
   handleRefreshToken : catchAsync(async(req,res)=>{

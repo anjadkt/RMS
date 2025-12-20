@@ -1,8 +1,6 @@
-import { useRef, useState } from "react"
-import {useSelector , useDispatch} from "react-redux"
+import { useState } from "react"
 import {useNavigate} from 'react-router-dom'
 import api from "../services/axios";
-import { setUserData } from "../app/features/user/userSlice";
 
 export default function Login(){
 
@@ -10,48 +8,66 @@ export default function Login(){
   const [Otploading,setOtpLoading] = useState(false);
   const [loading,setLoading] = useState(false);
 
-  const dispatch = useDispatch();
+  const [form,setForm] = useState({
+    number : "",
+    otp : ""
+  });
+
   const navigate = useNavigate();
 
-  const inputElem = useRef({
-    number : null,
-    otp : null
-  })
+  const handleChange = (e)=>{
+    setForm({...form , [e.target.name] : e.target.value});
+  }
 
-  const validateField = (e)=>{
-    
+  const validate = (field) =>{
+
     const newError = {}
-    const name = e.name ;
-    const value = e.value?.trim();
 
-    if(name === "number"){
-      newError.number = value.trim().length !== 10 ? "Enter a valid number" : delete newError.number
+    if(!form.number?.trim()){
+      newError.number = "Number Required!"
+    }else if(form.number.length !== 10){
+        newError.number = "Enter a Valid Number"
     }
-
-    if(name === "otp"){
-      newError.otp = value.trim().length < 6 ? "Incorrect OTP" : delete newError.otp ;
+    
+    if(field !== "otp"){
+      if(!form.otp?.trim()){
+        newError.otp = "Otp Required!"
+      }else if(form.otp?.length !== 6){
+          newError.otp = "Enter a Valid Otp"
+      }
     }
 
     setError(newError);
+
+    return Object.keys(newError).length > 0
   }
 
-  const sendOtp = async (e)=>{
-    validateField(e);
+  const sendOtp = async ()=>{
 
-    if(Object.keys(error).length > 0)return ;
+    if(validate("otp"))return ;
 
     try{
+
       setOtpLoading(true);
-      const {data} = await api.post('/auth/customer/otp',{number : Number(e.value)});
-      if(data.status === 201)setError({});
-      setOtpLoading(false);
+
+      const {data} = await api.post('/auth/customer/otp',{number : Number(form.number)});
+
+      if(data.ok)setError({});
+
       console.log(data);
 
     }catch(error){
 
       const newError = {}
-      if(error.status === 400)newError.number = "Enter a valid Number";
-      if(error.status === 429)newError.common = "Too Many Attempts! Try after 5min"
+
+      switch(error.response.status){
+
+        case 400 :
+          newError.number = "Enter a valid Number"
+        case 429 :
+          newError.common = "Too Many Attempts! Try after 5min"
+      }
+
       setError(newError);
 
     }finally{
@@ -59,20 +75,22 @@ export default function Login(){
     }
   }
 
-  const verifyUser = async(otp,number)=>{
-    validateField(otp);
-    validateField(number);
+  const verifyUser = async()=>{
+
+    if(validate("continue"))return ;
+
     try{
       setLoading(true);
-      const {data} = await api.post('/auth/customer/login',{otp : Number(otp.value),number : Number(number.value)});
-      setLoading(false);
-      dispatch(setUserData(data.userData));
+      const {data} = await api.post('/auth/customer/login',{otp : Number(form.otp),number : Number(form.number)});
+
+      if(data.ok)setError({});
+
       navigate('/home');
 
     }catch(error){
   
       const newError = {}
-      switch(error.status){
+      switch(error.response.status){
         case 400 : 
           newError.number = "Required!";
           newError.otp = "Required!"
@@ -96,23 +114,23 @@ export default function Login(){
      <h1>Log in or Sign up</h1>
      <form onSubmit={(e)=>{
       e.preventDefault();
-      verifyUser(inputElem.current.otp,inputElem.current.number);
+      verifyUser();
      }}>
         <input
          name="number"
          type="number"
          placeholder="Enter Phone Number!"
-         ref={(e)=>inputElem.current.number = e}
+         onChange={handleChange}
         />
 
-        <button type='button' onClick={()=>sendOtp(inputElem.current.number)}>{Otploading ? "..." : "Send OTP"}</button><br />
+        <button type='button' onClick={sendOtp}>{Otploading ? "..." : "Send OTP"}</button><br />
         <div>{error.number || ""}</div>
 
         <input 
           name="otp" 
           type="number" 
           placeholder="Enter OTP" 
-          ref={(e)=>inputElem.current.otp = e}
+          onChange={handleChange}
         /><br />
         <div></div>
 

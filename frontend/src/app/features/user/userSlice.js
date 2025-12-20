@@ -5,7 +5,7 @@ const userSlice = createSlice({
   initialState : {
     cart : [],
     phone : null,
-    login : false,
+    login : null,
     isBanned : false,
     notification : [],
     orders : [],
@@ -13,14 +13,7 @@ const userSlice = createSlice({
   },
   reducers : {
     setUserData(state,action){
-      const {cart,phone,login,isBanned,notification,orders,role} = action.payload ;
-      state.cart =  cart ;
-      state.phone = phone ;
-      state.login = login ;
-      state.isBanned = isBanned ;
-      state.notification = notification ;
-      state.orders = orders ;
-      state.role = role ;
+      
     }
   }
 });
