@@ -113,7 +113,6 @@ module.exports = {
     const {_id} = req.user ;
     const user = await User.findOne({_id});
     if(!user)throw new AppError("User Not Found!",404);
-    
     res.status(200).json({
       message : "User Data Found!",
       userData : {

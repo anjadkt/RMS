@@ -6,7 +6,6 @@ const mongoose = require('mongoose');
 module.exports = {
   getItems : catchAsync(async (req,res)=>{
     const {q,category} = req.query ;
-
     const filter = {
       isRemoved : false
     }
@@ -76,8 +75,6 @@ module.exports = {
       message : `Item ${update.isAvailable ? "available" : "not available"}!`,
       status : 200
     });
-  }),
-
-  
+  })  
 
 }

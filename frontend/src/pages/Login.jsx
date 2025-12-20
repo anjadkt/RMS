@@ -85,7 +85,7 @@ export default function Login(){
 
       if(data.ok)setError({});
 
-      navigate('/home');
+      navigate('/');
 
     }catch(error){
   
