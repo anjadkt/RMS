@@ -17,7 +17,14 @@ const userSchema = new mongoose.Schema({
     type : String,
     enum : ["customer","waiter","cook","admin"]
   },
-  details :Object,
+  details :{
+    address : String,
+    number : Number,
+    photo : {
+      type :String,
+      default : ""
+    }
+  },
 
   isBanned : {
     type : Boolean,

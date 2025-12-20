@@ -247,12 +247,19 @@ module.exports = {
       return `${role === "waiter" ? "WTR" : "CHF"}-${Date.now().toString().slice(-5)}`
     }
 
+    const isStaff = await User.findOne({"details.number":details.number});
+    if(isStaff)throw new AppError("Mobile Number/ Staff Already Exist!",409);
+
     const hashedPin = await bcrypt.hash(pin.toString(),10);
 
     const user = await User.create({
       name,
       role,
-      details,
+      details:{
+        address : details.address,
+        number : details.number,
+        photo : details.photo
+      },
       staffId : createStaffId(),
       pin : hashedPin
     });

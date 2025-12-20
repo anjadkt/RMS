@@ -53,7 +53,10 @@ const adminProductRouter = require('./src/router/admin/product.route.js');
 app.use('/items/admin',verifyToken,verifyUsers("admin"),adminProductRouter);
 
 const adminTableRouter = require('./src/router/admin/table.route.js');
-app.use('/table/admin',verifyToken,verifyUsers("admin"),adminTableRouter)
+app.use('/table/admin',verifyToken,verifyUsers("admin","waiter"),adminTableRouter);
+
+const adminStaffRouter = require('./src/router/admin/staff.route.js');
+app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);
 
 //staff routes
 

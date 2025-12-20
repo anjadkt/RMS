@@ -15,6 +15,5 @@ const limiter = rateLimit({
 router.post('/otp',limiter,userController.sendAdminOtp);
 router.post('/login',userController.adminLogin);
 router.get('/refresh',userController.handleRefreshToken);
-router.post('/staff',userController.createStaff);
 
 module.exports = router

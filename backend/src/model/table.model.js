@@ -11,7 +11,11 @@ const tableSchema = new mongoose.Schema({
       type : mongoose.Schema.Types.ObjectId,
       ref : "Order"
     }
-  ]
+  ],
+  waiterId :{
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "User"
+  }
 });
 
 module.exports = mongoose.model("Table",tableSchema);

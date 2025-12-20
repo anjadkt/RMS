@@ -20,5 +20,30 @@ module.exports = {
       status : 201,
       table
     });
+  }),
+  assignTable : catchAsync(async(req,res)=>{
+
+    const {waiterId,tableNumber} = req.body ;
+
+    if(Array.isArray(tableNumber)){
+
+    }
+
+    const table = await Table.findOne({tableNumber});
+    if(table.waiterId){
+      throw new AppError("Waiter already Assinged!",409);
+    }else{
+      table.waiterId = waiterId
+      await table.save();
+    }
+
+    res.status(200).json({
+      message : "table assigned successfully!",
+      status : 200,
+      table
+    })
+  }),
+  getWaiterTable : catchAsync(async(req,res)=>{
+
   })
 }
