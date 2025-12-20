@@ -102,7 +102,16 @@ module.exports = {
     res.status(201).json({
       message : "User login Successfull!",
       status : 201,
-      accessToken
+      accessToken,
+      userData : {
+        phone : user.phone,
+        cart : user.cart,
+        login : user.login,
+        isBanned : user.isBanned,
+        notification : user.notification,
+        orders : user.orders,
+        role : user.role
+      }
     });
 
   }),
