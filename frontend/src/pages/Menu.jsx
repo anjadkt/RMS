@@ -28,7 +28,7 @@ export default function Menu (){
     <>
      <Header />
      <div>
-       <img src="https://www.shutterstock.com/image-vector/special-offer-banner-vector-template-260nw-2474802375.jpg" alt="offer img" />
+       <img src="" alt="offer img" />
 
        <input onChange={searchItem} type="text" placeholder="search Anything..." />
 

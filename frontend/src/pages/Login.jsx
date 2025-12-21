@@ -7,16 +7,18 @@ export default function Login(){
   const [error,setError] = useState({});
   const [Otploading,setOtpLoading] = useState(false);
   const [loading,setLoading] = useState(false);
+  const [ok,setOk] = useState(false);
 
   const [form,setForm] = useState({
     number : "",
-    otp : ""
+    otp : "",
+    countryCode : "+91"
   });
 
   const navigate = useNavigate();
 
   const handleChange = (e)=>{
-    setForm({...form , [e.target.name] : e.target.value});
+    setForm({...form , [e.target.name] : e.target.value?.replace(/\D/g,"")});
   }
 
   const validate = (field) =>{
@@ -52,7 +54,10 @@ export default function Login(){
 
       const {data} = await api.post('/auth/customer/otp',{number : Number(form.number)});
 
-      if(data.ok)setError({});
+      if(data.ok){
+        setError({});
+        setOk(true);
+      }
 
       console.log(data);
 
@@ -81,9 +86,11 @@ export default function Login(){
 
     try{
       setLoading(true);
-      const {data} = await api.post('/auth/customer/login',{otp : Number(form.otp),number : Number(form.number)});
+      const {data} = await api.post('/auth/customer/login',{otp : Number(form.otp),number : Number(form.number),countryCode : form.countryCode});
 
-      if(data.ok)setError({});
+      if(data.ok){
+        setError({});
+      };
 
       navigate('/');
 
@@ -109,34 +116,117 @@ export default function Login(){
     }
   }
 
+
   return (
     <>
-     <h1>Log in or Sign up</h1>
-     <form onSubmit={(e)=>{
-      e.preventDefault();
-      verifyUser();
-     }}>
-        <input
-         name="number"
-         type="number"
-         placeholder="Enter Phone Number!"
-         onChange={handleChange}
-        />
+      <div className="min-h-screen flex justify-center items-start pt-20 bg-gray-100 px-4">
+        <div className="max-w-md bg-white rounded-2xl shadow-lg px-8 py-6">
+          
+          <div className="flex justify-center">
+            <img
+              className="h-36"
+              src="https://res.cloudinary.com/dcsmtagf7/image/upload/v1766284983/logoLogin_spt4f6.png"
+            />
+          </div>
 
-        <button type='button' onClick={sendOtp}>{Otploading ? "..." : "Send OTP"}</button><br />
-        <div>{error.number || ""}</div>
+          <div className="border-b h-1 relative border-gray-300 my-4">
+            <p className="text-xs p-1 absolute -top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-gray-500 z-10 mt-1">
+              Login or Signup
+            </p>
+          </div>
 
-        <input 
-          name="otp" 
-          type="number" 
-          placeholder="Enter OTP" 
-          onChange={handleChange}
-        /><br />
-        <div></div>
+          <form
+            className="mt-4 space-y-4"
+            onSubmit={(e) => {
+              e.preventDefault();
+              verifyUser();
+            }}
+          >
+            <div className={ok ? "hidden" : "display-block"}>
+              <label htmlFor="number" className="block text-sm font-medium text-gray-700 mb-1">
+                Phone Number
+              </label>
 
-        <button type="submit">{loading ? "..." : "Continue"}</button>
-        <div>{error.common || ""}</div>
-     </form>
+              <div className="flex gap-2 font-normal">
+                <select onChange={e =>console.log(e)} name="countryCode" className="rounded-lg border border-gray-300 px-1 py-2 focus:outline-none">
+                  <option className="text-lg">+91</option>
+                  <option className="text-lg">+1</option>
+                </select>
+                <input
+                  id="number"
+                  name="number"
+                  type="text"
+                  maxLength={10}
+                  value={form.number}
+                  inputMode="numeric"
+                  placeholder="Enter phone number"
+                  onChange={handleChange}
+                  className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:outline-none focus:ring-2 focus:ring-white"
+                />
+              </div>
+
+              <div className="text-xs text-red-500 mt-1">
+                {error.number || ""}
+              </div>
+              <button
+                  type="button"
+                  onClick={sendOtp}
+                  className="w-full bg-[#cd0045] mt-4 cursor-pointer text-white font-semibold py-1.5 rounded-lg transition"
+                > 
+                {Otploading ? <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : "Continue"}
+              </button>
+            </div>
+
+            <div className={ok ? "display-block" : "hidden" }>
+              <div className="border-gray-200">
+              <label className="block text-sm font-normal text-gray-700 mb-3 text-center">
+                Enter 6-digit OTP send to <span className="font-medium text-black">{form.number}</span>
+              </label>
+
+              <div className="flex justify-center gap-2">
+                <input
+                  name="otp"
+                  type="text"
+                  inputMode="numeric"
+                  maxLength={6}
+                  value={form.otp || ""}
+                  onChange={handleChange}
+                  className="w-full h-10 text-center text-lg font-semibold border border-gray-300 rounded-lg focus:outline-none"
+                />
+              </div>
+
+              <div className="flex justify-center gap-1 mt-3 mb-1 items-center text-sm">
+
+                <button
+                  type="button"
+                  className="font-medium hover:underline cursor-pointer"
+                  onClick={sendOtp}
+                >
+                  Resend OTP?
+                </button>
+
+                <span className="text-gray-500">
+                   in <span className="font-medium">30s</span>
+                </span>
+              </div>
+              </div>
+
+              <button
+                type="submit"
+                className="w-full bg-black cursor-pointer hover:bg-gray-900 text-white font-semibold py-1.5 rounded-lg transition"
+              >
+                {loading ? <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                : "Continue"}
+              </button>
+            </div>
+
+            <div className="text-sm text-center text-red-500">
+              {error.common || ""}
+            </div>
+          </form>
+        </div>
+      </div>
     </>
   )
 }

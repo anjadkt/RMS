@@ -24,6 +24,14 @@ const itemSchema = new mongoose.Schema({
   isRemoved : {
     type : Boolean,
     default : false
+  },
+  isSpecial : {
+    type : Boolean,
+    default : false
+  },
+  isBest : {
+    type : Boolean,
+    default : false
   }
 });
 

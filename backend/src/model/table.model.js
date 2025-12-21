@@ -15,6 +15,15 @@ const tableSchema = new mongoose.Schema({
   waiterId :{
     type : mongoose.Schema.Types.ObjectId,
     ref : "User"
+  },
+
+  restaurentName : String,
+  offers : Array,
+  logo : String,
+  contactInfo :{
+    phone : Number,
+    email : String,
+    location : String
   }
 });
 
