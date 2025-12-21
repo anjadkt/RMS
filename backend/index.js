@@ -37,6 +37,9 @@ app.use('/auth/customer',userRouter);
 const productRouter = require('./src/router/customer/product.route.js');
 app.use('/items',productRouter);
 
+const restoDataRouter = require('./src/router/customer/resto.route.js');
+app.use('/resto',restoDataRouter);
+
 const userCartRouter = require('./src/router/customer/cart.route.js');
 app.use('/user/cart',verifyToken,verifyUsers("customer"),userCartRouter);
 
@@ -57,6 +60,9 @@ app.use('/table/admin',verifyToken,verifyUsers("admin","waiter"),adminTableRoute
 
 const adminStaffRouter = require('./src/router/admin/staff.route.js');
 app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);
+
+const restoRouter = require('./src/router/admin/resto.route.js');
+app.use('/resto/admin',restoRouter);
 
 //staff routes
 

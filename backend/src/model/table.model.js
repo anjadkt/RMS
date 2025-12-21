@@ -17,6 +17,7 @@ const tableSchema = new mongoose.Schema({
     ref : "User"
   },
 
+  restaurentId : String,
   restaurentName : String,
   offers : Array,
   logo : String,

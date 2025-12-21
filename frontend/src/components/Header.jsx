@@ -1,7 +1,10 @@
 import {useSelector} from "react-redux"
+import {useNavigate} from "react-router-dom"
 
 export default function Header(){
   const {login,name} = useSelector(state => state.user);
+  const logo = useSelector(state => state.website.logo);
+  const navigate = useNavigate();
 
   return (
     <>
@@ -9,16 +12,16 @@ export default function Header(){
         
         <div className="flex items-center text-lg gap-3">
           <img
-            src="https://res.cloudinary.com/dcsmtagf7/image/upload/v1766284983/logoHome_pp3yo2.png"
+            src={logo}
             alt="logo"
             className="h-15 w-auto"
           />
         </div>
 
         <nav className="hidden md:flex items-center gap-6 text-base font-medium text-gray-600">
-          <div className="cursor-pointer hover:text-[#cd0045] transition">Home</div>
-          <div className="cursor-pointer hover:text-[#cd0045] transition">Menu</div>
-          <div className="cursor-pointer hover:text-[#cd0045] transition">Offers</div>
+          <div onClick={()=>navigate('/home')} className="cursor-pointer hover:text-[#cd0045] transition">Home</div>
+          <div onClick={()=>navigate('/')} className="cursor-pointer hover:text-[#cd0045] transition">Menu</div>
+          <div onClick={()=>navigate('/offers')} className="cursor-pointer hover:text-[#cd0045] transition">Offers</div>
         </nav>
 
         {login ? (
