@@ -116,7 +116,6 @@ export default function Login(){
     }
   }
 
-
   return (
     <>
       <div className="min-h-screen flex justify-center items-start pt-20 bg-gray-100 px-4">
@@ -173,7 +172,7 @@ export default function Login(){
                   onClick={sendOtp}
                   className="w-full bg-[#cd0045] mt-4 cursor-pointer text-white font-semibold py-1.5 rounded-lg transition"
                 > 
-                {Otploading ? <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                {Otploading ? "..."
                 : "Continue"}
               </button>
             </div>
@@ -184,7 +183,7 @@ export default function Login(){
                 Enter 6-digit OTP send to <span className="font-medium text-black">{form.number}</span>
               </label>
 
-              <div className="flex justify-center gap-2">
+              <div className="flex flex-col justify-center gap-2">
                 <input
                   name="otp"
                   type="text"
@@ -194,6 +193,9 @@ export default function Login(){
                   onChange={handleChange}
                   className="w-full h-10 text-center text-lg font-semibold border border-gray-300 rounded-lg focus:outline-none"
                 />
+                <div className="text-xs text-red-500 mt-1">
+                 {error.otp || ""}
+                </div>
               </div>
 
               <div className="flex justify-center gap-1 mt-3 mb-1 items-center text-sm">
@@ -216,7 +218,7 @@ export default function Login(){
                 type="submit"
                 className="w-full bg-black cursor-pointer hover:bg-gray-900 text-white font-semibold py-1.5 rounded-lg transition"
               >
-                {loading ? <span className="h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                {loading ? "..."
                 : "Continue"}
               </button>
             </div>
