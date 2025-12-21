@@ -17,7 +17,7 @@ export default function Home (){
           </div>
         </div>
         <div className='home-main-image-container'>
-          <img src="https://www.shutterstock.com/image-vector/special-offer-banner-vector-template-260nw-2474802375.jpg" alt="offer img" />
+          <img src="" alt="offer img" />
         </div>
       </div>
      </main>

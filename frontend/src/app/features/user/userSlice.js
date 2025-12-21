@@ -9,11 +9,19 @@ const userSlice = createSlice({
     isBanned : false,
     notification : [],
     orders : [],
-    role : null
+    role : null,
+    name : null
   },
   reducers : {
     setUserData(state,action){
-      
+      const {name,login,cart,orders,notification,role,isBanned} = action.payload ;
+      state.cart = cart
+      state.name = name || ""
+      state.login = login
+      state.orders = orders
+      state.notification = notification
+      state.role = role
+      state.isBanned = isBanned
     }
   }
 });

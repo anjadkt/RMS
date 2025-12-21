@@ -119,7 +119,7 @@ export default function Login(){
   return (
     <>
       <div className="min-h-screen flex justify-center items-start pt-20 bg-gray-100 px-4">
-        <div className="max-w-md bg-white rounded-2xl shadow-lg px-8 py-6">
+        <div className="max-w-md bg-gray-100 rounded-2xl px-8 py-6">
           
           <div className="flex justify-center">
             <img
@@ -129,7 +129,7 @@ export default function Login(){
           </div>
 
           <div className="border-b h-1 relative border-gray-300 my-4">
-            <p className="text-xs p-1 absolute -top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-white text-gray-500 z-10 mt-1">
+            <p className="text-xs p-1 absolute -top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-gray-100 text-gray-500 z-10 mt-1">
               Login or Signup
             </p>
           </div>
@@ -147,7 +147,7 @@ export default function Login(){
               </label>
 
               <div className="flex gap-2 font-normal">
-                <select onChange={e =>console.log(e)} name="countryCode" className="rounded-lg border border-gray-300 px-1 py-2 focus:outline-none">
+                <select onChange={handleChange} name="countryCode" className="rounded-lg border border-gray-300 px-1 py-2 focus:outline-none">
                   <option className="text-lg">+91</option>
                   <option className="text-lg">+1</option>
                 </select>

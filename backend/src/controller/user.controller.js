@@ -118,7 +118,12 @@ module.exports = {
       userData : {
         login : user.login,
         isBanned : user.isBanned,
-        role : user.role
+        role : user.role,
+        cart : user.cart,
+        name : user.name,
+        phone : user.phone,
+        orders : user.orders,
+        notification : user.notification
       },
       status : 200,
       ok : true

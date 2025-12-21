@@ -1,25 +1,42 @@
+import {useSelector} from "react-redux"
 
 export default function Header(){
+  const {login,name} = useSelector(state => state.user);
+
   return (
     <>
-     <header className="user-header">
-      <div>
-        Logo
-      </div>
-      <nav className="">
-        <div>Home</div>
-        <div>Menu</div>
-        <div>Offers</div>
-      </nav>
-      <div className="">
-        <div>
-          Cart
+      <header className="w-full bg-white border-b border-gray-200 px-10 py-1 flex items-center justify-between">
+        
+        <div className="flex items-center text-lg gap-3">
+          <img
+            src="https://res.cloudinary.com/dcsmtagf7/image/upload/v1766284983/logoHome_pp3yo2.png"
+            alt="logo"
+            className="h-15 w-auto"
+          />
         </div>
-        <div>
-          Login Button
-        </div>
-      </div>
-     </header>
+
+        <nav className="hidden md:flex items-center gap-6 text-base font-medium text-gray-600">
+          <div className="cursor-pointer hover:text-[#cd0045] transition">Home</div>
+          <div className="cursor-pointer hover:text-[#cd0045] transition">Menu</div>
+          <div className="cursor-pointer hover:text-[#cd0045] transition">Offers</div>
+        </nav>
+
+        {login ? (
+          <div className="text-right">
+            <p className="text-lg text-gray-700 text-left">
+              Hello, <span className="font-medium">{name || ""}</span>
+            </p>
+            <p className="text-xs text-gray-400">
+              Welcome to Paragon!
+            </p>
+          </div>
+        ) : (
+          <button className="bg-[#cd0045] hover:bg-[#b8003f] text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+            Login
+          </button>
+        )}
+
+      </header>
     </>
   )
 }

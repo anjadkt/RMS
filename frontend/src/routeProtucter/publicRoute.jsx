@@ -1,26 +1,9 @@
 import { Navigate } from "react-router-dom";
 import {useState,useEffect} from 'react'
-import api from "../services/axios";
+import { useSelector } from "react-redux";
 
 export default function PublicRoute({children}){
-  const [login,setLogin] = useState(false);
-  const [loading,setLoading] = useState(true);
-
-  useEffect(()=>{
-    async function fetchUser(){
-      try{
-        const {data} = await api.get('/auth/customer');
-        setLogin(data.userData?.login);
-      }catch(error){
-        console.log(error)
-      }finally{
-        setLoading(false);
-      }
-    }
-    fetchUser();
-  },[])
-
-  if(loading)return <div>Loading...</div>
+  const login = useSelector(state => state.user.login);
 
   if(login)return <Navigate to={'/'} />
 
