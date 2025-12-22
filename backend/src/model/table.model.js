@@ -4,7 +4,6 @@ const tableSchema = new mongoose.Schema({
   tableNumber : {
     type :String,
     unique : true,
-    require : true
   },
   tableOrders : [
     {

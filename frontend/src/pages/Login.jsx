@@ -71,6 +71,8 @@ export default function Login(){
           newError.number = "Enter a valid Number"
         case 429 :
           newError.common = "Too Many Attempts! Try after 5min"
+        case 500 :
+          newError.common = "Internal Server Errror!"
       }
 
       setError(newError);

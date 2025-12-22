@@ -57,7 +57,28 @@ module.exports = {
       table
     })
   }),
-  getWaiterTable : catchAsync(async(req,res)=>{
 
+  getWaiterTable : catchAsync(async(req,res)=>{
+    const {_id} = req.user ;
+    const {id} = req.params ;
+
+    if(id){
+      const table = await Table.findOne({_id : id , waiterId : _id}).populate("tableOrders");
+      if(!table)throw new AppError("Wrong Table",400);
+      return res.status(200).json({
+        message : "Table Found!",
+        status : 200,
+        table
+      });
+    }
+
+    const tables = await Table.find({waiterId : _id});
+    if(!tables)throw new AppError("No Tables Found!",400);
+
+    res.status(200).json({
+      message : "Tables Found!",
+      status : 200,
+      tables
+    });
   })
 }

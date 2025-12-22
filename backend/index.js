@@ -56,7 +56,7 @@ const adminProductRouter = require('./src/router/admin/product.route.js');
 app.use('/items/admin',verifyToken,verifyUsers("admin"),adminProductRouter);
 
 const adminTableRouter = require('./src/router/admin/table.route.js');
-app.use('/table/admin',verifyToken,verifyUsers("admin","waiter"),adminTableRouter);
+app.use('/table/admin',verifyToken,verifyUsers("admin"),adminTableRouter);
 
 const adminStaffRouter = require('./src/router/admin/staff.route.js');
 app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);
@@ -69,10 +69,18 @@ app.use('/resto/admin',restoRouter);
 const staffRouter = require('./src/router/waiter/users.route.js');
 app.use('/auth/staff',staffRouter);
 
+const waiterTableRouter = require('./src/router/waiter/table.route.js');
+app.use('/waiter/table',verifyToken,verifyUsers("admin","waiter"),waiterTableRouter);
+
+const waiterOrderRouter = require('./src/router/waiter/orders.route.js');
+app.use('/waiter/orders',verifyToken,verifyUsers("waiter"),waiterOrderRouter);
+
+//cook routes
 const cookProductRouter = require('./src/router/cook/product.route.js');
 app.use('/items/cook',verifyToken,verifyUsers("cook","admin"),cookProductRouter);
 
-
+const cookOrderRouter = require('./src/router/cook/order.route.js');
+app.use('/orders/cook',verifyToken,verifyUsers("cook","admin"),cookOrderRouter);
 
 
 

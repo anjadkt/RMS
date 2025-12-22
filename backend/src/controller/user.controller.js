@@ -18,7 +18,7 @@ function getAccessToken(user){
 }
 
 function getRefreshToken(user){
-  return jwt.sign({_id : user._id},SECRET_REFRESH_KEY,{expiresIn : "30d"});
+  return jwt.sign({_id : user._id},SECRET_REFRESH_KEY,{expiresIn : user.role === "waiter" ? "7d" : "30d"});
 }
 
 function isValidEmail(email) {
@@ -150,7 +150,7 @@ module.exports = {
       res.cookie("access_token",newAccessToken,{maxAge : 1000 * 60 * 30});
 
       res.status(201).json({
-        message : "new access token created!",
+        message : `new access token created for ${user.role} !`,
         status : 201,
         accessToken : newAccessToken
       })
@@ -317,7 +317,7 @@ module.exports = {
 
     res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});
 
-    res.cookie("refresh_token",refreshToken,{maxAge : 1000 * 60 * 60 * 24 * 30, httpOnly : true});
+    res.cookie("refresh_token",refreshToken,{maxAge : 1000 * 60 * 60 * 24 * 7, httpOnly : true});
 
     res.status(200).json({
       message : "staff login successfull!",

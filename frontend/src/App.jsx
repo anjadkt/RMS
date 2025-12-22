@@ -24,7 +24,7 @@ function App() {
         dispatch(setWebsiteData(websiteData.settings));
         dispatch(setUserData(data.userData));
       }catch(error){
-        if(error.response.status === 404){
+        if(error.status === 404){
           navigate('/login');
         }
       }
@@ -35,7 +35,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path ="/" element={<ProtectedRoute><Menu/></ProtectedRoute>}/>
+        <Route path ="/" element={<Menu/>}/>
         <Route path ="/home" element={<Home/>}/>
         <Route path="/login" element = {<PublicRoute><Login/></PublicRoute>} />
       </Routes>
