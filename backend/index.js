@@ -64,7 +64,7 @@ app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);
 const restoRouter = require('./src/router/admin/resto.route.js');
 app.use('/resto/admin',restoRouter);
 
-//staff routes
+//waiter routes
 
 const staffRouter = require('./src/router/waiter/users.route.js');
 app.use('/auth/staff',staffRouter);

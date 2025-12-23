@@ -21,6 +21,15 @@ async function getOrderId(){
 }
 
 module.exports = {
+  
+  getChefOrders : catchAsync(async (req,res)=>{
+    const today = new Date().toISOString().slice(0, 10);
+    const {status} = req.params ;
+    if(!["accepted","preparing","ready"].includes(status))throw new AppError(status + " Not Allowed!",400);
+    const orders = await Order.find({status}).sort({orderNumber : status === "accepted" ? -1 : 1});
+    res.status(200).json(orders);
+  }),
+
   getWaiterOrders : catchAsync(async (req,res)=>{
     const {_id} = req.user ;
 

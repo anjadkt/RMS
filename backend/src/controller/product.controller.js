@@ -1,7 +1,6 @@
 const catchAsync = require('../utils/catchAsync.js');
 const AppError = require('../utils/AppError.js');
 const Item = require('../model/items.model.js');
-const mongoose = require('mongoose');
 
 module.exports = {
   getItems : catchAsync(async (req,res)=>{
@@ -65,7 +64,9 @@ module.exports = {
   }),
 
   changeAvailability : catchAsync(async(req,res)=>{
-    const isAvailable = req.body?.isAvailable ;
+    const isAvailable = req.query?.available ;
+    if(!isAvailable)throw new AppError("availablity query required!",400);
+    console.log(isAvailable);
     const {id} = req.params;
 
     const update = await Item.findByIdAndUpdate({_id : id },{isAvailable},{new : true , runValidators : true});
