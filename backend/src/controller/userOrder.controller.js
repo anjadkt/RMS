@@ -22,8 +22,10 @@ async function getOrderId(){
 
 module.exports = {
   userCreateOrder : catchAsync(async (req,res)=>{
-    const {_id} = req.user ;
+    const {_id,role} = req.user ;
     const {tableNumber,customerName,instructions} = req.body ;
+
+    if(!tableNumber)throw new AppError("Table Number Required!",400);
 
     const table = await Table.findOne({tableNumber});
     if(!table)throw new AppError("Table Not Found!",404);
@@ -52,9 +54,10 @@ module.exports = {
       orderType : "Dine-in",
       tableNumber,
       tableId :table._id,
+      isAssisted : role === "waiter" ? true : false ,
       customerId : user._id,
       customerName,
-      status : "placed",
+      status : role === "waiter" ? "accepted" : "placed",
       orderItems,
       orderDate,
       instructions
@@ -62,7 +65,13 @@ module.exports = {
     if(!order)throw new AppError("Order Creation Failed!",400);
 
     await Table.updateOne({tableNumber},{$push : {tableOrders : order._id}},{runValidators : true});
-    await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : []}},{runValidators : true})
+    await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : []}},{runValidators : true});
+
+    if(role === "waiter"){
+      //notify chef
+    }else{
+      //notify waiter
+    }
 
     res.status(201).json({
       message : "Order Created Successfully!",

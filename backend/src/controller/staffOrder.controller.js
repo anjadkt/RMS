@@ -4,6 +4,22 @@ const Order = require('../model/order.model.js');
 const AppError = require('../utils/AppError.js');
 const mongoose = require('mongoose');
 
+async function getOrderId(){
+  const today = new Date().toISOString().slice(0, 10);
+  const todayString = today.split("-").join("");
+
+  const order = await Order.aggregate([
+    {$match :{orderDate : today}},
+    {$sort : {orderNumber : -1}},
+    {$limit : 1}
+  ])
+
+  const orderNumber =  order[0] ? order[0].orderNumber + 1 : 1 ;
+  const orderId = `ODR-${todayString}-${orderNumber}`
+
+  return {orderNumber,orderId,orderDate : today}
+}
+
 module.exports = {
   getWaiterOrders : catchAsync(async (req,res)=>{
     const {_id} = req.user ;
@@ -78,7 +94,6 @@ module.exports = {
     const table = await Table.findOne({_id : new mongoose.Types.ObjectId(tableId) , tableOrders: { $all: orderObjectIds } });
     if(!table)throw new AppError("orders should from same table!",400);
 
-    //generate bill
     const orders = await Order.find({_id : {$in : orderIds}});
     const orderItemsObj = {}
     let orderBillId = ""
@@ -156,7 +171,7 @@ module.exports = {
     }
 
     if(action === "paynow"){
-      
+
     }
 
   })

@@ -46,7 +46,12 @@ const orderSchema = new mongoose.Schema({
   orderDate : {
     type :String,
     require : true
+  },
+  isAssisted : {
+    type :Boolean,
+    default : false
   }
 });
+
 
 module.exports = mongoose.model("Order",orderSchema);
