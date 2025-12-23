@@ -23,7 +23,7 @@ const orderSchema = new mongoose.Schema({
   customerName :String,
   status : {
     type :String,
-    enum : ["placed","accepted","preparing","ready","served","completed"]
+    enum : ["placed","accepted","preparing","ready","served","pending","completed"]
   },
   orderItems :[
     {
@@ -46,16 +46,6 @@ const orderSchema = new mongoose.Schema({
   orderDate : {
     type :String,
     require : true
-  },
-  paymentDetails :{
-    method : {
-      type : String,
-      enum : ["PREPAID", "POSTPAID"]
-    },
-    ItemTotal : Number,
-    tax :Number,
-    Discounts : Number,
-    Grandtotal : Number
   }
 });
 

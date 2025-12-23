@@ -34,9 +34,7 @@ module.exports = {
     if(!user)throw new AppError("User Not Found!",404);
     if(user.cart?.length < 1)throw new AppError("Cart is Empty!",400);
 
-    let ItemTotal = 0
     const orderItems = user.cart?.map(c =>{
-      ItemTotal += c.item.price * c.quantity ;
       return ({
         itemId : c.item._id,
         price : c.item.price,
@@ -59,13 +57,7 @@ module.exports = {
       status : "placed",
       orderItems,
       orderDate,
-      instructions,
-      paymentDetails : {
-        ItemTotal,
-        tax : 0,
-        Discounts : 0,
-        Grandtotal : ItemTotal
-      }
+      instructions
     });
     if(!order)throw new AppError("Order Creation Failed!",400);
 
