@@ -34,7 +34,7 @@ export default function Header(){
             </p>
           </div>
         ) : (
-          <button className="bg-[#cd0045] hover:bg-[#b8003f] text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+          <button onClick={()=>navigate('/login')} className="bg-[#cd0045] hover:bg-[#b8003f] text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
             Login
           </button>
         )}

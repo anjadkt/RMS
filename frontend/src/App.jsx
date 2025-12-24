@@ -7,35 +7,32 @@ import PublicRoute from "./routeProtucter/publicRoute.jsx"
 import { useDispatch } from "react-redux"
 import { useEffect, useState } from "react"
 import api from "./services/axios.js"
-import { setUserData } from "./app/features/user/userSlice.js"
 import {setWebsiteData} from "./app/features/website/webSlice.js"
-import { useNavigate } from "react-router-dom"
+import { checkAuth } from "./app/features/user/userSlice.js"
 
 function App() {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   useEffect(()=>{
-    async function getUserData() {
+    async function getWebsiteData() {
       try{
-        const {data} = await api.get('auth/customer');
         const {data : websiteData} = await api.get('/resto?settings=true');
-
         dispatch(setWebsiteData(websiteData.settings));
-        dispatch(setUserData(data.userData));
       }catch(error){
-        if(error.status === 404){
-          navigate('/login');
-        }
+        console.log(error.message);
       }
     }
-    getUserData();
-  })
+    getWebsiteData();
+  },[])
+
+  useEffect(()=>{
+     dispatch(checkAuth());
+  },[dispatch]);
 
   return (
     <>
       <Routes>
-        <Route path ="/" element={<Menu/>}/>
+        <Route path ="/" element={<ProtectedRoute><Menu/></ProtectedRoute>}/>
         <Route path ="/home" element={<Home/>}/>
         <Route path="/login" element = {<PublicRoute><Login/></PublicRoute>} />
       </Routes>

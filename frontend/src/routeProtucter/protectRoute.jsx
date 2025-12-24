@@ -1,12 +1,13 @@
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
-import {useState,useEffect} from 'react'
-import api from "../services/axios";
+import DotLoader from "../components/DotLoader";
 
-export default function ProtecteRoute({children}){
-  const login = useSelector(state => state.user.login);
+export default function ProtecteRoute({ children }) {
+  const { login, loading } = useSelector((state) => state.user);
 
-  if(!login)return <Navigate to={'/login'} replace />
+  if (loading) return <DotLoader />;
 
-  return children
+  if (login === false) return <Navigate to="/login" replace />;
+
+  return children;
 }
