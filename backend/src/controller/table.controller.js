@@ -28,8 +28,8 @@ module.exports = {
     const {waiterId,tableNumber} = req.body ;
 
     if(waiterId){
-      const user = await User.findOne({_id : waiterId});
-      if(!user)throw new AppError("valid User Id needed!",400);
+      const user = await User.findOne({_id : waiterId,role: "waiter", isWorking: true});
+      if(!user)throw new AppError("valid waiter Id needed!",400);
     }
 
     if (!tableNumber || (Array.isArray(tableNumber) && !tableNumber.length)) {
@@ -41,7 +41,7 @@ module.exports = {
         {tableNumber : {$in : tableNumber}},
         {$set : {waiterId : waiterId ? waiterId : null }});
 
-      if(!table.modifiedCount)throw new AppError("Updation Failed!",400);
+      if(table.matchedCount === 0)throw new AppError("Updation Failed!",400);
 
       return res.status(200).json({
         message : `tables ${waiterId ? "assigned" : "removed"}  successfully!`,
@@ -50,6 +50,7 @@ module.exports = {
     }
 
     const table = await Table.findOneAndUpdate({tableNumber},{$set : {waiterId}},{new : true});
+    if (!table)throw new AppError("Table not found", 404);
 
     res.status(200).json({
       message : "table assigned successfully!",

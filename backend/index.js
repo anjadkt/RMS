@@ -3,11 +3,34 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
+
 const cookieParser = require('cookie-parser');
 const verifyToken = require('./src/middleware/verifyToken.js');
 const verifyUsers = require('./src/middleware/verifyUsers.js');
 
-const {PORT,MONGO_DB_URL,USERFRONT_END_URL} = process.env
+const userRouter = require('./src/router/customer/customer.route.js');
+const productRouter = require('./src/router/customer/product.route.js');
+const restoDataRouter = require('./src/router/customer/resto.route.js');
+const userOrderRouter = require('./src/router/customer/userOrders.route.js');
+const userCartRouter = require('./src/router/customer/cart.route.js');
+
+const adminRouter = require('./src/router/admin/admin.route.js');
+const adminProductRouter = require('./src/router/admin/product.route.js');
+const adminTableRouter = require('./src/router/admin/table.route.js');
+const adminStaffRouter = require('./src/router/admin/staff.route.js');
+const restoRouter = require('./src/router/admin/resto.route.js');
+
+
+const staffRouter = require('./src/router/waiter/users.route.js');
+const waiterTableRouter = require('./src/router/waiter/table.route.js');
+const waiterOrderRouter = require('./src/router/waiter/orders.route.js');
+
+const cookProductRouter = require('./src/router/cook/product.route.js');
+const cookOrderRouter = require('./src/router/cook/order.route.js');
+
+const {PORT,MONGO_DB_URL,USERFRONT_END_URL} = process.env ;
+
+
 
 app.use(cors({
   origin : [USERFRONT_END_URL],
@@ -31,55 +54,26 @@ app.use(cookieParser());
 
 
 //customer routes
-const userRouter = require('./src/router/customer/customer.route.js');
 app.use('/auth/customer',userRouter);
-
-const productRouter = require('./src/router/customer/product.route.js');
 app.use('/items',productRouter);
-
-const restoDataRouter = require('./src/router/customer/resto.route.js');
 app.use('/resto',restoDataRouter);
-
-const userCartRouter = require('./src/router/customer/cart.route.js');
 app.use('/user/cart',verifyToken,verifyUsers("customer"),userCartRouter);
-
-const userOrderRouter = require('./src/router/customer/userOrders.route.js');
 app.use('/user/order',verifyToken,verifyUsers("customer"),userOrderRouter);
 
-
 //admin routes
-
-const adminRouter = require('./src/router/admin/admin.route.js');
 app.use('/auth/admin',adminRouter);
-
-const adminProductRouter = require('./src/router/admin/product.route.js');
 app.use('/items/admin',verifyToken,verifyUsers("admin"),adminProductRouter);
-
-const adminTableRouter = require('./src/router/admin/table.route.js');
 app.use('/table/admin',verifyToken,verifyUsers("admin"),adminTableRouter);
-
-const adminStaffRouter = require('./src/router/admin/staff.route.js');
 app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);
-
-const restoRouter = require('./src/router/admin/resto.route.js');
-app.use('/resto/admin',restoRouter);
+app.use('/resto/admin',verifyToken,verifyUsers("admin"),restoRouter);
 
 //waiter routes
-
-const staffRouter = require('./src/router/waiter/users.route.js');
 app.use('/auth/staff',staffRouter);
-
-const waiterTableRouter = require('./src/router/waiter/table.route.js');
 app.use('/waiter/table',verifyToken,verifyUsers("admin","waiter"),waiterTableRouter);
-
-const waiterOrderRouter = require('./src/router/waiter/orders.route.js');
 app.use('/waiter/orders',verifyToken,verifyUsers("waiter"),waiterOrderRouter);
 
 //cook routes
-const cookProductRouter = require('./src/router/cook/product.route.js');
 app.use('/items/cook',verifyToken,verifyUsers("cook","admin"),cookProductRouter);
-
-const cookOrderRouter = require('./src/router/cook/order.route.js');
 app.use('/orders/cook',verifyToken,verifyUsers("cook","admin"),cookOrderRouter);
 
 

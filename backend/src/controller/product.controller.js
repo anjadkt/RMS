@@ -51,11 +51,20 @@ module.exports = {
     });
   }),
   editItem : catchAsync(async(req,res)=>{
-    const {name , price ,image,category,isAvailable} = req.body ;
+    const {name , price ,image,category,isAvailable,isRemoved , isSpecial ,isBest} = req.body ;
     const {id} = req.params ;
 
-    if(!name || !price || !image || !category)throw new AppError("Field Required!",400);
-    const update = await Item.findByIdAndUpdate({_id : id },req.body,{new : true , runValidators : true});
+    if(!name || !price || !image || !category || !isAvailable || !isRemoved || !isSpecial || !isBest)throw new AppError("Field Required!",400);
+    const update = await Item.findByIdAndUpdate({_id : id },{
+      name,
+      price,
+      image,
+      category,
+      isAvailable,
+      isRemoved,
+      isSpecial,
+      isBest
+    },{new : true , runValidators : true});
     
     if(!update)throw new AppError("Updation failed!",405);
 

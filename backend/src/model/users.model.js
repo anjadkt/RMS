@@ -30,7 +30,10 @@ const userSchema = new mongoose.Schema({
     type : Boolean,
     default : false
   },
-  isWorking : Boolean,
+  isWorking : {
+    type : Boolean,
+    default : true
+  },
   login : {
     type : Boolean,
     default : false
