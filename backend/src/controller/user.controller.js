@@ -6,8 +6,9 @@ const OTP = require('../model/otp.model.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const transporter = require('../utils/email.js');
+const client = require('../utils/send_sms.js');
 
-const {SECRET_KEY,SECRET_REFRESH_KEY} = process.env ;
+const {SECRET_KEY,SECRET_REFRESH_KEY,TWILIO_PHONE} = process.env ;
 
 function getOtp(){
   return Math.floor(Math.random() * 900000 + 100000);
@@ -52,22 +53,27 @@ module.exports = {
     const number = req.body.number || "" ;
 
     if(!number)throw new AppError("Number Required",400);
-    if( !/^[0-9]{10}$/.test(number)) throw new AppError("Enter a valid Number",400);
+    if( !/^\+91[0-9]{10}$/.test(number)) throw new AppError("Enter a valid Number",400);
 
     const otp = getOtp();
-
-    // send otp through twilio
 
     const hashedOtp = await bcrypt.hash(otp.toString(),10);
     await OTP.updateOne({phone : number},{
       otp : hashedOtp,
       expiresAt : new Date(Date.now() + 5 * 60 * 1000),
       phone : number
-    },{upsert : true});
+    },{upsert : true,runValidators : true});
+
+    console.log(number);
+
+    const message = await client.messages.create({
+      body: `Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`,
+      from: TWILIO_PHONE,
+      to: number
+    });
 
     res.status(201).json({
-      otp,
-      message : "otp created valid upto 5min",
+      message : `otp send to ${message.to}`,
       ok : true ,
       status : 201
     });

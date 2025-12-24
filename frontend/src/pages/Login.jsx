@@ -52,14 +52,12 @@ export default function Login(){
 
       setOtpLoading(true);
 
-      const {data} = await api.post('/auth/customer/otp',{number : Number(form.number)});
+      const {data} = await api.post('/auth/customer/otp',{number : form.countryCode?.trim() + form.number?.trim()});
 
       if(data.ok){
         setError({});
         setOk(true);
       }
-
-      console.log(data);
 
     }catch(error){
 
@@ -88,13 +86,12 @@ export default function Login(){
 
     try{
       setLoading(true);
-      const {data} = await api.post('/auth/customer/login',{otp : Number(form.otp),number : Number(form.number),countryCode : form.countryCode});
+      const {data} = await api.post('/auth/customer/login',{otp : Number(form.otp),number : form.countryCode?.trim() + form.number?.trim()});
 
       if(data.ok){
         setError({});
+        navigate('/');
       };
-
-      navigate('/');
 
     }catch(error){
   
