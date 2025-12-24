@@ -93,7 +93,7 @@ module.exports = {
 
     await OTP.deleteMany({phone : number});
 
-    const user = await User.findOneAndUpdate({phone : number},{$set : {login : true},$setOnInsert : {phone : number,role : "customer"}},{upsert : true,new : true , runValidators : true});
+    const user = await User.findOneAndUpdate({phone : number},{$setOnInsert : {phone : number,role : "customer"}},{upsert : true,new : true , runValidators : true});
 
     const accessToken = getAccessToken(user);
 
@@ -249,7 +249,6 @@ module.exports = {
     const refreshToken = getRefreshToken(user);
 
     user.refreshToken = refreshToken
-    user.login = true
 
     await user.save();
 
@@ -317,8 +316,7 @@ module.exports = {
     const refreshToken = getRefreshToken(user);
 
     user.refreshToken = refreshToken
-    user.login = true
-
+    
     await user.save();
 
     res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});

@@ -34,10 +34,6 @@ const userSchema = new mongoose.Schema({
     type : Boolean,
     default : true
   },
-  login : {
-    type : Boolean,
-    default : false
-  },
 
   cart : [
       {
