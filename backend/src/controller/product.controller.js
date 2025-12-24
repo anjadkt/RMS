@@ -42,7 +42,9 @@ module.exports = {
   }),
   removeItem : catchAsync(async(req,res)=>{
     const {id} = req.params ;
-    await Item.deleteOne({_id : id});
+    const deleted = await Item.deleteOne({_id : id});
+    if(!deleted.deletedCount)throw new AppError("Item Can't be removed!",400);
+
     res.status(200).json({
       message : "product deleted successfully",
       status : 200
