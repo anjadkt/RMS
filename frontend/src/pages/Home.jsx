@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import { Autoplay } from "swiper/modules";
 import BestSeller from '../components/BestSeller.jsx';
 import "swiper/css";
+import Footer from '../components/Footer.jsx';
 
 export default function Home (){
   const [loading,setLoading] = useState(false);
@@ -129,7 +130,7 @@ export default function Home (){
         }
        </div>
 
-       <div className='px-5 my-20'>
+       <div className='px-5 my-10'>
           <h1 className='text-xl sm:text-xl lg:text-2xl font-extrabold leading-tight
             bg-gradient-to-r from-[#cd0045] to-[#ff6a88]
             bg-clip-text text-transparent font-REM'>
@@ -152,8 +153,13 @@ export default function Home (){
         <h2 className='bg-[#F8FAFC] text-[#cd0045] rounded-3xl text-sm xl:text-xl px-2'>Food Categories</h2>
       </div>
 
+      <div>
+
+      </div>
+
 
      </main>
+     <Footer/>
     </>
   )
 }

@@ -1,5 +1,4 @@
 export default function BestSeller({data}) {
-  console.log(data);
   return (
     <div key={data._id} className=" relative w-[180px] ml-3 shrink-0 rounded-xl bg-white shadow-md border border-gray-100 hover:shadow-md transition xl:ml-5">
       
