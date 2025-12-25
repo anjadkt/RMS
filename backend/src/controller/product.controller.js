@@ -24,14 +24,16 @@ module.exports = {
   }),
 
   addItem : catchAsync(async (req,res)=>{
-    const {name , price ,image,category} = req.body ;
+    const {name , price ,image,category,isSpecial ,isBest} = req.body ;
     if(!name || !price || !image || !category)throw new AppError("fields Required!",400);
 
     const item = await Item.create({
       name,
       price,
       image,
-      category
+      category,
+      isSpecial,
+      isBest
     });
 
     res.status(201).json({

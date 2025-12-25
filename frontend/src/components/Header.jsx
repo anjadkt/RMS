@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {useSelector} from "react-redux"
 import {useNavigate} from "react-router-dom"
 
@@ -8,13 +9,13 @@ export default function Header(){
 
   return (
     <>
-      <header className="w-full bg-white border-b border-gray-200 px-10 py-1 flex items-center justify-between">
+      <header className="w-full bg-white border-b border-gray-200 px-3 py-1 flex items-center justify-between">
         
-        <div className="flex items-center text-lg gap-3">
+        <div className="flex items-center text-lg">
           <img
             src={logo}
             alt="logo"
-            className="h-15 w-auto"
+            className="h-12 w-auto"
           />
         </div>
 
@@ -26,7 +27,7 @@ export default function Header(){
 
         {login ? (
           <div className="text-right">
-            <p className="text-lg text-gray-700 text-left">
+            <p className="text-sm text-gray-700 text-left">
               Hello, <span className="font-medium">{name || ""}</span>
             </p>
             <p className="text-xs text-gray-400">

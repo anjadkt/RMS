@@ -122,7 +122,6 @@ module.exports = {
     res.status(200).json({
       message : "User Data Found!",
       userData : {
-        login : user.login,
         isBanned : user.isBanned,
         role : user.role,
         cart : user.cart,
