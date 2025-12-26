@@ -1,7 +1,7 @@
 import { useState } from "react"
 import {useNavigate} from 'react-router-dom'
 import api from "../services/axios";
-
+import DotLoader from '../components/DotLoader.jsx'
 export default function Login(){
 
   const [error,setError] = useState({});
@@ -90,8 +90,9 @@ export default function Login(){
 
       if(data.ok){
         setError({});
-        navigate('/');
       };
+
+      navigate('/');
 
     }catch(error){
   
@@ -115,10 +116,12 @@ export default function Login(){
     }
   }
 
+  if(Otploading || loading) return <DotLoader />
+
   return (
     <>
       <div className="min-h-screen flex justify-center items-start pt-20 bg-gray-100 px-4">
-        <div className="max-w-md bg-gray-100 rounded-2xl px-8 py-6">
+        <div className="max-w-md bg-gray-100 rounded-2xl px-8 py-6 lg:shadow-lg">
           
           <div className="flex justify-center">
             <img
@@ -171,8 +174,7 @@ export default function Login(){
                   onClick={sendOtp}
                   className="w-full bg-[#cd0045] mt-4 cursor-pointer text-white font-semibold py-1.5 rounded-lg transition"
                 > 
-                {Otploading ? "..."
-                : "Continue"}
+                Continue
               </button>
             </div>
 
@@ -217,8 +219,7 @@ export default function Login(){
                 type="submit"
                 className="w-full bg-black cursor-pointer hover:bg-gray-900 text-white font-semibold py-1.5 rounded-lg transition"
               >
-                {loading ? "..."
-                : "Continue"}
+                Continue
               </button>
             </div>
 

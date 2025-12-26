@@ -1,5 +1,7 @@
-body{
-  background: #f7f7f7 ;
+@import "tailwindcss";
+
+body {
+  background: #f7f7f7;
 }
 
 .scrollbar-hide::-webkit-scrollbar {
@@ -9,7 +11,3 @@ body{
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
-
-
-@import "tailwindcss";
-@import url('https://fonts.googleapis.com/css2?family=REM:ital,wght@0,100..900;1,100..900&family=Reem+Kufi:wght@400..700&display=swap')

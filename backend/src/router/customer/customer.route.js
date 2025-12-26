@@ -14,7 +14,7 @@ const limiter = rateLimit({
 
 router.post('/otp',limiter,userController.sendUserOtp);
 router.post('/login',userController.verifyUser);
-router.get('/refresh',userController.handleRefreshToken);
+// router.get('/refresh',userController.handleRefreshToken);
 router.get('/',verifyToken,userController.getUserData);
 
 module.exports = router

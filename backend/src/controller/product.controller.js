@@ -23,6 +23,42 @@ module.exports = {
 
   }),
 
+  getItemsCategory : catchAsync(async(req,res)=>{
+    const items = await Item.aggregate([
+      {$match : {isRemoved : false}},
+      {$group : {
+        _id : "$category",
+        items : {
+          $push : {
+            _id : "$_id",
+            name : "$name",
+            price : "$price",
+            image : "$image",
+            category : "$category",
+            rating : "$rating",
+            isAvailable : "$isAvailable",
+            isSpecial : "$isSpecial",
+            isBest : "$isBest",
+
+            }
+          }
+        }
+      },
+      {$project : {
+        _id: 0,
+        category: "$_id",
+        items: 1
+      }},
+      {
+        $sort : {
+          category : 1
+        }
+      }
+    ])
+    if(!items)throw new AppError("items cannot be accessble!",400);
+    res.status(200).json(items)
+  }),
+
   addItem : catchAsync(async (req,res)=>{
     const {name , price ,image,category,isSpecial ,isBest} = req.body ;
     if(!name || !price || !image || !category)throw new AppError("fields Required!",400);

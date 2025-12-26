@@ -1,13 +1,18 @@
 import Header from "../components/Header";
+import Category from '../components/Category.jsx'
 import api from "../services/axios";
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {useSelector,useDispatch} from 'react-redux'
 import { setSearch } from "../app/features/product/productSlice";
+import Item from "../components/Item.jsx";
+import Footer from '../components/Footer.jsx';
+import DotLoader from '../components/DotLoader.jsx' ;
 
 export default function Menu (){
   const [loading,setLoading] = useState(false);
   const {searchProduct} = useSelector(state => state.product);
   const dispatch = useDispatch() ;
+  const [products ,setProduct] = useState([]);
 
   async function searchItem(e){
     if(!e.target.value)return dispatch(setSearch([]));
@@ -22,16 +27,104 @@ export default function Menu (){
     }
   }
 
+  useEffect(()=>{
+    async function fetchItems() {
+      try{
+        setLoading(true);
+        const {data}  = await api.get('/items/category');
+        setProduct(data);
+      }catch(error){
+        console.log(error.message);
+      }finally{
+        setLoading(false);
+      }
+    }
+    fetchItems();
+  },[])
 
-
+  if(loading)return <DotLoader/>
   return(
     <>
-     <Header />
-     <div>
-       <img src="" alt="offer img" />
+    <div className="hidden xl:block lg:block">
+      <Header/>
+    </div>
+    <main>
+      <div className="relative w-full h-[200px] overflow-hidden rounded-b-xl
+        bg-gradient-to-b from-[#c86a2b] via-[#f2a93b] to-[#ffd166]"
+        >
+        <h1
+          className="
+            absolute left-5 top-8
+            xl:left-1/2 lg:left-1/2
+            text-[28px] sm:text-[32px]
+            font-extrabold italic
+            text-white
+            drop-shadow-[0_4px_6px_rgba(0,0,0,0.35)]
+            tracking-wide
+            leading-none
+          "
+        >
+          FLAT <span className="text-yellow-300">50%</span> OFF
+        </h1>
 
-       <input onChange={searchItem} type="text" placeholder="search Anything..." />
+        <img
+          src="/images/offerPizza.png"
+          alt="pizza"
+          className="absolute right-2 top-0 h-32 xl:left-90 xl:top-0 lg:left-90 lg:top-0"
+        />
 
+        <img
+          src="/images/burger2.png"
+          alt="burger"
+          className="absolute left-2 -bottom-2 h-28 xl:left-200 lg:left-200"
+        />
+
+        <button
+          className="absolute right-12 bottom-6 bg-gray-900 opacity-80 text-white
+          xl:right-150 lg:right-150 xl:px-5 xl:py-2
+          px-3 py-1 rounded-full text-xs font-semibold
+          hover:bg-gray-900 transition"
+        >
+          Order Now →
+        </button>
+
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="relative w-[85%] max-w-md">
+            <img
+              src="/icons/searchfood.png"
+              alt="search"
+              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 opacity-60"
+            />
+            <input
+              type="text"
+              onChange={searchItem}
+              placeholder="Search anything..."
+              className="w-full pl-10 pr-4 py-2 rounded-md
+              text-sm outline-none bg-white shadow-md"
+            />
+            <img
+              src="/icons/mic.png"
+              alt="mic"
+              className="absolute border-l pl-1.5 right-3 top-1/2 -translate-y-1/2 h-4 opacity-60"
+            />
+          </div>
+        </div>
+      </div>
+      <Category />
+      <div className='h-0.5 mb-10 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center lg:justify-start xl:justify-start'>
+        <h2 className='bg-[#F8FAFC] lg:ml-10 xl:ml-10 text-[#cd0045] rounded-3xl text-sm xl:text-xl px-2'>Food Categories</h2>
+      </div>
+      <div className="grid grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 gap-5 px-5">
+        {
+          products && products?.map(v=>(
+            <Item item={v} />
+          ))
+        }
+      </div>
+    </main>
+    <Footer />
+
+     {/* <div>
        <div>
         {loading? "Loading..." : (
 
@@ -44,15 +137,7 @@ export default function Menu (){
         )}
        </div>
 
-     </div>
-
-     <div>
-      
-     </div>
-
-     <div>
-      <div>All Menu</div>
-     </div>
+     </div> */}
 
 
     </>

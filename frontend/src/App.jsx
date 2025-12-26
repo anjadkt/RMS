@@ -32,7 +32,7 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path ="/" element={<Menu/>}/>
+        <Route path ="/" element={<ProtectedRoute ><Menu/></ProtectedRoute>}/>
         <Route path ="/home" element={<Home/>}/>
         <Route path="/login" element = {<PublicRoute><Login/></PublicRoute>} />
       </Routes>

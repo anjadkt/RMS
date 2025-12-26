@@ -5,4 +5,18 @@ const api = axios.create({
   withCredentials : true
 });
 
+api.interceptors.response.use(res => res ,async err =>{
+  const originalReq = err.config ;
+  if(err.response?.status === 401 && !originalReq._retry){
+    originalReq._retry = true ;
+    try{
+      await api.get("/auth/refresh");
+      return api(originalReq);
+    }catch(error){
+      return Promise.reject(error);
+    }
+  }
+   return Promise.reject(err);
+})
+
 export default api ;

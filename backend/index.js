@@ -8,6 +8,9 @@ const cookieParser = require('cookie-parser');
 const verifyToken = require('./src/middleware/verifyToken.js');
 const verifyUsers = require('./src/middleware/verifyUsers.js');
 
+const refreshController = require('./src/controller/user.controller.js');
+const itemsController = require('./src/controller/product.controller.js');
+
 const userRouter = require('./src/router/customer/customer.route.js');
 const productRouter = require('./src/router/customer/product.route.js');
 const restoDataRouter = require('./src/router/customer/resto.route.js');
@@ -51,6 +54,9 @@ mongoose.connect(MONGO_DB_URL)
 app.use(express.json());
 app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
+
+app.get('/auth/refresh',refreshController.handleRefreshToken);
+app.get('/items/category',itemsController.getItemsCategory);
 
 
 //customer routes

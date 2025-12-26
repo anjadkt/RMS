@@ -14,6 +14,6 @@ const limiter = rateLimit({
 //admin routes
 router.post('/otp',limiter,userController.sendAdminOtp);
 router.post('/login',userController.adminLogin);
-router.get('/refresh',userController.handleRefreshToken);
+// router.get('/refresh',userController.handleRefreshToken);
 
 module.exports = router

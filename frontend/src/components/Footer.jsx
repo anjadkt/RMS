@@ -3,7 +3,6 @@ import api from "../services/axios";
 
 export default function Footer() {
   const [settings,setSettings] = useState({});
-  console.log(settings);
   useEffect(()=>{
       async function fetchWebData() {
         try{
