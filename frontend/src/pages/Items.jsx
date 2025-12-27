@@ -3,6 +3,7 @@ import { useEffect , useState } from "react";
 import DotLoader from '../components/DotLoader.jsx'
 import api from '../services/axios.js' ;
 import { useNavigate } from "react-router-dom";
+import Cart from "../components/Cart.jsx";
 
 export default function Items(){
   const [itemObj,setItemObj] = useState({});
@@ -30,7 +31,7 @@ export default function Items(){
   if(loading)return <DotLoader/>
   return(
     <>
-     <main>
+     <main className="mb-20">
        <div className="flex items-center justify-between px-3 py-2 xl:px-5 xl:py-3 lg:px-3 lg:py-4 border-b border-gray-700">
         <img className="h-3 opacity-80" src="/icons/leftArrow.png" alt="arrow" onClick={()=>navigate('/')} />
         <h1 className="-ml-3 text-lg font-semibold xl:text-2xl font-[REM] text-[#cd0045] ">{itemObj.category || "404"}</h1>
@@ -89,6 +90,7 @@ export default function Items(){
           }
        </div>
      </main>
+     <Cart isItems= {true} />
     </>
   )
 }

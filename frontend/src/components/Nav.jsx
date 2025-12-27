@@ -1,22 +1,25 @@
 import { NavLink } from "react-router-dom";
 import { useState,useEffect } from "react";
+import {useDispatch,useSelector} from 'react-redux'
+import {setScroll} from '../app/features/website/webSlice.js'
 
 export default function Nav() {
   const [show, setShow] = useState(true);
-  const [lastScrollY, setLastScrollY] = useState(0);
+  const dispatch = useDispatch();
+  const {scroll :lastScrollY} = useSelector(state=> state.website);
 
   useEffect(() => {
 
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
 
-      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setShow(false);
-      } else {
-        setShow(true);
-      }
+      } 
 
-      setLastScrollY(currentScrollY);
+      if(!currentScrollY)setShow(true);
+
+      dispatch(setScroll(currentScrollY));
     };
 
     window.addEventListener("scroll", handleScroll);
@@ -28,11 +31,11 @@ export default function Nav() {
   return (
     <div className=
     {
-      `md:hidden fixed bottom-2 left-1/2 -translate-x-1/2 z-50
+      `md:hidden fixed bottom-0.5 left-1/2 -translate-x-1/2 z-50
       transition-transform duration-300 ease-in-out
       ${show ? "translate-y-0" : "translate-y-40"}
     `}>
-      <div className="flex bg-white border border-[#cd0045] rounded-full p-1 shadow-sm">
+      <div className="flex bg-black border border-[#cd0045] rounded-full p-1 shadow-sm">
 
         <NavLink
           to="/home"
@@ -41,12 +44,26 @@ export default function Nav() {
             ${
               isActive
                 ? "bg-[#cd0045] text-white"
-                : "text-[#cd0045]"
+                : "text-white"
             }`
           }
         >
           Home
         </NavLink>
+
+        {/* <NavLink
+          to="/search"
+          className={({ isActive }) =>
+            `px-5 py-1.5 text-sm font-semibold rounded-full transition
+            ${
+              isActive
+                ? "bg-[#cd0045] text-white"
+                : "text-white"
+            }`
+          }
+        >
+          Search
+        </NavLink> */}
 
         <NavLink
           to="/"
@@ -56,7 +73,7 @@ export default function Nav() {
             ${
               isActive
                 ? "bg-[#cd0045] text-white"
-                : "text-[#cd0045]"
+                : "text-white"
             }`
           }
         >

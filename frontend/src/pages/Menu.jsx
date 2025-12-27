@@ -8,6 +8,7 @@ import Item from "../components/Item.jsx";
 import Footer from '../components/Footer.jsx';
 import DotLoader from '../components/DotLoader.jsx' ;
 import Nav from "../components/Nav.jsx";
+import Cart from "../components/Cart.jsx";
 
 export default function Menu (){
   const [loading,setLoading] = useState(false);
@@ -124,6 +125,7 @@ export default function Menu (){
       </div>
     </main>
     <Nav/>
+    <Cart />
     <Footer />
 
      {/* <div>

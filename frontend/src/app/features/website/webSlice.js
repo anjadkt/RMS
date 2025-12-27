@@ -5,15 +5,19 @@ const webSlice = createSlice({
   initialState : {
     logo : null,
     restaurentName : null,
+    scroll : 0
   },
   reducers : {
     setWebsiteData(state,action){
       state.logo = action.payload.logo ;
       state.restaurentName = action.payload.restaurentName ;
+    },
+    setScroll(state,action){
+      state.scroll = action.payload ;
     }
   }
 });
 
 export default webSlice.reducer ;
 
-export const {setWebsiteData} = webSlice.actions ;
+export const {setWebsiteData,setScroll} = webSlice.actions ;

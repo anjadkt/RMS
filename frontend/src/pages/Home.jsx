@@ -10,6 +10,7 @@ import Category from '../components/Category.jsx';
 import "swiper/css";
 import Footer from '../components/Footer.jsx';
 import Nav from '../components/Nav.jsx'
+import Cart from '../components/Cart.jsx'
 
 export default function Home (){
   const [loading,setLoading] = useState(false);
@@ -162,6 +163,7 @@ export default function Home (){
        </div>
 
      </main>
+     <Cart />
      <Nav/>
      <Footer/>
     </>
