@@ -7,6 +7,7 @@ import { setSearch } from "../app/features/product/productSlice";
 import Item from "../components/Item.jsx";
 import Footer from '../components/Footer.jsx';
 import DotLoader from '../components/DotLoader.jsx' ;
+import Nav from "../components/Nav.jsx";
 
 export default function Menu (){
   const [loading,setLoading] = useState(false);
@@ -122,6 +123,7 @@ export default function Menu (){
         }
       </div>
     </main>
+    <Nav/>
     <Footer />
 
      {/* <div>
