@@ -24,8 +24,14 @@ module.exports = {
   }),
 
   getItemsCategory : catchAsync(async(req,res)=>{
+    const {c} = req.query ;
+    const match = {$match : {isRemoved : false}}
+    if(c){
+      match.$match.category = c
+    }
+
     const items = await Item.aggregate([
-      {$match : {isRemoved : false}},
+      match,
       {$group : {
         _id : "$category",
         items : {

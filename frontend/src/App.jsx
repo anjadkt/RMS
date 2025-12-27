@@ -9,6 +9,8 @@ import { useEffect, useState } from "react"
 import api from "./services/axios.js"
 import {setWebsiteData} from "./app/features/website/webSlice.js"
 import { checkAuth } from "./app/features/user/userSlice.js"
+import Items from "./pages/Items.jsx"
+import Item from "./components/Item.jsx"
 
 function App() {
   const dispatch = useDispatch();
@@ -35,6 +37,7 @@ function App() {
         <Route path ="/" element={<ProtectedRoute ><Menu/></ProtectedRoute>}/>
         <Route path ="/home" element={<Home/>}/>
         <Route path="/login" element = {<PublicRoute><Login/></PublicRoute>} />
+        <Route path="/items/:c" element = {<Items/>} />
       </Routes>
     </>
   )

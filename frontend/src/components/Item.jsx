@@ -1,12 +1,15 @@
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay} from "swiper/modules";
 import "swiper/css";
+import {useNavigate} from "react-router-dom";
 
 export default function Item({item}){
 
+  const navigate = useNavigate()
+
   return(
     <>
-      <div className="shadow-xl rounded-xl overflow-hidden">
+      <div className="shadow-xl rounded-xl overflow-hidden " onClick={()=>navigate(`/items/${item.category}`)}>
 
         <div className="lg:col-span-2 bg-gray-200">
           <Swiper
