@@ -11,6 +11,7 @@ import {setWebsiteData} from "./app/features/website/webSlice.js"
 import { checkAuth } from "./app/features/user/userSlice.js"
 import Items from "./pages/Items.jsx"
 import Checkout from './pages/Checkout.jsx'
+import Search from "./pages/Search.jsx"
 
 
 function App() {
@@ -40,6 +41,7 @@ function App() {
         <Route path="/login" element = {<PublicRoute><Login/></PublicRoute>} />
         <Route path="/items/:c" element = {<Items/>} />
         <Route path="/cart" element = {<ProtectedRoute ><Checkout/></ProtectedRoute>} />
+        <Route path="/search" element = {<Search/>} />
       </Routes>
     </>
   )

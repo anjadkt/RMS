@@ -19,6 +19,8 @@ module.exports = {
 
     const items = await Item.find(filter);
 
+    console.log(q,items)
+
     res.status(200).json(items);
 
   }),

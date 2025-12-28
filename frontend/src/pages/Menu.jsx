@@ -2,32 +2,16 @@ import Header from "../components/Header";
 import Category from '../components/Category.jsx'
 import api from "../services/axios";
 import {useEffect, useState} from 'react'
-import {useSelector,useDispatch} from 'react-redux'
-import { setSearch } from "../app/features/product/productSlice";
 import Item from "../components/Item.jsx";
 import Footer from '../components/Footer.jsx';
 import DotLoader from '../components/DotLoader.jsx' ;
 import Nav from "../components/Nav.jsx";
 import Cart from "../components/Cart.jsx";
+import SearchComp from "../components/SerachComp.jsx";
 
 export default function Menu (){
   const [loading,setLoading] = useState(false);
-  const {searchProduct} = useSelector(state => state.product);
-  const dispatch = useDispatch() ;
   const [products ,setProduct] = useState([]);
-
-  async function searchItem(e){
-    if(!e.target.value)return dispatch(setSearch([]));
-    try{
-      setLoading(true);
-      const {data} = await api.get(`/items?q=${e.target.value}`);
-      dispatch(setSearch(data));
-    }catch(error){
-      console.log(error.message);
-    }finally{
-      setLoading(false);
-    }
-  }
 
   useEffect(()=>{
     async function fetchItems() {
@@ -91,25 +75,7 @@ export default function Menu (){
         </button>
 
         <div className="absolute inset-0 flex items-center justify-center">
-          <div className="relative w-[85%] max-w-md">
-            <img
-              src="/icons/searchfood.png"
-              alt="search"
-              className="absolute left-3 top-1/2 -translate-y-1/2 h-4 opacity-60"
-            />
-            <input
-              type="text"
-              onChange={searchItem}
-              placeholder="Search anything..."
-              className="w-full pl-10 pr-4 py-2 rounded-md
-              text-sm outline-none bg-white shadow-md"
-            />
-            <img
-              src="/icons/mic.png"
-              alt="mic"
-              className="absolute border-l pl-1.5 right-3 top-1/2 -translate-y-1/2 h-4 opacity-60"
-            />
-          </div>
+          <SearchComp />
         </div>
       </div>
 
