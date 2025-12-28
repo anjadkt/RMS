@@ -1,19 +1,62 @@
 import { useNavigate } from "react-router-dom";
 import { fetchCart } from "../app/features/cart/cartSlice";
 import { useDispatch,useSelector } from "react-redux";
-import { useEffect } from "react";
+import { useEffect , useState } from "react";
 import { addToCart,removeFromCart } from "../app/features/cart/cartSlice";
+import DotLoader from '../components/DotLoader.jsx'
+import api from "../services/axios.js";
+// import SlideToOrder from '../components/OrderButton.jsx'
 
 export default function Checkout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {cart} = useSelector(state => state.cart);
+  const [orderLoading , setOrderLoading] = useState(false);
+  const [form,setForm] = useState({
+    name : "",
+    tableNumber : ""
+  });
+  const [error,setError] = useState({});
+
+  const {cart,loading} = useSelector(state => state.cart);
 
   const calcTotal = cart.reduce((accum,val)=>accum + (val.item.price * val.quantity),0);
+
+  const handleChange =(e)=>{
+        setForm(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }))
+  }
+
+  const makeOrder = async () =>{
+    try{
+      setOrderLoading(true);
+      const {data} = await api.post('/user/order',form);
+      setError({});
+      navigate('/history');
+
+    }catch(error){
+      switch(error.status){
+        case 400 : 
+         setError({tableNumber : "Required!" });
+         break ;
+        case 404 :
+          setError({tableNumber : "Wrong Table Number!" });
+         break ;
+        case 406 :
+          setError({tableNumber : "Cart is Empty!" });
+         break ;
+      }
+    }finally{
+      setOrderLoading(false);
+    }
+  }
 
   useEffect(()=>{
     dispatch(fetchCart());
   },[dispatch])
+
+  if(loading)return <DotLoader />
 
   return (
     <div className="min-h-screen bg-[#fff5f7] p-4 max-w-md mx-auto">
@@ -22,8 +65,8 @@ export default function Checkout() {
         <button onClick={()=>navigate('/')}>
           <img className="h-3" src="/icons/leftArrow.png" alt="" />
         </button>
-        <h1 className="text-lg -ml-4 font-semibold text-gray-800">Checkout</h1>
-        <div></div>
+        <h1 className="text-lg font-semibold text-gray-800">Checkout</h1>
+        <div onClick={()=> navigate('/history')}><img className="h-4 opacity-80" src="/icons/history.png" alt="history" /></div>
       </div>
 
       <div className='h-0.5 mb-5 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center'>
@@ -83,9 +126,11 @@ export default function Checkout() {
         <h2 className='bg-[#fff5f7] text-[#cd0045]/60 rounded-3xl text-sm xl:text-xl px-2'>Dine-In Details</h2>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex items-center justify-center gap-2">
+      <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex items-start justify-center gap-2">
         <div className="flex flex-col gap-2">
           <input
+            onChange={handleChange}
+            name = "name"
             type="text"
             placeholder="Name"
             className="border rounded-lg px-3 py-2 text-sm
@@ -93,12 +138,14 @@ export default function Checkout() {
           />
 
           <input
+            onChange={handleChange}
+            name = "tableNumber"
             type="text"
             placeholder="Scan/Type Table NO:"
             className="border rounded-lg px-3 py-2 text-sm
             focus:outline-none focus:ring-1 focus:ring-[#cd0045]"
           />
-
+          <div className="text-xs text-red-600 ml-1 -mt-1">{error.tableNumber || ""}</div>
         </div>
 
         <div className="w-1/2 h-20 flex items-center justify-center
@@ -107,22 +154,13 @@ export default function Checkout() {
         </div>
       </div>
 
-      {/* Slider Button */}
       <div className="bg-white rounded-xl shadow-sm p-3">
-        <div className="relative w-full h-12 bg-gray-200 rounded-full overflow-hidden">
-
-          {/* Sliding knob */}
-          <div className="absolute left-1 top-1 h-10 w-10 bg-[#cd0045]
-            rounded-full flex items-center justify-center text-white
-            animate-pulse">
-            →
-          </div>
-
-          {/* Text */}
-          <p className="absolute inset-0 flex items-center justify-center
-            text-sm font-semibold text-gray-600">
-            Slide to Pay
-          </p>
+        <div 
+        onClick={makeOrder}
+        className="flex items-center justify-center w-full h-12 bg-[#cd0045] rounded-full text-sm font-semibold text-white">
+          {
+            orderLoading ? (<span className="inline-block h-6 w-6 border-3 border-white border-t-transparent rounded-full animate-spin" />) : "Confirm & Call waiter"
+          }
         </div>
       </div>
 

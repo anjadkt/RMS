@@ -23,7 +23,7 @@ async function getOrderId(){
 module.exports = {
   userCreateOrder : catchAsync(async (req,res)=>{
     const {_id,role} = req.user ;
-    const {tableNumber,customerName,instructions} = req.body ;
+    const {tableNumber,name,instructions} = req.body ;
 
     if(!tableNumber)throw new AppError("Table Number Required!",400);
 
@@ -34,7 +34,7 @@ module.exports = {
 
     const user = await User.findOne({_id}).populate("cart.item");
     if(!user)throw new AppError("User Not Found!",404);
-    if(user.cart?.length < 1)throw new AppError("Cart is Empty!",400);
+    if(user.cart?.length < 1)throw new AppError("Cart is Empty!",406);
 
     const orderItems = user.cart?.map(c =>{
       return ({
@@ -56,7 +56,7 @@ module.exports = {
       tableId :table._id,
       isAssisted : role === "waiter" ? true : false ,
       customerId : user._id,
-      customerName,
+      name,
       status : role === "waiter" ? "accepted" : "placed",
       orderItems,
       orderDate,

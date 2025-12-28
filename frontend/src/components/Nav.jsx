@@ -51,20 +51,6 @@ export default function Nav() {
           Home
         </NavLink>
 
-        {/* <NavLink
-          to="/search"
-          className={({ isActive }) =>
-            `px-5 py-1.5 text-sm font-semibold rounded-full transition
-            ${
-              isActive
-                ? "bg-[#cd0045] text-white"
-                : "text-white"
-            }`
-          }
-        >
-          Search
-        </NavLink> */}
-
         <NavLink
           to="/"
           end
@@ -78,6 +64,20 @@ export default function Nav() {
           }
         >
           Menu
+        </NavLink>
+
+                <NavLink
+          to="/history"
+          className={({ isActive }) =>
+            `px-5 py-1.5 text-sm font-semibold rounded-full transition
+            ${
+              isActive
+                ? "bg-[#cd0045] text-white"
+                : "text-white"
+            }`
+          }
+        >
+          History
         </NavLink>
 
       </div>

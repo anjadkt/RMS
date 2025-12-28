@@ -12,6 +12,7 @@ import { checkAuth } from "./app/features/user/userSlice.js"
 import Items from "./pages/Items.jsx"
 import Checkout from './pages/Checkout.jsx'
 import Search from "./pages/Search.jsx"
+import History from "./pages/History.jsx"
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
         <Route path="/items/:c" element = {<Items/>} />
         <Route path="/cart" element = {<ProtectedRoute ><Checkout/></ProtectedRoute>} />
         <Route path="/search" element = {<Search/>} />
+        <Route path="/history" element = {<ProtectedRoute><History/></ProtectedRoute>} />
       </Routes>
     </>
   )

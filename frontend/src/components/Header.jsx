@@ -22,7 +22,7 @@ export default function Header(){
         <nav className="hidden md:flex items-center gap-6 text-base font-medium text-gray-600">
           <div onClick={()=>navigate('/home')} className="cursor-pointer hover:text-[#cd0045] transition">Home</div>
           <div onClick={()=>navigate('/')} className="cursor-pointer hover:text-[#cd0045] transition">Menu</div>
-          <div onClick={()=>navigate('/offers')} className="cursor-pointer hover:text-[#cd0045] transition">Offers</div>
+          <div onClick={()=>navigate('/history')} className="cursor-pointer hover:text-[#cd0045] transition">History</div>
         </nav>
 
         {login ? (
