@@ -4,6 +4,7 @@ import DotLoader from '../components/DotLoader.jsx'
 import api from '../services/axios.js' ;
 import { useNavigate } from "react-router-dom";
 import Cart from "../components/Cart.jsx";
+import ItemButton from "../components/ItemButton.jsx";
 
 export default function Items(){
   const [itemObj,setItemObj] = useState({});
@@ -71,17 +72,11 @@ export default function Items(){
                       className="h-24 object-cover"
                     />
 
-                    <button
-                      className="absolute -bottom-3 flex items-center gap-1
-                      border border-[#cd0045] text-[#cd0045]
-                      bg-white px-6 py-1.5 rounded-sm
-                      text-xs font-bold
-                      hover:bg-[#cd0045] hover:text-white
-                      transition"
+                    <div
+                      className="absolute -bottom-3 flex items-center gap-1 bg-white"
                     >
-                      ADD
-                      <span className="text-sm font-bold absolute -top-1 right-1">+</span>
-                    </button>
+                     <ItemButton cartItem={v}/>
+                    </div>
                   </div>
 
                 </div>

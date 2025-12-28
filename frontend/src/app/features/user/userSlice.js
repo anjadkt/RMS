@@ -7,7 +7,7 @@ const userSlice = createSlice({
     login: null,
     isBanned: false,
     loading: false,
-    error: null,
+    error: null
   },
   reducers: {
     setfetchStart(state) {
@@ -36,6 +36,7 @@ export const checkAuth = () => async (dispatch) => {
     dispatch(setFetchFail(error.message));
   }
 };
+
 
 export const { setfetchSuccess, setfetchStart, setFetchFail } =
   userSlice.actions;

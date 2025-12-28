@@ -54,6 +54,8 @@ export default function Login(){
 
       const {data} = await api.post('/auth/customer/otp',{number : form.countryCode?.trim() + form.number?.trim()});
 
+      console.log(data);
+
       if(data.ok){
         setError({});
         setOk(true);

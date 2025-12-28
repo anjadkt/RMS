@@ -1,95 +1,17 @@
 import { useEffect, useState } from "react";
-import api from "../services/axios.js";
-import { useSelector } from "react-redux";
+import { useSelector , useDispatch } from "react-redux";
+import {fetchCart} from '../app/features/cart/cartSlice.js'
+import {useNavigate} from 'react-router-dom'
 
 export default function Cart({isItems}) {
-  const [cart, setCart] = useState([]);
   const { scroll } = useSelector((state) => state.website);
+  const {cart} = useSelector(state => state.cart);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
-    async function fetchCart() {
-      try {
-        const { data } = await api.get("/user/cart");
-        setCart([
-          {
-            _id : "694cca6180dbdd60cab3c6f4",
-            name : "Chicken 65",
-            price : 180,
-            image :"https://res.cloudinary.com/dcsmtagf7/image/upload/v1766750404/pastaaa_ueh0p2.png",
-            category : "Starters",
-            rating : 3,
-            isAvailable : true,
-            isRemoved : false,
-            isSpecial : true,
-            isBest :false
-          },
-          {
-            _id : "694cca6180dbdd60cab3c6f4",
-            name : "Chicken 65",
-            price : 180,
-            image :"https://res.cloudinary.com/dcsmtagf7/image/upload/v1766750404/pastaaa_ueh0p2.png",
-            category : "Starters",
-            rating : 3,
-            isAvailable : true,
-            isRemoved : false,
-            isSpecial : true,
-            isBest :false
-          },
-          {
-            _id : "694cca6180dbdd60cab3c6f4",
-            name : "Chicken 65",
-            price : 180,
-            image :"https://res.cloudinary.com/dcsmtagf7/image/upload/v1766750404/pastaaa_ueh0p2.png",
-            category : "Starters",
-            rating : 3,
-            isAvailable : true,
-            isRemoved : false,
-            isSpecial : true,
-            isBest :false
-          },
-          {
-            _id : "694cca6180dbdd60cab3c6f4",
-            name : "Chicken 65",
-            price : 180,
-            image :"https://res.cloudinary.com/dcsmtagf7/image/upload/v1766750404/pastaaa_ueh0p2.png",
-            category : "Starters",
-            rating : 3,
-            isAvailable : true,
-            isRemoved : false,
-            isSpecial : true,
-            isBest :false
-          },
-          {
-            _id : "694cca6180dbdd60cab3c6f4",
-            name : "Chicken 65",
-            price : 180,
-            image :"https://res.cloudinary.com/dcsmtagf7/image/upload/v1766750404/pastaaa_ueh0p2.png",
-            category : "Starters",
-            rating : 3,
-            isAvailable : true,
-            isRemoved : false,
-            isSpecial : true,
-            isBest :false
-          },
-          {
-            _id : "694cca6180dbdd60cab3c6f4",
-            name : "Chicken 65",
-            price : 180,
-            image :"https://res.cloudinary.com/dcsmtagf7/image/upload/v1766750404/pastaaa_ueh0p2.png",
-            category : "Starters",
-            rating : 3,
-            isAvailable : true,
-            isRemoved : false,
-            isSpecial : true,
-            isBest :false
-          }
-        ]);
-      } catch (error) {
-        console.log(error.message);
-      }
-    }
-    fetchCart();
-  }, []);
+    dispatch(fetchCart());
+  },[dispatch]);
 
   if (!cart.length) return null;
 
@@ -99,16 +21,17 @@ export default function Cart({isItems}) {
         className={`flex items-center justify-between px-4 w-[280px] fixed left-1/2 -translate-x-1/2 z-50
         transition-all duration-300
         overflow-hidden h-11
-        bg-black shadow-xl rounded-2xl
+        bg-black/50 shadow-xl rounded-2xl
         xl:bottom-3 lg:bottom-3 xl:py-6
         ${scroll > 100 || isItems ? "bottom-1" : "bottom-12"}`}
+        onClick={()=>navigate('/cart')}
       >
         <div className="flex -space-x-2">
           {cart.slice(0, 4).map((v, i) => (
             <img
               key={i}
-              src={v.image}
-              alt={v.name}
+              src={v.item.image}
+              alt={v.item.name}
               className="h-6 w-6 rounded-full border-2 border-white object-cover"
             />
           ))}
@@ -126,7 +49,7 @@ export default function Cart({isItems}) {
 
         <div>
           <button
-            className="bg-[#cd0045] text-white px-2 py-1 rounded-xl
+            className="bg-[#cd0045] text-white px-2 py-1 rounded-lg
             text-sm font-semibold hover:opacity-90 transition whitespace-nowrap"
           >
             View Cart

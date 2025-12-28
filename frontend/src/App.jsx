@@ -10,7 +10,8 @@ import api from "./services/axios.js"
 import {setWebsiteData} from "./app/features/website/webSlice.js"
 import { checkAuth } from "./app/features/user/userSlice.js"
 import Items from "./pages/Items.jsx"
-import Item from "./components/Item.jsx"
+import Checkout from './pages/Checkout.jsx'
+
 
 function App() {
   const dispatch = useDispatch();
@@ -34,10 +35,11 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path ="/" element={<ProtectedRoute ><Menu/></ProtectedRoute>}/>
+        <Route path ="/" element={<Menu/>}/>
         <Route path ="/home" element={<Home/>}/>
         <Route path="/login" element = {<PublicRoute><Login/></PublicRoute>} />
         <Route path="/items/:c" element = {<Items/>} />
+        <Route path="/cart" element = {<ProtectedRoute ><Checkout/></ProtectedRoute>} />
       </Routes>
     </>
   )

@@ -1,3 +1,5 @@
+import ItemButton from "./ItemButton";
+
 export default function BestSeller({data}) {
   return (
     <div key={data._id} className=" relative w-[180px] ml-3 shrink-0 rounded-xl bg-white shadow-md border border-gray-100 hover:shadow-md transition xl:ml-5">
@@ -28,10 +30,8 @@ export default function BestSeller({data}) {
             <img className="h-3 mr-0.5" src="/icons/clock.png" alt="" />
             <div>12–15 mins</div>
           </div>
-          <button className="px-4.5 relative py-1.5 text-xs font-bold rounded-sm border border-[#cd0045] text-[#cd0045] hover:bg-[#cd0045] hover:text-white transition cursor-pointer">
-            ADD
-            <div className="absolute -top-1 right-1">+</div>
-          </button>
+
+          <ItemButton cartItem={data} />
         </div>
 
       </div>
