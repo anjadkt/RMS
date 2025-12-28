@@ -20,24 +20,6 @@ const cartSlice = createSlice({
     cartFetchFail(state,action){
       state.loading = false 
       state.error = action.payload
-    },
-    addToCartUpdate(state,action){
-      const isInCart = state.cart.find(v => v.item._id === action.payload);
-      if(isInCart){
-        isInCart.quantity++
-      }else{
-        state.cart.push({item : action.payload , quantity : 1});
-      }
-    },
-    removeFromCartUpdate(state,action){
-      const isInCart = state.cart.find(v => v.item._id === action.payload);
-
-      if(isInCart.quantity <= 1){
-        state.cart = state.cart.filter(v => v.item._id !== isInCart._id);
-      }else{
-        isInCart.quantity--
-      }
-
     }
   }
 });
@@ -54,7 +36,7 @@ export const fetchCart = ()=> async (dispatch)=>{
 }
 
 export const addToCart = (id) => async(dispatch)=>{
-  dispatch(addToCartUpdate(id));
+  // dispatch(addToCartUpdate(id));
   try{
     const {data} = await api.get(`/user/cart/add/${id}`);
     dispatch(cartFetchSuccess(data.cart));
@@ -64,15 +46,15 @@ export const addToCart = (id) => async(dispatch)=>{
 }
 
 export const removeFromCart = (id) => async(dispatch)=>{
-  dispatch(removeFromCartUpdate(id));
+  // dispatch(removeFromCartUpdate(id));
   try{
     const {data} = await api.get(`/user/cart/remove/${id}`);
     dispatch(cartFetchSuccess(data.cart));
   }catch(error){
-    dispatch(cartFetchFail(error.message));
+    dispatch(fetchCart());
   }
 }
 
 export default cartSlice.reducer ;
 
-export const {cartFetchFail,cartFetchStart,cartFetchSuccess,addToCartUpdate,removeFromCartUpdate} = cartSlice.actions
+export const {cartFetchFail,cartFetchStart,cartFetchSuccess} = cartSlice.actions
