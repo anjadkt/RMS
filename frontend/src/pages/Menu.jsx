@@ -112,10 +112,13 @@ export default function Menu (){
           </div>
         </div>
       </div>
+
       <Category />
+
       <div className='h-0.5 mb-10 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center lg:justify-start xl:justify-start'>
         <h2 className='bg-[#F8FAFC] lg:ml-10 xl:ml-10 text-[#cd0045] rounded-3xl text-sm xl:text-xl px-2'>Food Categories</h2>
       </div>
+
       <div className="grid grid-cols-1 xl:grid-cols-4 lg:grid-cols-3 gap-5 px-5">
         {
           products && products?.map(v=>(
@@ -123,7 +126,9 @@ export default function Menu (){
           ))
         }
       </div>
+
     </main>
+    
     <Nav/>
     <Cart />
     <Footer />

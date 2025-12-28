@@ -7,11 +7,11 @@ import Cart from "../components/Cart.jsx";
 import ItemButton from "../components/ItemButton.jsx";
 
 export default function Items(){
-  const [itemObj,setItemObj] = useState({});
+  const [itemObj,setItemObj] = useState({items : [],category : ""});
   const [loading,setLoading] = useState(false);
   const {c} = useParams();
   const navigate = useNavigate();
-  const {items} = itemObj || []
+  const {items} = itemObj 
 
 
   useEffect(()=>{
@@ -19,7 +19,7 @@ export default function Items(){
       try{
         setLoading(true);
         const {data} = await api.get(`/items/category?c=${c}`);
-        setItemObj(data[0]);
+        setItemObj(data[0]||{items : [] , category : ""});
       }catch(error){
         console.log(error.message);
       }finally{
@@ -35,12 +35,23 @@ export default function Items(){
      <main className="mb-20">
        <div className="flex items-center justify-between px-3 py-2 xl:px-5 xl:py-3 lg:px-3 lg:py-4 border-b border-gray-700">
         <img className="h-3 opacity-80" src="/icons/leftArrow.png" alt="arrow" onClick={()=>navigate('/')} />
-        <h1 className="-ml-3 text-lg font-semibold xl:text-2xl font-[REM] text-[#cd0045] ">{itemObj.category || "404"}</h1>
+        <h1 className="-ml-3 text-lg font-semibold xl:text-2xl font-[REM] text-[#cd0045] ">{itemObj?.category || "Items unavailable!"}</h1>
         <div></div>
        </div>
        <div className="flex flex-wrap justify-center gap-4 py-5">
           {
-            items?.map((v,i)=>(
+            (!items.length) ? (
+                <div className="w-full flex flex-col items-center justify-center py-16 text-center">
+                  <div className="text-5xl mb-3 animate-bounce">🍔</div>
+                  <h2 className="text-xl font-semibold text-gray-800">
+                    Coming Soon
+                  </h2>
+                  <p className="text-sm text-gray-500 mt-1">
+                    We’re cooking something tasty for you
+                  </p>
+                </div>
+              ) : 
+              items?.map((v,i)=>(
               <div className="w-[290px] bg-white rounded-xl py-5 px-3 shadow-md">
 
                 <div className="flex justify-between items-start gap-2">
