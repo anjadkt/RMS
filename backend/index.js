@@ -31,12 +31,12 @@ const waiterOrderRouter = require('./src/router/waiter/orders.route.js');
 const cookProductRouter = require('./src/router/cook/product.route.js');
 const cookOrderRouter = require('./src/router/cook/order.route.js');
 
-const {PORT,MONGO_DB_URL,USERFRONT_END_URL} = process.env ;
+const {PORT,MONGO_DB_URL,USERFRONT_END_URL,STAFFFRONT_END_URL} = process.env ;
 
 
 
 app.use(cors({
-  origin : [USERFRONT_END_URL],
+  origin : [USERFRONT_END_URL,STAFFFRONT_END_URL],
   methods : ["GET","POST","PUT","DELETE"],
   credentials : true
 }));
