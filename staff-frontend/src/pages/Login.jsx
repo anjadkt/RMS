@@ -32,7 +32,7 @@ export default function LoginPage () {
         setLoading(true);
         const {data} = await api.post('/auth/staff/login',form);
         setError({});
-        navigate('/home');
+        navigate('/');
       }catch(error){
         switch(error.status){
           case 400 :

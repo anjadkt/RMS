@@ -134,7 +134,10 @@ module.exports = {
         name : user.name,
         phone : user.phone,
         orders : user.orders,
-        notification : user.notification
+        notification : user.notification,
+        details : user.details,
+        isWorking : user.isWorking,
+        tables : user.tables
       },
       status : 200,
       ok : true

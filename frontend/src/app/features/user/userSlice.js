@@ -30,7 +30,7 @@ const userSlice = createSlice({
 export const checkAuth = () => async (dispatch) => {
   dispatch(setfetchStart());
   try {
-    const { data } = await api.get("auth/customer");
+    const { data } = await api.get("auth/user");
     dispatch(setfetchSuccess(data.userData));
   } catch (error) {
     dispatch(setFetchFail(error.message));

@@ -57,6 +57,7 @@ app.use(cookieParser());
 
 app.get('/auth/refresh',refreshController.handleRefreshToken);
 app.get('/items/category',itemsController.getItemsCategory);
+app.get('/auth/user',verifyToken,refreshController.getUserData);
 
 
 //customer routes
