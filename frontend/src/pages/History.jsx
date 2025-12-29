@@ -36,7 +36,7 @@ export default function History(){
           <div></div>
         </div>
      </div>
-     <main className="px-5 flex flex-wrap justify-between">
+     <main className={`px-5 flex flex-wrap ${orders.length < 1 ? "justify-center" : "justify-between" }`}>
       {
         orders.length < 1 ? (
           <div className="flex flex-col items-center justify-center text-center py-16">
