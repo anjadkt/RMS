@@ -6,10 +6,9 @@ function App() {
 
   return (
     <>
-     {/* <Routes>
+     <Routes>
       <Route path="/login" element={<LoginPage/>} />
-     </Routes> */}
-     <LoginPage/>
+     </Routes>
     </>
   )
 }
