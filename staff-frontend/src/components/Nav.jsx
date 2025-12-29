@@ -1,18 +1,47 @@
 import React from 'react';
-import { ShoppingCart, Table, Bell, LogOut } from 'lucide-react'; // Optional icons
+import { ShoppingCart, Table, Bell, LogOut } from 'lucide-react';
+import { useEffect,useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
 export default function Nav() {
+  const [show , setShow] = useState(true);
+  const [lastScrollY,setScrollY] = useState(0);
+
   const navItems = [
     { name: 'Orders', icon: <ShoppingCart size={20} />, href: '/' },
     { name: 'Tables', icon: <Table size={20} />, href: '/tables' },
     { name: 'Updates', icon: <Bell size={20} />, href: '/updates' },
   ];
 
+
+  useEffect(() => {
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+
+      if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setShow(false);
+      }
+
+      if(!currentScrollY){
+        setShow(true);
+      }
+
+      setScrollY(currentScrollY);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => window.removeEventListener("scroll", handleScroll);
+
+  }, [lastScrollY]);
+
   return (
-    <nav className="fixed bg-slate-900 text-white z-50
+    <nav className={`fixed bg-slate-900 text-white z-50
       bottom-0 left-0 w-full h-14 flex items-center justify-around
-      lg:top-0 lg:left-0 lg:h-screen lg:w-42 lg:flex-col lg:justify-between lg:py-8 lg:px-4">
+      transition-all duration-300 ease-in-out
+      ${!show ? "translate-y-20": "translate-y-2" }
+      lg:top-0 lg:left-0 lg:h-screen lg:w-42 lg:flex-col lg:justify-between lg:py-8 lg:px-4`}>
       
       <div className="hidden lg:block">
         <h1 className="text-2xl font-bold tracking-tight text-blue-400">PSD</h1>

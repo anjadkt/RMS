@@ -32,14 +32,36 @@ module.exports = {
 
   getWaiterOrders : catchAsync(async (req,res)=>{
     const {_id} = req.user ;
+    const {s} = req.query ;
 
-    const table = await Table.find({waiterId : _id}).populate("tableOrders");
-    if(!table)throw new AppError("No Orders Found!",404);
+    if(s && !["placed","accepted","preparing","ready","served","pending","completed"].includes(s))throw new AppError("Wrong Query!",400);
+
+    // const table = await Table.aggregate([
+    //   {$match : {waiterId : _id}}
+    // ])
+    // if(!table)throw new AppError("No Orders Found!",404);
+
+    const table = await Table.find({waiterId : _id}).select("tableOrders");
+    if(!table.length)throw new AppError("No Tables Found!",404);
+
+    const tableIds = table.flatMap(t => t.tableOrders );
+
+    if(!tableIds.length)throw new AppError("No Orders Found!",404);
+
+    const orderQuery = {
+      _id : {$in : tableIds}
+    }
+
+    if(s){
+      orderQuery.status = s
+    }
+
+    const orders = await Order.find(orderQuery).sort({orderNumber : -1});
 
     res.status(200).json({
       message : "send all current orders!",
       status :200,
-      orders : table
+      orders
     });
   }),
 
