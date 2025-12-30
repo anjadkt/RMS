@@ -7,6 +7,7 @@ import {useDispatch} from 'react-redux'
 import { checkAuth } from "./app/features/user/userSlice.js"
 import PublicRouter from './routeProtecter/PublicRouter.jsx'
 import ProtectedRoute from './routeProtecter/ProtectedRoute.jsx'
+import Table from "./pages/Tables.jsx"
 
 function App() {
   const dispatch = useDispatch();
@@ -19,6 +20,7 @@ function App() {
     <>
      <Routes>
       <Route path="/" element={<ProtectedRoute roleP={"waiter"}><Orders/></ProtectedRoute>} />
+      <Route path="/tables" element={<ProtectedRoute roleP={"waiter"}><Table/></ProtectedRoute>} />
       <Route path="/login" element={<PublicRouter><LoginPage/></PublicRouter>} />
      </Routes>
     </>

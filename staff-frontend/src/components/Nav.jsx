@@ -41,7 +41,7 @@ export default function Nav() {
       bottom-0 left-0 w-full h-14 flex items-center justify-around
       transition-all duration-300 ease-in-out
       ${!show ? "translate-y-20": "translate-y-2" }
-      lg:top-0 lg:left-0 lg:h-screen lg:w-42 lg:flex-col lg:justify-between lg:py-8 lg:px-4`}>
+      lg:-top-2 lg:left-0 lg:h-screen lg:w-42 lg:flex-col lg:justify-between lg:py-10 lg:px-4`}>
       
       <div className="hidden lg:block">
         <h1 className="text-2xl font-bold tracking-tight text-blue-400">PSD</h1>

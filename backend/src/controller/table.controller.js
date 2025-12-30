@@ -73,8 +73,8 @@ module.exports = {
       });
     }
 
-    const tables = await Table.find({waiterId : _id});
-    if(!tables)throw new AppError("No Tables Found!",400);
+    const tables = await Table.find({waiterId : _id}).populate("tableOrders");
+    if(!tables.length)throw new AppError("No Tables Found!",400);
 
     res.status(200).json({
       message : "Tables Found!",
