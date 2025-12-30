@@ -23,7 +23,7 @@ function App() {
       <Route path="/" element={<ProtectedRoute roleP={"waiter"}><Orders/></ProtectedRoute>} />
       <Route path="/tables" element={<ProtectedRoute roleP={"waiter"}><Table/></ProtectedRoute>} />
       <Route path="/login" element={<PublicRouter><LoginPage/></PublicRouter>} />
-      <Route path="/tables/:table" element ={<ProtectedRoute roleP={"waiter"}><EachTable/></ProtectedRoute>} />
+      <Route path="/tables/:id" element ={<ProtectedRoute roleP={"waiter"}><EachTable/></ProtectedRoute>} />
      </Routes>
     </>
   )

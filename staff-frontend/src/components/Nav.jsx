@@ -40,7 +40,7 @@ export default function Nav() {
     <nav className={`fixed bg-slate-900 text-white z-50
       bottom-0 left-0 w-full h-14 flex items-center justify-around
       transition-all duration-300 ease-in-out
-      ${!show ? "translate-y-20": "translate-y-2" }
+      ${!show ? "translate-y-20 lg:translate-y-0 xl:translate-y-0": "translate-y-0" }
       lg:-top-2 lg:left-0 lg:h-screen lg:w-42 lg:flex-col lg:justify-between lg:py-10 lg:px-4`}>
       
       <div className="hidden lg:block">
@@ -65,7 +65,6 @@ export default function Nav() {
         ))}
       </ul>
 
-      {/* Logout Div - Hidden on Mobile */}
       <div className="hidden lg:block w-full">
         <button className="flex items-center gap-4 w-full px-4 py-3 text-red-400 hover:bg-red-400/10 rounded-lg transition-colors">
           <LogOut size={20} />

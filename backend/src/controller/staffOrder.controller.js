@@ -151,21 +151,23 @@ module.exports = {
     return res.status(201).json({
       message : "bill generated for " + orderBillId,
       status : 201,
-      restaurantInfo : {
-        name : "paragon",
-        address : "manjeri,malappuram",
-      },
-      billInfo : {
-        date : new Date().toISOString().split("T")[0],
-        orderNumbers : orderBillId,
-        gstn : "32PQRSX5678L1Z2",
-        paymentStatus : "",
-        tableNumber : table.tableNumber,
-        billId : "BILL-" + Date.now()
-      },
-      orderDetails : Object.values(orderItemsObj),
-      billSummary :{
-        total : grandTotal
+      billData :{
+        restaurantInfo : {
+          name : "paragon",
+          address : "manjeri,malappuram",
+        },
+        billInfo : {
+          date : new Date().toISOString().split("T")[0],
+          orderNumbers : orderBillId,
+          gstn : "32PQRSX5678L1Z2",
+          paymentStatus : "",
+          tableNumber : table.tableNumber,
+          billId : "BILL-" + Date.now()
+        },
+        orderDetails : Object.values(orderItemsObj),
+        billSummary :{
+          total : grandTotal
+        }
       }
 
     });

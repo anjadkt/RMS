@@ -1,7 +1,9 @@
 const catchAsync = require('../utils/catchAsync.js');
 const Table = require('../model/table.model.js');
+const Order = require('../model/order.model.js');
 const AppError = require('../utils/AppError.js');
 const User = require('../model/users.model.js');
+const mongoose = require('mongoose');
 
 module.exports = {
   createTable : catchAsync(async(req,res)=>{
@@ -64,11 +66,31 @@ module.exports = {
     const {id} = req.params ;
 
     if(id){
-      const table = await Table.findOne({_id : id , waiterId : _id}).populate("tableOrders");
+      const table = await Table.findOne({_id : id , waiterId : _id});
       if(!table)throw new AppError("Wrong Table",400);
+
+      const orderIds = table.tableOrders.map(
+        id => new mongoose.Types.ObjectId(id)
+      );
+
+      const orders = await Order.aggregate([
+        {$match : {_id : {$in : orderIds}}},
+        {$group : {
+          _id : "$customerId",
+          orders : {$push : {
+            _id : "$_id",
+            orderId : "$orderId",
+            status : "$status",
+            orderItems : "$orderItems",
+            isAssisted : "$isAssisted"
+          }}
+        }}
+      ])
+
       return res.status(200).json({
         message : "Table Found!",
         status : 200,
+        orders,
         table
       });
     }
