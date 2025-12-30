@@ -1,4 +1,7 @@
+import { useNavigate } from "react-router-dom";
+
 export default function TableComp({ data }) {
+  const navigate = useNavigate();
   const stats = [
     { label: "New", symbol : "placed", color: "text-purple-700" },
     { label: "Ready", symbol : "ready", color: "text-green-700" },
@@ -24,7 +27,9 @@ export default function TableComp({ data }) {
 
       h-24 flex flex-col justify-between rounded-2xl shadow-sm
        w-[90px] py-2
-      lg:py-4 lg:w-50 lg:flex lg:flex-col lg:rounded-xl`}>
+      lg:py-4 lg:w-50 lg:flex lg:flex-col lg:rounded-xl`}
+      onClick={()=>navigate(`/tables/${data.tableNumber}`)}
+    >
       
       <div className="flex items-center justify-center mb-3 lg:mb-0">
         <span className="text-[12px] font-bold text-black/80 uppercase">
