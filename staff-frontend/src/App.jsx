@@ -10,6 +10,8 @@ import ProtectedRoute from './routeProtecter/ProtectedRoute.jsx'
 import Table from "./pages/Tables.jsx"
 import EachTable from "./pages/EachTable.jsx"
 import Order from "./pages/Order.jsx"
+import KitchenOrders from './pages/KitchenOrder.jsx'
+import KitchenProducts from "./pages/kitchenProducts.jsx"
 
 function App() {
   const dispatch = useDispatch();
@@ -26,6 +28,9 @@ function App() {
       <Route path="/waiter/tables" element={<ProtectedRoute roleP={"waiter"}><Table/></ProtectedRoute>} />
       <Route path="/waiter/tables/:id" element ={<ProtectedRoute roleP={"waiter"}><EachTable/></ProtectedRoute>} />
       <Route path='/waiter/order' element={<ProtectedRoute roleP={"waiter"}><Order/></ProtectedRoute>} />
+
+       <Route path="/kitchen/orders" element={<ProtectedRoute roleP={"cook"}><KitchenOrders/></ProtectedRoute>} />
+      <Route path="/kitchen/products" element={<ProtectedRoute roleP={"cook"}><KitchenProducts/></ProtectedRoute>} />
      </Routes>
     </>
   )

@@ -35,7 +35,7 @@ export default function LoginPage () {
         const {data} = await api.post('/auth/staff/login',form);
         setError({});
         dispatch(checkAuth());
-        navigate('/waiter/orders');
+        navigate( data.role === "waiter" ? '/waiter/orders' : '/kitchen/orders');
       }catch(error){
         switch(error.status){
           case 400 :
