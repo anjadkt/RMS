@@ -1,14 +1,11 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, CheckCircle, User, Hash } from "lucide-react";
 import api from "../services/axios";
-import { useDispatch } from "react-redux";
-import { fetchOrders } from "../app/features/orders/orderSlice";
 import { useNavigate } from "react-router-dom";
 
-export default function OrderItems({ data }) {
+export default function OrderItems({ data ,fetchOrders }) {
   const [fall, setFall] = useState(false);
   const [loading,setLoading] = useState(false);
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const total = data.orderItems?.reduce((accum , val)=>accum + val.subTotal,0);
@@ -31,7 +28,7 @@ export default function OrderItems({ data }) {
     try{
       setLoading(true)
       await api.post('/waiter/orders',orderData);
-      dispatch(fetchOrders());
+      fetchOrders("All");
     }catch(error){
       console.log(error.message);
     }finally{

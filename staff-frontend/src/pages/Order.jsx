@@ -154,8 +154,8 @@ export default function Order() {
           <div className="max-w-3xl mx-auto bg-white border border-slate-200 rounded-xl shadow-2xl p-4 flex flex-col sm:flex-row gap-4">
             <div className="flex-1 relative">
               <Utensils className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-              <select onChange={(e)=>setTableNumber(e.target.value)} className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-slate-700">
-                <option>Select Table</option>
+              <select onChange={(e)=>setTableNumber(e.target.value)} className="w-full pl-10 pr-0 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500/20 font-bold text-slate-700">
+                <option className="w-10">Select Table</option>
                 {[...Array(9)].map((_, i) => (
                   <option key={i} value={"TBL-0"+ (i+1)}>TBL-0{i+1}</option>
                 ))}

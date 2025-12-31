@@ -1,20 +1,31 @@
 import { useEffect, useState } from "react"
 import Nav from "../components/Nav"
 import OrderItems from "../components/OrderItems";
-import {fetchOrders} from '../app/features/orders/orderSlice.js'
-import {useDispatch,useSelector} from 'react-redux'
+import api from "../services/axios.js";
 
 export default function Orders(){
-  const {orders,loading} = useSelector(state => state.order);
-  const dispatch = useDispatch();
+  const [orders,setOrders] = useState([]);
+  const [loading,setLoading] = useState(false);
   const [active ,setActive] = useState("All");
 
   const status = [
     "All","placed","accepted","preparing","ready","served","pending","completed"
   ]
 
+  async function fetchOrders(status) {
+    try{
+    setLoading(true);
+    const {data} = await api.get(`/waiter/orders?s=${status === "All" ? "" : status}`);
+    setOrders(data.orders);
+    }catch(error){
+      console.log(error.message);
+    }finally{
+      setLoading(false)
+    }
+  } 
+
   useEffect(()=>{
-    dispatch(fetchOrders());
+    fetchOrders("All");
   },[])
 
   return(
@@ -35,7 +46,7 @@ export default function Orders(){
            key={i}
            onClick={()=>{
             setActive(v);
-            dispatch(fetchOrders(v))
+            fetchOrders(v);
            }}
            className={`px-4 py-1 rounded-full text-xs font-semibold 
             ${active === v ? "bg-black text-white" : "text-black bg-black/5"} cursor-pointer whitespace-nowrap`}
@@ -52,7 +63,7 @@ export default function Orders(){
         (
           orders.length < 1 ? <h1 className="font-semibold text-gray-600">No Orders!</h1> : (
             orders.map(v =>(
-            <OrderItems data={v} />
+            <OrderItems fetchOrders={fetchOrders} data={v} />
             ))
           )
         )
