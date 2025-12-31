@@ -42,7 +42,7 @@ export default function Order() {
 
   useEffect(()=>{
     dispatch(fetchCart())
-  },[dispatch]);
+  },[]);
 
 
   async function searchItem(e){

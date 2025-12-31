@@ -1,4 +1,3 @@
-import React from 'react';
 import { Printer, Receipt, MapPin, Calendar, Hash } from 'lucide-react';
 
 export default function Bill({ restaurantInfo, billInfo, orderDetails, billSummary }) {

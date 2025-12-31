@@ -8,9 +8,9 @@ export default function Nav() {
   const [lastScrollY,setScrollY] = useState(0);
 
   const navItems = [
-    { name: 'Orders', icon: <ShoppingCart size={20} />, href: '/' },
-    { name: 'create', icon: <CirclePlus size={20} />, href: '/order' },
-    { name: 'Tables', icon: <Table size={20} />, href: '/tables' },
+    { name: 'Orders', icon: <ShoppingCart size={20} />, href: '/waiter/orders' },
+    { name: 'create', icon: <CirclePlus size={20} />, href: '/waiter/order' },
+    { name: 'Tables', icon: <Table size={20} />, href: '/waiter/tables' },
   ];
 
 

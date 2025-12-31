@@ -49,13 +49,14 @@ export default function Orders(){
             fetchOrders(v);
            }}
            className={`px-4 py-1 rounded-full text-xs font-semibold 
+            lg:py-2 lg:px-5 lg:text-sm
             ${active === v ? "bg-black text-white" : "text-black bg-black/5"} cursor-pointer whitespace-nowrap`}
           >{v}</div>
         ))
       }
        
      </header>
-     <main className="flex flex-wrap items-center justify-center xl:ml-42 lg:ml-42 lg:mt-14 mx-4 mb-10 mt-12">
+     <main className="flex flex-wrap items-center justify-center xl:ml-42 lg:ml-42 lg:mt-20 mx-4 mb-10 mt-12">
       {
         loading ? (
           <span className="h-6 w-6 border-3 border-black border-t-transparent rounded-full animate-spin" />

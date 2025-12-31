@@ -23,7 +23,7 @@ export default function OrderItems({ data ,fetchOrders }) {
 
   async function changeOrderStatus(orderData) {
     if(orderData.action === "completed"){
-      return navigate(`/tables/${orderData.tableId}`);
+      return navigate(`/waiter/tables/${orderData.tableId}`);
     }
     try{
       setLoading(true)
@@ -46,7 +46,7 @@ export default function OrderItems({ data ,fetchOrders }) {
           <span>Order ID : <span className="text-slate-800">{data.orderId}</span></span>
         </div>
 
-        <div className="flex justify-between items-start mb-1 lg:mb-4">
+        <div onClick={()=>navigate(`/waiter/tables/${data.tableId}`)} className="flex justify-between items-start mb-1 lg:mb-4">
           <div className="flex items-center gap-2 text-base lg:text-lg font-bold text-slate-800">
             <Hash className="text-blue-500 lg:w-4 lg:h-4 w-4 h-4" />
             Table: {data.tableNumber}

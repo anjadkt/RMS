@@ -28,7 +28,7 @@ export default function TableComp({ data }) {
       h-24 flex flex-col justify-between rounded-2xl shadow-sm
        w-[90px] py-2
       lg:py-4 lg:w-50 lg:flex lg:flex-col lg:rounded-xl`}
-      onClick={()=>navigate(`/tables/${data._id}`)}
+      onClick={()=>navigate(`/waiter/tables/${data._id}`)}
     >
       
       <div className="flex items-center justify-center mb-3 lg:mb-0">

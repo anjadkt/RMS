@@ -22,10 +22,10 @@ function App() {
     <>
      <Routes>
       <Route path="/login" element={<PublicRouter><LoginPage/></PublicRouter>} />
-      <Route path="/" element={<ProtectedRoute roleP={"waiter"}><Orders/></ProtectedRoute>} />
-      <Route path="/tables" element={<ProtectedRoute roleP={"waiter"}><Table/></ProtectedRoute>} />
-      <Route path="/tables/:id" element ={<ProtectedRoute roleP={"waiter"}><EachTable/></ProtectedRoute>} />
-      <Route path='/order' element={<ProtectedRoute roleP={"waiter"}><Order/></ProtectedRoute>} />
+      <Route path="/waiter/orders" element={<ProtectedRoute roleP={"waiter"}><Orders/></ProtectedRoute>} />
+      <Route path="/waiter/tables" element={<ProtectedRoute roleP={"waiter"}><Table/></ProtectedRoute>} />
+      <Route path="/waiter/tables/:id" element ={<ProtectedRoute roleP={"waiter"}><EachTable/></ProtectedRoute>} />
+      <Route path='/waiter/order' element={<ProtectedRoute roleP={"waiter"}><Order/></ProtectedRoute>} />
      </Routes>
     </>
   )
