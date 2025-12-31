@@ -3,6 +3,7 @@ import {useState,useEffect} from 'react'
 import api from "../services/axios";
 import DotLoader from "../components/DotLoader";
 import OrderHistory from "../components/Order.jsx"
+import Nav from '../components/Nav.jsx'
 
 export default function History(){
   const [orders,setOrders] = useState([]);
@@ -59,6 +60,7 @@ export default function History(){
         )
       }
      </main>
+     <Nav />
     </>
   )
 }

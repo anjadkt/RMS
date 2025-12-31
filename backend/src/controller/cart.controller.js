@@ -13,6 +13,7 @@ module.exports = {
   addItemsToCart : catchAsync(async(req,res)=>{
     const {id} = req.params ;
     const {_id} = req.user ;
+    
     const update = await User.findOneAndUpdate({_id,"cart.item" : id},{$inc :{"cart.$.quantity" : 1}},{new : true}).populate("cart.item");
     if(update)return res.status(200).json({message : "quantity updated!",status : 200,cart : update.cart});
 

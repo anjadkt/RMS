@@ -7,7 +7,7 @@ import Bill from "../components/Bill";
 
 export default function EachTable(){
   const [fall,setFall] = useState(false);
-  const [drop,setDrop] = useState(null);
+  const [drop,setDrop] = useState([]);
 
   const [loading,setLoading] = useState(false);
   const [orders,setOrders] = useState([]);
@@ -17,6 +17,14 @@ export default function EachTable(){
   const [billData,setBillData] = useState({});
 
   const {id} = useParams();
+
+  const toggleCustomer = (index) => {
+    setDrop((prev) =>
+      prev.includes(index)
+        ? prev.filter((i) => i !== index) 
+        : [...prev, index]           
+    );
+  };
 
   async function generateBill() {
     try{
@@ -88,14 +96,14 @@ export default function EachTable(){
           orders.map((v,i) =>(
           <>
             <div 
-              onClick={()=>setDrop(drop === i ? null : i)}
+              onClick={()=>toggleCustomer(i)}
               className="flex items-center justify-between font-bold text-gray-800 text-sm border border-black/30 rounded-lg max-w-2xl w-full px-2 py-2 mb-2 trasition-all duration-300">
               <div>Customer {i+1}</div>
-              <div>{drop === i ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</div>
+              <div>{drop.includes(i) ? <ChevronUp size={18} /> : <ChevronDown size={18} />}</div>
             </div>
             <div>
               {
-                drop === i && v.orders?.map(order => (
+                drop.includes(i) && v.orders?.map(order => (
                   <TableOrder setOrderId={setOrderId} data={order} />
                 ))
               }

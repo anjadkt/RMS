@@ -7,7 +7,7 @@ export default function ProtecteRoute({ children }) {
 
   if (loading) return <DotLoader />;
 
-  if (login === false) return <Navigate to="/login" replace />;
+  if (login === false) return <Navigate to="/login" />;
 
   return children;
 }

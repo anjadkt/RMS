@@ -64,8 +64,8 @@ app.get('/auth/user',verifyToken,refreshController.getUserData);
 app.use('/auth/customer',userRouter);
 app.use('/items',productRouter);
 app.use('/resto',restoDataRouter);
-app.use('/user/cart',verifyToken,verifyUsers("customer"),userCartRouter);
-app.use('/user/order',verifyToken,verifyUsers("customer"),userOrderRouter);
+app.use('/user/cart',verifyToken,verifyUsers("customer","waiter"),userCartRouter);
+app.use('/user/order',verifyToken,verifyUsers("customer","waiter"),userOrderRouter);
 
 //admin routes
 app.use('/auth/admin',adminRouter);

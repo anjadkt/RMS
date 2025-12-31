@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import api from '../services/axios.js'
-import {useNavigate} from "react-router-dom"
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { checkAuth } from '../app/features/user/userSlice.js';
 
 export default function LoginPage () {
-
+  const dispatch = useDispatch();
   const [isAdmin, setIsAdmin] = useState(false);
   const [error,setError] = useState({});
   const [loading,setLoading] = useState(false);
@@ -32,6 +34,7 @@ export default function LoginPage () {
         setLoading(true);
         const {data} = await api.post('/auth/staff/login',form);
         setError({});
+        dispatch(checkAuth());
         navigate('/')
       }catch(error){
         switch(error.status){

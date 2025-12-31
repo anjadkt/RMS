@@ -56,7 +56,7 @@ module.exports = {
       orderQuery.status = s
     }
 
-    const orders = await Order.find(orderQuery).sort({orderNumber : -1});
+    const orders = await Order.find(orderQuery).sort({orderDate : -1,orderNumber : -1});
 
     res.status(200).json({
       message : "send all current orders!",
@@ -189,7 +189,7 @@ module.exports = {
 
     if(action === "paylater"){
       const update = await Order.updateMany(
-        {_id : {$in : orderIds},status : "served"},
+        {_id : {$in : orderIds}},
         {status : "pending"},
         {runValidators : true}
       );

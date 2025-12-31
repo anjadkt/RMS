@@ -8,7 +8,7 @@ export default function ProtectedRoute({ roleP, children }) {
     return <Navigate to="/login" replace />;
   }
 
-  if (roleP && role !== roleP) {
+  if (role && roleP && role !== roleP) {
     return <Navigate to="/login" replace />;
   }
 

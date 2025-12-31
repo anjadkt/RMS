@@ -4,7 +4,7 @@ import { Printer, Receipt, MapPin, Calendar, Hash } from 'lucide-react';
 export default function Bill({ restaurantInfo, billInfo, orderDetails, billSummary }) {
   return (
     <div className="bg-slate-50 px-4 min-h-screen flex justify-center items-start lg:py-10">
-      <div className="bg-white w-[240px] max-w-[440px] border border-slate-200 shadow-xl rounded-sm overflow-hidden flex flex-col">
+      <div className="bg-white w-[240px] lg:w-[380px]  border border-slate-200 shadow-xl rounded-sm overflow-hidden flex flex-col">
         
         <div className="h-2 w-full bg-[repeating-linear-gradient(45deg,#e2e8f0,#e2e8f0_10px,#ffffff_10px,#ffffff_20px)]"></div>
 

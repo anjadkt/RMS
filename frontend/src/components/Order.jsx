@@ -1,4 +1,15 @@
 export default function OrderHistory({ data }) {
+   const statusColors = {
+    placed: "bg-purple-100 text-purple-700",
+    accepted: "bg-blue-100 text-blue-700",
+    preparing: "bg-amber-100 text-amber-700",
+    ready: "bg-green-100 text-green-700",
+    served: "bg-emerald-100 text-emerald-700",
+    pending : "bg-rose-100 text-rose-700",
+    completed: "bg-slate-200 text-slate-700",
+    default: "bg-slate-100 text-slate-600"
+  };
+
   const total = data.orderItems.reduce(
     (accum, val) => accum + val.subTotal,
     0
@@ -69,14 +80,7 @@ export default function OrderHistory({ data }) {
         <div className="flex font-[REM] justify-center px-4 py-2 border-t border-gray-100">
           <span
             className={`text-sm font-semibold px-10 py-0.5 rounded-lg
-              ${
-                data.status === "completed"
-                  ? "bg-green-100 text-green-700"
-                  : data.status === "pending"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "bg-gray-100 text-gray-600"
-              }
-            `}
+              ${statusColors[data.status]}`}
           >
             {data.status}
           </span>

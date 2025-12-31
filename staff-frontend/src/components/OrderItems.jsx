@@ -10,7 +10,7 @@ export default function OrderItems({ data }) {
   const [loading,setLoading] = useState(false);
   const dispatch = useDispatch();
   const navigate = useNavigate();
- 
+
   const total = data.orderItems?.reduce((accum , val)=>accum + val.subTotal,0);
 
   const statusColors = {
@@ -26,7 +26,7 @@ export default function OrderItems({ data }) {
 
   async function changeOrderStatus(orderData) {
     if(orderData.action === "completed"){
-      return navigate(`/tables/${orderData.tableNumber}`);
+      return navigate(`/tables/${orderData.tableId}`);
     }
     try{
       setLoading(true)

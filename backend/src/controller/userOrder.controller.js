@@ -56,7 +56,7 @@ module.exports = {
       tableId :table._id,
       isAssisted : role === "waiter" ? true : false ,
       customerId : user._id,
-      name,
+      customerName : name,
       status : role === "waiter" ? "accepted" : "placed",
       orderItems,
       orderDate,
@@ -81,7 +81,12 @@ module.exports = {
   }),
   viewOrderSummary : catchAsync(async (req,res)=>{
     const {_id} = req.user ;
-    const user = await User.findOne({_id}).populate("orders");
+    const user = await User.findOne({_id}).populate({
+      path: "orders",
+      options: {
+        sort: { orderDate: -1, orderNumber: -1 }
+      }
+    });
     if(!user)throw new AppError("User Not Found!",404);
 
     res.status(200).json({

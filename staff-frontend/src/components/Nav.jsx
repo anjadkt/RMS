@@ -1,5 +1,5 @@
 import React from 'react';
-import { ShoppingCart, Table, Bell, LogOut } from 'lucide-react';
+import { ShoppingCart, Table, CirclePlus, LogOut } from 'lucide-react';
 import { useEffect,useState } from 'react';
 import { NavLink } from 'react-router-dom';
 
@@ -9,8 +9,8 @@ export default function Nav() {
 
   const navItems = [
     { name: 'Orders', icon: <ShoppingCart size={20} />, href: '/' },
+    { name: 'create', icon: <CirclePlus size={20} />, href: '/order' },
     { name: 'Tables', icon: <Table size={20} />, href: '/tables' },
-    { name: 'Updates', icon: <Bell size={20} />, href: '/updates' },
   ];
 
 
