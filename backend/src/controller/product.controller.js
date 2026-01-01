@@ -128,7 +128,8 @@ module.exports = {
 
     res.status(200).json({
       message : `Item ${update.isAvailable ? "available" : "not available"}!`,
-      status : 200
+      status : 200,
+      item : update
     });
   })  
 
