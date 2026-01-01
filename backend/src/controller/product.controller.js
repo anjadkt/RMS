@@ -19,8 +19,6 @@ module.exports = {
 
     const items = await Item.find(filter);
 
-    console.log(q,items)
-
     res.status(200).json(items);
 
   }),
@@ -123,7 +121,6 @@ module.exports = {
   changeAvailability : catchAsync(async(req,res)=>{
     const isAvailable = req.query?.available ;
     if(!isAvailable)throw new AppError("availablity query required!",400);
-    console.log(isAvailable);
     const {id} = req.params;
 
     const update = await Item.findByIdAndUpdate({_id : id },{isAvailable},{new : true , runValidators : true});

@@ -1,10 +1,13 @@
 import { LogOut, Package, ShoppingCart } from "lucide-react";
 import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
 
 export default function Header() {
   
   return (
-    <header className="hidden lg:flex fixed top-0 z-50 w-full items-center justify-between px-10 py-2 bg-white/80 border-b border-slate-200">
+    <header className={
+      `hidden lg:flex fixed top-0 z-50 w-full items-center justify-between 
+      px-10 py-2 bg-white border-b border-slate-200`}>
       
       <div className="flex items-center gap-1">
         <div className="bg-black/80 p-2 rounded-xl shadow-lg shadow-blue-200">

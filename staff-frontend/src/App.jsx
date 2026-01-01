@@ -12,6 +12,7 @@ import EachTable from "./pages/EachTable.jsx"
 import Order from "./pages/Order.jsx"
 import KitchenOrders from './pages/KitchenOrder.jsx'
 import KitchenProducts from "./pages/kitchenProducts.jsx"
+import RootRedirect from './routeProtecter/RootRedirect.jsx'
 
 function App() {
   const dispatch = useDispatch();
@@ -23,6 +24,7 @@ function App() {
   return (
     <>
      <Routes>
+      <Route path="/" element={<RootRedirect/>} />
       <Route path="/login" element={<PublicRouter><LoginPage/></PublicRouter>} />
       <Route path="/waiter/orders" element={<ProtectedRoute roleP={"waiter"}><Orders/></ProtectedRoute>} />
       <Route path="/waiter/tables" element={<ProtectedRoute roleP={"waiter"}><Table/></ProtectedRoute>} />
