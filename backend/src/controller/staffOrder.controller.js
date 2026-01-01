@@ -23,10 +23,19 @@ async function getOrderId(){
 module.exports = {
   
   getChefOrders : catchAsync(async (req,res)=>{
-    const today = new Date().toISOString().slice(0, 10);
     const {status} = req.params ;
-    if(!["accepted","preparing","ready"].includes(status))throw new AppError(status + " Not Allowed!",400);
-    const orders = await Order.find({status}).sort({orderNumber : status === "accepted" ? -1 : 1});
+
+    if(!["accepted","preparing","ready","all"].includes(status))throw new AppError(status + " Not Allowed!",400);
+
+    const query = {
+      status
+    }
+
+    if(status === "all"){
+      query.status = {$in : ["accepted","preparing","ready"]}
+    }
+
+    const orders = await Order.find(query).sort({orderId : -1});
     res.status(200).json(orders);
   }),
 
@@ -94,11 +103,11 @@ module.exports = {
   prepareOrder : catchAsync(async (req,res)=>{
     const {action , id} = req.body ;
 
-    if(!["preparing","ready"].includes(action))throw new AppError(action + " is Not a Status!",400);
+    if(!["accepted","preparing"].includes(action))throw new AppError(action + " is Not a Status!",400);
     
     const order = await Order.findOneAndUpdate(
-      {_id : id , status : action === "preparing" ? "accepted" : "preparing"  },
-      {status : action},
+      {_id : id },
+      {status : action === "accepted" ? "preparing" : "ready"},
       {new : true , runValidators : true}
     );
     if(!order)throw new AppError("Order Updation Failed!",400);
