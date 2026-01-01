@@ -65,24 +65,24 @@ module.exports = {
     },{upsert : true,runValidators : true});
 
 
-    // const message = await client.messages.create({
-    //   body: `Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`,
-    //   from: TWILIO_PHONE,
-    //   to: number
-    // });
-
-    // res.status(201).json({
-    //   message : `otp send to ${message.to}`,
-    //   ok : true ,
-    //   status : 201
-    // });
+    const message = await client.messages.create({
+      body: `Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`,
+      from: TWILIO_PHONE,
+      to: number
+    });
 
     res.status(201).json({
-      otp,
-      message : `otp send to `,
+      message : `otp send to ${message.to}`,
       ok : true ,
       status : 201
     });
+
+    // res.status(201).json({
+    //   otp,
+    //   message : `otp send to `,
+    //   ok : true ,
+    //   status : 201
+    // });
   }),
 
   verifyUser : catchAsync(async (req,res)=>{
