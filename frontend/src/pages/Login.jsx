@@ -2,8 +2,12 @@ import { useState } from "react"
 import {useNavigate} from 'react-router-dom'
 import api from "../services/axios";
 import DotLoader from '../components/DotLoader.jsx'
+import {checkAuth} from '../app/features/user/userSlice.js'
+import { useDispatch } from "react-redux";
+
 export default function Login(){
 
+  const dispatch = useDispatch();
   const [error,setError] = useState({});
   const [Otploading,setOtpLoading] = useState(false);
   const [loading,setLoading] = useState(false);
@@ -93,6 +97,8 @@ export default function Login(){
       if(data.ok){
         setError({});
       };
+
+      dispatch(checkAuth());
 
       navigate('/');
 
