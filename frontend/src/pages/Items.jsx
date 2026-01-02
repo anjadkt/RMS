@@ -33,38 +33,40 @@ export default function Items(){
   return(
     <>
      <main className="mb-20">
-       <div className="flex items-center justify-between px-3 py-2 xl:px-5 xl:py-3 lg:px-3 lg:py-4 border-b border-gray-700">
+
+       <div className="flex items-center justify-between px-3 py-2 lg:px-3 lg:py-4 border-b border-gray-700">
         <img className="h-3 opacity-80" src="/icons/leftArrow.png" alt="arrow" onClick={()=>navigate('/')} />
         <h1 className="-ml-3 text-lg font-semibold xl:text-2xl font-[REM] text-[#cd0045] ">{itemObj?.category || "Items unavailable!"}</h1>
         <div></div>
        </div>
+
        <div className="flex flex-wrap justify-center gap-4 py-5">
           {
             (!items.length) ? (
                 <div className="w-full flex flex-col items-center justify-center py-16 text-center">
                   <div className="text-5xl mb-3 animate-bounce">🍔</div>
-                  <h2 className="text-xl font-semibold text-gray-800">
+                  <h2 className="text-xl lg:text-2xl font-semibold text-gray-800">
                     Coming Soon
                   </h2>
-                  <p className="text-sm text-gray-500 mt-1">
+                  <p className="text-sm lg:text-lg text-gray-500 mt-1">
                     We’re cooking something tasty for you
                   </p>
                 </div>
               ) : 
               items?.map((v,i)=>(
-              <div className="w-[290px] bg-white rounded-xl py-5 px-3 shadow-md">
+              <div className="w-[290px] lg:w-[340px] bg-white rounded-xl py-5 px-3 lg:px-5 shadow-md">
 
                 <div className="flex justify-between items-start gap-2">
 
                   <div className="flex flex-col gap-2">
-                    <h2 className="text-sm font-semibold text-gray-800">
+                    <h2 className="text-sm lg:text-lg font-semibold text-gray-800">
                       {v.name}
                     </h2>
-                    <p className="text-sm font-bold text-gray-900">
+                    <p className="text-sm lg:text-lg font-bold text-gray-900">
                       ₹{v.price}
                     </p>
                     <div>
-                      <img className="h-3 rounded" src={v.veg ? "/icons/veg.png" : "/icons/non-veg.png"} alt="" />
+                      <img className="h-3 lg:h-4 rounded" src={v.veg ? "/icons/veg.png" : "/icons/non-veg.png"} alt="" />
                     </div>
                     {
                       v.offers ? (
@@ -91,6 +93,7 @@ export default function Items(){
                   </div>
 
                 </div>
+
               </div>
             ))
           }

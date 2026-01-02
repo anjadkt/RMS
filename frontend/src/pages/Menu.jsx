@@ -34,9 +34,10 @@ export default function Menu (){
     <div className="hidden xl:block lg:block">
       <Header/>
     </div>
-    <main>
-      <div className="relative w-full h-[200px] overflow-hidden rounded-b-xl
-        bg-gradient-to-b from-[#c86a2b] via-[#f2a93b] to-[#ffd166]"
+    <main className="lg:mt-18">
+      <div className="relative w-full h-[200px] lg:h-[220px] overflow-hidden rounded-b-xl
+        bg-gradient-to-b from-[#c86a2b] via-[#f2a93b] to-[#ffd166]
+        "
         >
         <h1
           className="

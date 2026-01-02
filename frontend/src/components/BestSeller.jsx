@@ -2,13 +2,13 @@ import ItemButton from "./ItemButton";
 
 export default function BestSeller({data}) {
   return (
-    <div key={data._id} className=" relative w-[180px] ml-3 shrink-0 rounded-xl bg-white shadow-md border border-gray-100 hover:shadow-md transition xl:ml-5">
+    <div key={data._id} className=" relative w-[180px] lg:w-[190px] ml-3 shrink-0 rounded-xl bg-white shadow-md border border-gray-100 hover:shadow-md transition">
       
-      <div className="h-36 w-full bg-gray-100 rounded-t-xl flex items-center justify-center">
+      <div className="h-36 lg:h-40 w-full bg-gray-100 rounded-t-xl flex items-center justify-center">
         <img
           src={data?.image}
           alt={data?.name}
-          className="h-32 object-contain"
+          className="h-32 lg:36 object-contain"
         />
       </div>
 

@@ -4,6 +4,7 @@ import api from "../services/axios";
 import DotLoader from "../components/DotLoader";
 import OrderHistory from "../components/Order.jsx"
 import Nav from '../components/Nav.jsx'
+import Header from "../components/Header.jsx";
 
 export default function History(){
   const [orders,setOrders] = useState([]);
@@ -28,7 +29,9 @@ export default function History(){
   if(loading)return <DotLoader/>
   return (
     <>
-     <div className="bg-[#fff5f7] p-4 pt-2 ">
+     <Header/>
+
+     <div className="bg-[#fff5f7] p-4 pt-2 lg:hidden xl:hidden ">
         <div className="flex items-center justify-between -ml-2 mb-2">
           <button onClick={()=>navigate('/')}>
             <img className="h-3" src="/icons/leftArrow.png" alt="" />
@@ -37,7 +40,9 @@ export default function History(){
           <div></div>
         </div>
      </div>
-     <main className={`px-5 flex flex-wrap ${orders.length < 1 ? "justify-center" : "justify-between" }`}>
+
+     <main 
+      className={`px-5 flex flex-wrap lg:mt-25 ${orders.length < 1 ? "justify-center" : "justify-between" }`}>
       {
         orders.length < 1 ? (
           <div className="flex flex-col items-center justify-center text-center py-16">

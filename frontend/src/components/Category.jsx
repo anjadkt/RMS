@@ -80,13 +80,16 @@ export default function Category (){
           <div 
             onClick={()=>navigate(`/items/${category.name}`)}
             key={i}
-            className="min-w-[120px] flex flex-col items-center justify-center
-                      rounded-xl shadow-sm bg-white
-                      px-2 py-3 cursor-pointer
-                      hover:shadow-md transition"
+            className="
+              min-w-[120px] flex flex-col items-center justify-center
+              rounded-xl shadow-sm bg-white
+              px-2 py-3 cursor-pointer
+              hover:shadow-md transition
+              lg:px-4 lg:py-6
+            "
           >
             <img
-              className="h-10 mb-2 object-contain"
+              className="h-10 lg:h-12 mb-2 object-contain"
               src={category.img}
               alt={category.name}
             />

@@ -23,14 +23,14 @@ export default function OrderHistory({ data }) {
       >
         <div className="
         px-2 py-0 rounded-2xl 
-        absolute -top-2 left-1/2 -translate-x-14 
+        absolute -top-2 lg:-top-2.5 left-1/2 -translate-x-14 
         bg-gradient-to-b from-[#fff5f7] to-white">
-          <div className="text-xs font-semibold text-[#cd0045] tracking-wide">
+          <div className="text-xs lg:text-sm font-semibold text-[#cd0045] tracking-wide">
             {data.orderId}
           </div>
         </div>
 
-        <div className="px-4 py-2 text-xs text-gray-600 flex justify-between mt-2 border-b border-gray-300">
+        <div className="px-4 py-2 text-xs lg:text-sm lg:py-3 text-gray-600 flex justify-between mt-2 border-b border-gray-300">
           <div>
             <span className="font-semibold text-gray-700">Table Number :</span>{" "}
             {data.tableNumber}
@@ -49,26 +49,26 @@ export default function OrderHistory({ data }) {
             >
               <div className="bg-gray-100 p-2 rounded-md w-[50px] flex items-center justify-center">
                 <img
-                  className="h-8 object-contain"
+                  className="h-8 lg:h-10 object-contain"
                   src={v.image}
                   alt={v.name}
                 />
               </div>
 
-              <div className="flex items-center gap-2 font-[REM] text-xs text-gray-600">
+              <div className="flex items-center gap-2 font-[REM] text-xs lg:text-sm text-gray-600">
                 <span className="font-medium">{v.name}</span>
                 <span className="text-gray-500">x</span>
                 <span className="font-medium">{v.quantity}</span>
               </div>
 
-              <div className="text-xs font-medium text-gray-700">
+              <div className="text-xs lg:text-sm font-medium text-gray-700">
                 ₹{v.subTotal}
               </div>
             </div>
           ))}
 
           <div className="flex justify-between px-5 py-2 bg-gray-50">
-            <span className="text-sm font-semibold text-gray-700">
+            <span className="text-sm lg:text-lg font-semibold text-gray-700">
               Total
             </span>
             <span className="text-sm font-bold text-gray-900">
@@ -77,9 +77,9 @@ export default function OrderHistory({ data }) {
           </div>
         </div>
 
-        <div className="flex font-[REM] justify-center px-4 py-2 border-t border-gray-100">
+        <div className="flex font-[REM] justify-center px-4 py-2 lg:py-3 border-t border-gray-100">
           <span
-            className={`text-sm font-semibold px-10 py-0.5 rounded-lg
+            className={`text-sm lg:text-lg font-semibold px-10 py-0.5 rounded-lg
               ${statusColors[data.status]}`}
           >
             {data.status}

@@ -51,10 +51,14 @@ export default function Home (){
   return(
     <>
      <Header/>
-     <main className='bg-[#F8FAFC] mb-20'>
+     <main className='bg-[#F8FAFC] mb-20 mt-16'>
 
-      <div className="px-4 py-6 pb-10 lg:px-12 lg:py-12 lg:flex lg:flex-row-reverse lg:gap-5 lg:items-center">
-        <div className="lg:w-1/2">
+      <div 
+        className="px-4 py-6 pb-10 
+          lg:px-20 lg:py-12 lg:flex lg:flex-row-reverse lg:gap-5 lg:items-start
+        "
+      >
+        <div className="lg:w-xl">
           <Swiper 
             modules={[Autoplay]}
             spaceBetween={15}
@@ -69,7 +73,7 @@ export default function Home (){
               <SwiperSlide key={i}>
                 <div className="flex justify-center">
                   <img
-                    className="rounded-2xl shadow-lg w-full max-w-md object-cover"
+                    className="rounded-2xl shadow-lg w-full max-w-md lg:max-w-lg"
                     src={offer}
                     alt="Offer"
                   />
@@ -113,17 +117,17 @@ export default function Home (){
         </div>
       </div>
 
-      <div className='h-0.5 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center lg:justify-start xl:justify-start'>
-        <h2 className='bg-[#F8FAFC] lg:ml-10 xl:ml-10 text-[#cd0045] rounded-3xl text-sm xl:text-xl px-2'>Food Categories</h2>
+      <div className='h-0.5 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center lg:justify-start'>
+        <h2 className='bg-[#F8FAFC] lg:ml-10 text-[#cd0045] rounded-3xl text-sm lg:text-xl px-2'>Food Categories</h2>
       </div>
 
       <Category />
 
       <div className='h-0.5 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center'>
-        <h2 className='bg-[#F8FAFC] text-[#cd0045] rounded-3xl text-sm xl:text-xl px-2'>Best Selling</h2>
+        <h2 className='bg-[#F8FAFC] text-[#cd0045] rounded-3xl text-sm lg:text-lg px-2'>Best Selling</h2>
       </div>
 
-      <div className='my-7 py-2 overflow-auto flex scrollbar-hide' >
+      <div className='my-7 py-2 lg:overflow-visible lg:flex lg:flex-wrap lg:gap-5 lg:justify-center overflow-auto flex scrollbar-hide' >
         {
           bestSelling && bestSelling?.map((best,i) =>(
             <BestSeller data={best} />
@@ -132,10 +136,10 @@ export default function Home (){
       </div>
 
       <div className='h-0.5 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center'>
-        <h2 className='bg-[#F8FAFC] text-[#cd0045] rounded-3xl text-sm xl:text-xl px-2'>Today's Special</h2>
+        <h2 className='bg-[#F8FAFC] text-[#cd0045] rounded-3xl text-sm lg:text-lg px-2'>Today's Special</h2>
       </div>
 
-       <div className='my-7 py-2 overflow-auto scrollbar-hide flex' >
+       <div className='my-7 py-2 overflow-auto scrollbar-hide flex lg:overflow-visible lg:flex lg:flex-wrap lg:gap-5 lg:justify-center' >
         {
           specialItems && specialItems?.map((special,i) =>(
             <BestSeller data={special} />

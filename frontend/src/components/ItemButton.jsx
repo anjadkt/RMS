@@ -12,7 +12,7 @@ export default function ItemButton({cartItem}){
 
   return(
     <>
-      <button className={` ${isInCart ? "hidden" : "block"} px-4.5 relative py-1.5 text-xs font-bold rounded-sm 
+      <button className={` ${isInCart ? "hidden" : "block"} px-4.5 relative py-1.5 cursor-pointer text-xs font-bold rounded-sm 
         border border-[#cd0045] text-[#cd0045]`}
         onClick={()=>{
           if(!login)return navigate('/login');
