@@ -4,7 +4,7 @@ const Order = require('../model/order.model.js');
 const Table = require('../model/table.model.js');
 
 module.exports = {
-  getOrderData : catchAsync(async(req,res)=>{
+  getDashboardData : catchAsync(async(req,res)=>{
     const today = new Date().toISOString().slice(0, 10);
 
     const total = await Order.aggregate([
@@ -60,5 +60,61 @@ module.exports = {
      totalTableCount : totalTable
 
     })
-  })
+  }),
+
+  getOrders : catchAsync(async (req,res)=>{
+    //f=filter s=status q=search
+    const {s,f,q,t} = req.query;
+
+    const today = new Date().toISOString().slice(0, 10);
+
+    if(!["all","placed","accepted","preparing","ready","served","pending","completed"].includes(s))throw new AppError(s + " Not Allowed!",400);
+
+    if(!["customers","waiters","tables","none"].includes(f))throw new AppError(f + " Not Allowed!",400);
+
+    const query = {
+      status : s
+    }
+
+    if(t==="true"){
+      query.orderDate = today
+    }
+
+    if(s === "all"){
+      query.status = {$in : ["accepted","preparing","placed","accepted","preparing","ready","served","pending","completed"]}
+    }
+
+    if(q?.trim()){
+      query.orderId = {$regex : q.trim() , $options : "i"}
+    }
+
+    const orders = await Order.find(query).sort({orderId : -1}).populate("waiterId");
+    res.status(200).json(orders);
+  }),
+
+  changeOrderStatus : catchAsync(async (req,res)=>{
+    const {status,id,tableId} = req.body ;
+    if(!["cancel","placed","accepted","preparing","ready","served","pending","completed"].includes(status)){
+      throw new AppError(status +"Not Allowed!",400);
+    }
+
+    if(status === "cancel"){
+      await Order.deleteOne({_id : id});
+      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id}});
+      return res.status(200).json({
+        message : "Order"+status,
+        status : 200
+      });
+    }
+
+    if(status === "completed"){
+      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id}});
+    }
+
+    const update = await Order.findOneAndUpdate({_id : id},{status},{runValidators : true,new : true});
+    if(!update)throw new AppError("Update Failed!",400);
+
+    res.status(200).json(update);
+
+  }),
 }

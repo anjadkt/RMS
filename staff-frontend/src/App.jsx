@@ -14,6 +14,7 @@ import KitchenOrders from './pages/KitchenOrder.jsx'
 import KitchenProducts from "./pages/kitchenProducts.jsx"
 import RootRedirect from './routeProtecter/RootRedirect.jsx'
 import AdminDashboard from "./pages/AdminDashboard.jsx"
+import AdminOrders from "./pages/AdminOrders.jsx"
 
 
 function App() {
@@ -36,7 +37,10 @@ function App() {
 
        <Route path="/kitchen/orders" element={<ProtectedRoute roleP={"cook"}><KitchenOrders/></ProtectedRoute>} />
       <Route path="/kitchen/products" element={<ProtectedRoute roleP={"cook"}><KitchenProducts/></ProtectedRoute>} />
-      <Route path="/admin/dashboard" element={<ProtectedRoute role={"admin"}><AdminDashboard/></ProtectedRoute>} />
+
+      
+      <Route path="/admin/dashboard" element={<ProtectedRoute roleP={"admin"}><AdminDashboard/></ProtectedRoute>} />
+      <Route path="/admin/orders" element={<ProtectedRoute roleP={"admin"}><AdminOrders/></ProtectedRoute>} />
      </Routes>
     </>
   )

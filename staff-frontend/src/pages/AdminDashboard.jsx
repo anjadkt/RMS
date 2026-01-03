@@ -11,7 +11,7 @@ export default function AdminDashboard() {
     async function fetchData() {
       try{
         setLoading(true);
-        const {data:orderData} = await api.get('/admin/orders');
+        const {data:orderData} = await api.get('/admin/orders/dashboard');
         setData(orderData);
       }catch(error){
         console.log(error.message);

@@ -13,6 +13,7 @@ export default function PublicRoute({children}){
   
   if(login === true && role === "waiter")return <Navigate to={'/waiter/orders'} />
   if(login === true && role === "cook")return <Navigate to={'/kitchen/orders'} />
+  if(login === true && role === "admin")return <Navigate to={'/admin/dashboard'} />
 
   return children
 }

@@ -75,7 +75,7 @@ app.get('/add',async (req,res)=>{
 
 //admin routes
 app.use('/auth/admin',adminRouter);
-app.use('/admin/orders',adminOrderRouter);
+app.use('/admin/orders',verifyToken,verifyUsers("admin"),adminOrderRouter);
 app.use('/items/admin',verifyToken,verifyUsers("admin"),adminProductRouter);
 app.use('/table/admin',verifyToken,verifyUsers("admin"),adminTableRouter);
 app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);

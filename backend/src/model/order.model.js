@@ -20,6 +20,10 @@ const orderSchema = new mongoose.Schema({
      type : mongoose.Schema.Types.ObjectId,
      ref : "User"
   },
+  waiterId:{
+     type : mongoose.Schema.Types.ObjectId,
+     ref : "User"
+  },
   customerName :String,
   status : {
     type :String,

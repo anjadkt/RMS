@@ -49,7 +49,6 @@ module.exports = {
     });
 
     const orderTotal = orderItems.reduce((accum,val)=>accum + val.subTotal,0);
-    console.log(orderTotal);
 
     const order = await Order.create({
       orderId,
@@ -59,6 +58,7 @@ module.exports = {
       tableId :table._id,
       isAssisted : role === "waiter" ? true : false ,
       customerId : user._id,
+      waiterId : table.waiterId,
       customerName : name,
       status : role === "waiter" ? "accepted" : "placed",
       orderItems,

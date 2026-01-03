@@ -58,7 +58,7 @@ export default function OrderItems({ data ,fetchOrders }) {
         
         <div className="flex items-center gap-2 text-xs lg:text-sm text-slate-500 font-medium">
           <User size={14} className="lg:w-4 lg:h-4" />
-          <span>Customer: <span className="text-slate-800">{data.name || "Unknown"}</span></span>
+          <span>Customer: <span className="text-slate-800">{data.customerName || "Unknown"}</span></span>
         </div>
       </div>
 
