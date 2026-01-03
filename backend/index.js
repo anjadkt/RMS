@@ -22,6 +22,7 @@ const adminProductRouter = require('./src/router/admin/product.route.js');
 const adminTableRouter = require('./src/router/admin/table.route.js');
 const adminStaffRouter = require('./src/router/admin/staff.route.js');
 const restoRouter = require('./src/router/admin/resto.route.js');
+const adminOrderRouter = require('./src/router/admin/adminOrder.route.js');
 
 
 const staffRouter = require('./src/router/waiter/users.route.js');
@@ -67,8 +68,14 @@ app.use('/resto',restoDataRouter);
 app.use('/user/cart',verifyToken,verifyUsers("customer","waiter"),userCartRouter);
 app.use('/user/order',verifyToken,verifyUsers("customer","waiter"),userOrderRouter);
 
+const Table = require('./src/model/table.model.js');
+app.get('/add',async (req,res)=>{
+  await Table.updateMany({},{isOccupied : false});
+})
+
 //admin routes
 app.use('/auth/admin',adminRouter);
+app.use('/admin/orders',adminOrderRouter);
 app.use('/items/admin',verifyToken,verifyUsers("admin"),adminProductRouter);
 app.use('/table/admin',verifyToken,verifyUsers("admin"),adminTableRouter);
 app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);

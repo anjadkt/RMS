@@ -16,7 +16,10 @@ const tableSchema = new mongoose.Schema({
     ref : "User",
     default : null
   },
-
+  isOccupied : {
+    type : Boolean,
+    default : false
+  },
   restaurentId : String,
   restaurentName : String,
   offers : Array,

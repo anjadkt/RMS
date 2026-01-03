@@ -12,6 +12,7 @@ export default function RootRedirect(){
 
   if(login === false)return <Navigate to="/login" />
 
+  if (role === "customer") return <Navigate to="/login" />;
   if (role === "waiter") return <Navigate to="/waiter/orders" />;
   if (role === "cook") return <Navigate to="/kitchen/orders" />;
   if (role === "admin") return <Navigate to="/admin/dashboard" />;

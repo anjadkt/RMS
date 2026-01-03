@@ -48,6 +48,9 @@ module.exports = {
       })
     });
 
+    const orderTotal = orderItems.reduce((accum,val)=>accum + val.subTotal,0);
+    console.log(orderTotal);
+
     const order = await Order.create({
       orderId,
       orderNumber,
@@ -60,7 +63,8 @@ module.exports = {
       status : role === "waiter" ? "accepted" : "placed",
       orderItems,
       orderDate,
-      instructions
+      instructions,
+      orderTotal
     });
     if(!order)throw new AppError("Order Creation Failed!",400);
 

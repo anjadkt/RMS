@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState , useEffect } from "react"
 import {useNavigate} from 'react-router-dom'
 import api from "../services/axios";
 import DotLoader from '../components/DotLoader.jsx'
@@ -12,6 +12,7 @@ export default function Login(){
   const [Otploading,setOtpLoading] = useState(false);
   const [loading,setLoading] = useState(false);
   const [ok,setOk] = useState(false);
+  const [time,setTime] = useState(0)
 
   const [form,setForm] = useState({
     number : "",
@@ -59,6 +60,8 @@ export default function Login(){
       const {data} = await api.post('/auth/customer/otp',{number : form.countryCode?.trim() + form.number?.trim()});
 
       console.log(data);
+
+      setTime(30);
 
       if(data.ok){
         setError({});
@@ -123,6 +126,14 @@ export default function Login(){
         setLoading(false);
     }
   }
+
+  useEffect(()=>{
+    if(time===0)return ;
+    const timeout = setTimeout(()=>{
+      setTime(pre => pre-1);
+    },1000)
+    return ()=> clearTimeout(timeout);
+  },[time])
 
   if(Otploading || loading) return <DotLoader />
 
@@ -213,12 +224,13 @@ export default function Login(){
                   type="button"
                   className="font-medium hover:underline cursor-pointer"
                   onClick={sendOtp}
+                  disabled={time}
                 >
                   Resend OTP?
                 </button>
 
                 <span className="text-gray-500">
-                   in <span className="font-medium">30s</span>
+                   {!time ? <b>Now</b> : <>in <span className="font-medium">{time}s</span></>}
                 </span>
               </div>
               </div>

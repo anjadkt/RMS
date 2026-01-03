@@ -184,7 +184,7 @@ module.exports = {
 
   sendAdminOtp : catchAsync(async(req,res)=>{
     const email = req.body.email;
-    if(!isValidEmail(email))throw AppError("Email is Not provided",400);
+    if(!isValidEmail(email))throw new AppError("Email is Not provided",400);
 
     const otp = getOtp();
 

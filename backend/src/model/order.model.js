@@ -50,7 +50,8 @@ const orderSchema = new mongoose.Schema({
   isAssisted : {
     type :Boolean,
     default : false
-  }
+  },
+  orderTotal : Number
 });
 
 
