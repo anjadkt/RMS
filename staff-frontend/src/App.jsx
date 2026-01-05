@@ -16,6 +16,7 @@ import RootRedirect from './routeProtecter/RootRedirect.jsx'
 import AdminDashboard from "./pages/AdminDashboard.jsx"
 import AdminOrders from "./pages/AdminOrders.jsx"
 import AdminProducts from "./pages/AdminProducts.jsx"
+import AdminUsers from "./pages/AdminUsers.jsx"
 
 
 function App() {
@@ -43,6 +44,7 @@ function App() {
       <Route path="/admin/dashboard" element={<ProtectedRoute roleP={"admin"}><AdminDashboard/></ProtectedRoute>} />
       <Route path="/admin/orders" element={<ProtectedRoute roleP={"admin"}><AdminOrders/></ProtectedRoute>} />
       <Route path="/admin/products" element={<ProtectedRoute roleP={"admin"}><AdminProducts/></ProtectedRoute>} />
+      <Route path="/admin/users" element={<ProtectedRoute roleP={"admin"}><AdminUsers/></ProtectedRoute>} />
      </Routes>
     </>
   )

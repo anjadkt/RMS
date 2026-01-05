@@ -197,7 +197,20 @@ export default function AdminProducts() {
                       <div className="inline-block h-8 w-8 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
                     </td>
                   </tr>
-                ) : 
+                ) : products.length === 0 ? (
+                  <tr>
+                    <td colSpan={7} className="py-16 text-center">
+                      <div className="flex flex-col items-center gap-3 text-gray-400">
+                        <span className="text-sm font-bold text-gray-600">
+                          No products found
+                        </span>
+                        <span className="text-xs">
+                          Add a product to see it here
+                        </span>
+                      </div>
+                    </td>
+                  </tr>
+                ): 
                 products.map((product, index) => (
                 <tr key={product._id} className="hover:bg-gray-50/50 transition-colors group">
                   <td className="px-6 py-4 text-sm font-semibold text-gray-400">
