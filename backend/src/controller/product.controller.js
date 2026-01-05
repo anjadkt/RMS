@@ -4,9 +4,12 @@ const Item = require('../model/items.model.js');
 
 module.exports = {
   getItems : catchAsync(async (req,res)=>{
-    const {q,category} = req.query ;
-    const filter = {
-      isRemoved : false
+    const {q,category,role} = req.query ;
+
+    const filter = {}
+
+    if(!role && role !== "admin"){
+      filter.isRemoved = false
     }
 
     if(q?.trim()){
@@ -66,7 +69,7 @@ module.exports = {
   }),
 
   addItem : catchAsync(async (req,res)=>{
-    const {name , price ,image,category,isSpecial ,isBest} = req.body ;
+    const {name , price ,image,category,isAvailable,isRemoved , isSpecial ,isBest , offer , isVeg,prepTime} = req.body ;
     if(!name || !price || !image || !category)throw new AppError("fields Required!",400);
 
     const item = await Item.create({
@@ -74,8 +77,13 @@ module.exports = {
       price,
       image,
       category,
+      isAvailable,
+      isRemoved,
       isSpecial,
-      isBest
+      isBest,
+      offer,
+      isVeg,
+      prepTime
     });
 
     res.status(201).json({
@@ -95,10 +103,10 @@ module.exports = {
     });
   }),
   editItem : catchAsync(async(req,res)=>{
-    const {name , price ,image,category,isAvailable,isRemoved , isSpecial ,isBest} = req.body ;
+    const {name , price ,image,category,isAvailable,isRemoved , isSpecial ,isBest , offer , isVeg,prepTime} = req.body ;
     const {id} = req.params ;
 
-    if(!name || !price || !image || !category || !isAvailable || !isRemoved || !isSpecial || !isBest)throw new AppError("Field Required!",400);
+    if(!name || !price || !image || !category)throw new AppError("Field Required!",400);
     const update = await Item.findByIdAndUpdate({_id : id },{
       name,
       price,
@@ -107,14 +115,19 @@ module.exports = {
       isAvailable,
       isRemoved,
       isSpecial,
-      isBest
+      isBest,
+      offer,
+      isVeg,
+      prepTime
     },{new : true , runValidators : true});
     
     if(!update)throw new AppError("Updation failed!",405);
 
     res.status(200).json({
       message : "product updated!",
-      status : 200
+      status : 200,
+      ok:true,
+      update
     })
   }),
 

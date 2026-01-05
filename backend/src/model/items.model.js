@@ -36,7 +36,17 @@ const itemSchema = new mongoose.Schema({
   isBest : {
     type : Boolean,
     default : false
+  },
+  offer : String,
+  prepTime : {
+    type : Number,
+    default : 5
+  },
+  isVeg : {
+    type : Boolean,
+    default : false
   }
+
 });
 
 module.exports = mongoose.model("Item",itemSchema);
