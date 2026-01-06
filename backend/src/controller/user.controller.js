@@ -1,5 +1,7 @@
 require('dotenv').config();
 const User = require('../model/users.model.js');
+const Table = require('../model/table.model.js');
+const Order = require('../model/order.model.js');
 const AppError = require('../utils/AppError.js');
 const catchAsync = require('../utils/catchAsync.js');
 const OTP = require('../model/otp.model.js');
@@ -274,31 +276,76 @@ module.exports = {
 
   createStaff : catchAsync(async(req,res)=>{
 
-    const {name,details,role,pin} = req.body ;
+    const {name,details,role,email} = req.body ;
 
-    if(!name|| !role || !pin)throw new AppError("Invalid Data!",400);
-    if(pin.toString().length < 6)throw new AppError("Pin must be greater than 6",400);
+    if(!name|| !role || !isValidEmail(email))throw new AppError("Invalid Data!",400);
 
     const createStaffId = ()=>{
       return `${role === "waiter" ? "WTR" : "CHF"}-${Date.now().toString().slice(-5)}`
     }
 
-    const isStaff = await User.findOne({"details.number":details.number});
-    if(isStaff)throw new AppError("Mobile Number/ Staff Already Exist!",409);
-
-    const hashedPin = await bcrypt.hash(pin.toString(),10);
+    const isStaff = await User.findOne({email});
+    if(isStaff)throw new AppError("Staff Already Exist!",409);
 
     const user = await User.create({
       name,
       role,
+      email,
       details:{
         address : details.address,
         number : details.number,
         photo : details.photo
       },
       staffId : createStaffId(),
-      pin : hashedPin
+      isWorking : false
     });
+
+    const token = jwt.sign({_id : user._id , email},process.env.STAFF_PASS_KEY,{expiresIn : "5m"});
+
+    const mailOptions = {
+      from: `<PARAGON>`,
+      to: email,
+      subject: "Welcome to the Team – Set Your Password",
+      html: `
+        <html>
+          <body style="font-family: Arial, sans-serif; color:#111; line-height:1.5;">
+          
+        <p>Hi ${user.name},</p>
+
+        <p>
+          Welcome to Paragon.  
+          Your staff account has been created. Your Staff ID is <br> ${user.staffId}</b>.
+          use this to login!
+        </p>
+
+        <p>
+          Please set your password using the link below:
+        </p>
+
+        <p>
+          <a href="${process.env.STAFFFRONT_END_URL + "/staff/password/"+ token}">
+            Set your password
+          </a>
+        </p>
+
+        <p>
+          This link will expire in 5 min.
+        </p>
+
+        <p>
+          Thanks,<br/>
+          -Paragon Manager
+        </p>
+
+          </body>
+        </html>
+
+      
+      `
+
+    };
+
+    await transporter.sendMail(mailOptions);
 
     res.status(201).json({
       message : "staff creation successfull!",
@@ -306,6 +353,25 @@ module.exports = {
       staffId : user.staffId,
       role
     });
+
+  }),
+
+  setStaffPassword : catchAsync(async (req,res)=>{
+    const {token , pin} = req.body ;
+    if(pin.trim().length < 6) throw new AppError("Password Atleast 6 digits",400);
+    const data = jwt.verify(token,process.env.STAFF_PASS_KEY);
+    if(!data)throw new AppError("Invalid Token!",400);
+
+    const user = await User.findOne({_id : data._id});
+
+    const hashedPin = await bcrypt.hash(pin.toString(),10);
+    user.pin = hashedPin;
+    user.isWorking = true ;
+    await user.save();
+
+    res.status(201).json({
+      message : "user password set"
+    })
 
   }),
 
@@ -336,6 +402,75 @@ module.exports = {
       status : 200,
       accessToken
     });
+  }),
+
+  getAllUsers : catchAsync(async(req,res)=>{
+    const {q,user} = req.query ;
+    if(!["cook","waiter","customer","staffs"].includes(user))throw new AppError(user + " not a valid user",400);
+
+    const query = {
+      role : user
+    }
+
+    if(user==="staffs"){
+      query.role = {$in : ["waiter","cook"]}
+    }
+
+    if(q.trim()){
+      query.staffId = {$regex : q , $options : "i"}
+    }
+
+    if(q && user === "customer"){
+      query.number = {$regex : q , $options : "i"}
+    }
+
+    const users = await User.find(query);
+
+    res.status(200).json(users);
+  }),
+
+  getUserAdminData : catchAsync(async (req,res)=>{
+    const {id} = req.params ;
+    const user = await User.findOne({_id : id});
+    const tables = await Table.find({waiterId : id});
+    const allTables = await Table.find({waiterId : {$ne : id}});
+    const orders = await Order.find({waiterId : id , status : {$nin : ["completed","pending"]}});
+
+    if(!user)throw new AppError("User Not Found!",404);
+    res.status(200).json({
+      user : {
+        name : user.name,
+        number : user.details.number,
+        address : user.details.address,
+        photo : user.details.photo,
+        isWorking : user.isWorking,
+        role : user.role,
+        staffId : user.staffId,
+        _id : user._id
+      },
+      tables,
+      allTables,
+      orders
+    });
+  }),
+
+
+  manageUsers : catchAsync(async (req,res)=>{
+    const {role,id,action} = req.body ;
+    if(role === "waiter" || role === "cook"){
+      const user = await User.findOneAndUpdate({_id : id},{isWorking : action},{runValidators : true , new : true});
+      return res.status(200).json(user);
+    }
+    res.status(500);
+  }),
+
+  removeStaff : catchAsync(async (req,res)=>{
+    const {id} = req.params ;
+    await Table.updateMany({waiterId : id},{waiterId : null});
+    await User.deleteOne({_id : id});
+    res.status(200).json({
+      message : "user deleted!"
+    })
   })
 
 }

@@ -40,7 +40,7 @@ module.exports = {
 
     if(Array.isArray(tableNumber)){
       const table = await Table.updateMany(
-        {tableNumber : {$in : tableNumber}},
+        {_id : {$in : tableNumber}},
         {$set : {waiterId : waiterId ? waiterId : null }});
 
       if(table.matchedCount === 0)throw new AppError("Updation Failed!",400);

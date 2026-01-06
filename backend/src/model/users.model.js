@@ -32,7 +32,7 @@ const userSchema = new mongoose.Schema({
   },
   isWorking : {
     type : Boolean,
-    default : true
+    default : false
   },
 
   cart : [

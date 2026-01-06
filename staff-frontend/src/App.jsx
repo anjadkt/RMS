@@ -1,5 +1,5 @@
 
-import {Routes, Route} from "react-router-dom"
+import {Routes, Route , Navigate} from "react-router-dom"
 import LoginPage from "./pages/Login.jsx"
 import Orders from "./pages/Orders.jsx"
 import { useEffect } from "react"
@@ -16,7 +16,11 @@ import RootRedirect from './routeProtecter/RootRedirect.jsx'
 import AdminDashboard from "./pages/AdminDashboard.jsx"
 import AdminOrders from "./pages/AdminOrders.jsx"
 import AdminProducts from "./pages/AdminProducts.jsx"
-import AdminUsers from "./pages/AdminUsers.jsx"
+import AdminStaffs from "./pages/AdminStaffs.jsx"
+import AdminUsersLayout from "./components/AdminUserLayout.jsx"
+import AdminCustomers from './pages/AdminCustomers.jsx'
+import AdminStaffDetails from './pages/AdminStaffDetials.jsx'
+import StaffSetPassword from '././pages/StaffSetPassword.jsx'
 
 
 function App() {
@@ -31,20 +35,32 @@ function App() {
      <Routes>
       <Route path="/" element={<RootRedirect/>} />
       <Route path="/login" element={<PublicRouter><LoginPage/></PublicRouter>} />
-      <Route path="/waiter/orders" element={<ProtectedRoute roleP={"waiter"}><Orders/></ProtectedRoute>} />
-      <Route path="/waiter/tables" element={<ProtectedRoute roleP={"waiter"}><Table/></ProtectedRoute>} />
-      <Route path="/waiter/tables/:id" element ={<ProtectedRoute roleP={"waiter"}><EachTable/></ProtectedRoute>} />
-      <Route path='/waiter/order' element={<ProtectedRoute roleP={"waiter"}><Order/></ProtectedRoute>} />
+      <Route path="/staff/password/:token" element={<PublicRouter><StaffSetPassword/></PublicRouter>} />
 
+      <Route element={<ProtectedRoute roleP={"waiter"} />}>
+        <Route path="/waiter/orders" element={<Orders/>} />
+        <Route path="/waiter/tables" element={<Table/>} />
+        <Route path="/waiter/tables/:id" element ={<EachTable/>} />
+        <Route path='/waiter/order' element={<Order/>} />
+      </Route>
 
-       <Route path="/kitchen/orders" element={<ProtectedRoute roleP={"cook"}><KitchenOrders/></ProtectedRoute>} />
-      <Route path="/kitchen/products" element={<ProtectedRoute roleP={"cook"}><KitchenProducts/></ProtectedRoute>} />
-
+      <Route element={<ProtectedRoute roleP={"cook"}></ProtectedRoute>}>
+        <Route path="/kitchen/orders" element={<KitchenOrders/>} />
+        <Route path="/kitchen/products" element={<KitchenProducts/>} />
+      </Route>
       
-      <Route path="/admin/dashboard" element={<ProtectedRoute roleP={"admin"}><AdminDashboard/></ProtectedRoute>} />
-      <Route path="/admin/orders" element={<ProtectedRoute roleP={"admin"}><AdminOrders/></ProtectedRoute>} />
-      <Route path="/admin/products" element={<ProtectedRoute roleP={"admin"}><AdminProducts/></ProtectedRoute>} />
-      <Route path="/admin/users" element={<ProtectedRoute roleP={"admin"}><AdminUsers/></ProtectedRoute>} />
+      <Route element={<ProtectedRoute roleP="admin" />}>
+        <Route path="/admin/dashboard" element={<AdminDashboard/>} />
+        <Route path="/admin/orders" element={<AdminOrders/>} />
+        <Route path="/admin/products" element={<AdminProducts/>} />     
+        <Route path="/admin/users" element={<AdminUsersLayout />}>
+          <Route index element={<Navigate to="staffs" replace />} />
+          <Route path="staffs" element={<AdminStaffs />} />
+          <Route path="customers" element={<AdminCustomers />} />
+        </Route>
+        <Route path="/admin/users/staffs/:id" element={<AdminStaffDetails/>} />
+
+      </Route>      
      </Routes>
     </>
   )
