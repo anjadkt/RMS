@@ -1,4 +1,4 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate , useSearchParams } from "react-router-dom";
 import { fetchCart } from "../app/features/cart/cartSlice";
 import { useDispatch,useSelector } from "react-redux";
 import { useEffect , useState } from "react";
@@ -16,6 +16,9 @@ export default function Checkout() {
     tableNumber : ""
   });
   const [error,setError] = useState({});
+
+  const [searchParams] = useSearchParams();
+  const tableNumber = searchParams.get("table");
 
   const {cart,loading} = useSelector(state => state.cart);
 
@@ -163,6 +166,7 @@ export default function Checkout() {
               <input
                 onChange={handleChange}
                 name="tableNumber"
+                defaultValue={tableNumber || ""}
                 type="text"
                 placeholder="Scan/Type Table NO:"
                 className="border rounded-lg px-3 py-2 text-sm

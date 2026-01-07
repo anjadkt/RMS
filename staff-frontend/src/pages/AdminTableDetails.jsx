@@ -4,6 +4,7 @@ import { Hash, Utensils, QrCode, ChevronDown, Package, Printer, Download } from 
 import { useState , useEffect } from "react";
 import api from '../services/axios.js';
 import { useNavigate } from "react-router-dom";
+import QrComp from '../components/QrComp.jsx'
 
 export default function AdminTableDetails() {
   const { id } = useParams();
@@ -92,23 +93,7 @@ export default function AdminTableDetails() {
                 </div>
               </div>
 
-              <div className="bg-white border border-gray-100 rounded-3xl p-8 shadow-sm">
-                <div className="flex items-center gap-2 mb-6">
-                  <QrCode size={18} className="text-gray-900" />
-                  <h3 className="text-sm font-black text-gray-900 uppercase tracking-widest">Table QR Code</h3>
-                </div>
-                <div className="bg-gray-50 aspect-square rounded-2xl border-2 border-dashed border-gray-200 flex items-center justify-center relative group overflow-hidden">
-                   <QrCode size={120} strokeWidth={1} className="text-gray-300 group-hover:text-black transition-colors" />
-                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                      <button className="bg-white text-black p-3 rounded-xl shadow-xl transform translate-y-4 group-hover:translate-y-0 transition-transform">
-                        <Download size={20} />
-                      </button>
-                   </div>
-                </div>
-                <button className="w-full mt-4 flex items-center justify-center gap-2 py-3 text-xs font-bold text-gray-500 hover:text-black transition-colors uppercase tracking-widest">
-                  <Printer size={14} /> Print for Table
-                </button>
-              </div>
+              <QrComp tableNumber={table.tableNumber} />
 
             </div>
           </aside>
@@ -125,7 +110,6 @@ export default function AdminTableDetails() {
               {table?.tableOrders?.map((order, idx) => (
                 <div key={idx} className={`bg-white rounded-3xl overflow-hidden transition-all`}>
                   
-                  {/* Order Header Row */}
                   <div 
                     onClick={() => setExpandedOrder(expandedOrder === idx ? null : idx)}
                     className="p-5 flex items-center justify-between cursor-pointer"

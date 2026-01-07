@@ -5,6 +5,7 @@ const tableSchema = new mongoose.Schema({
     type :String,
     unique : true,
   },
+  qrCode : String,
   tableOrders : [
     {
       type : mongoose.Schema.Types.ObjectId,
