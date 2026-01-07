@@ -9,7 +9,7 @@ export default function StaffCard({ data }) {
     <div key={data._id} className="relative max-w-2xs bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all group overflow-hidden">
       
       <div className="absolute top-0 left-0 z-10">
-        {data.isWorking ? (
+        {data.isWorking || data.isBanned ? (
           <div className="bg-green-700 text-white px-3 py-1.5 rounded-br-2xl flex items-center gap-1.5 shadow-sm">
             <ShieldCheck size={14} strokeWidth={3} />
             <span className="text-[10px] font-black uppercase tracking-wider">Verified</span>
@@ -38,7 +38,7 @@ export default function StaffCard({ data }) {
           <div className="flex flex-col gap-1">
             <div className="flex items-center gap-1.5 text-gray-400">
               <IdCard size={14} />
-              <span className="text-xs font-bold tracking-tight">ID: {data.staffId}</span>
+              <span className="text-xs font-bold tracking-tight">ID: {data.staffId || data.phone}</span>
             </div>
             <div className="flex items-center gap-1.5 text-gray-500">
               <Briefcase size={14} className="text-gray-400" />
@@ -48,7 +48,7 @@ export default function StaffCard({ data }) {
         </div>
       </div>
 
-      <button onClick={()=>navigate(`/admin/users/staffs/${data._id}`)} className="w-full flex items-center justify-center gap-2 bg-gray-50 text-gray-700 font-bold py-2.5 rounded-xl cursor-pointer hover:bg-black/90 hover:text-white transition-all duration-300">
+      <button onClick={()=>navigate(`/admin/users/${data.role === "customer" ? "customer" : "staffs"}/${data._id}`)} className="w-full flex items-center justify-center gap-2 bg-gray-50 text-gray-700 font-bold py-2.5 rounded-xl cursor-pointer hover:bg-black/90 hover:text-white transition-all duration-300">
         <span className="text-sm">View Details</span>
         <ChevronRight size={16} />
       </button>

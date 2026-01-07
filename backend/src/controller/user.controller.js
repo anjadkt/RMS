@@ -420,8 +420,8 @@ module.exports = {
       query.staffId = {$regex : q , $options : "i"}
     }
 
-    if(q && user === "customer"){
-      query.number = {$regex : q , $options : "i"}
+    if(q.trim() && user === "customer"){
+      query.phone = {$regex : q , $options : "i"}
     }
 
     const users = await User.find(query);
@@ -454,14 +454,39 @@ module.exports = {
     });
   }),
 
+  getCusomerData : catchAsync(async (req,res)=>{
+    const {id} = req.params ;
+    const user = await User.findOne({_id : id}).populate('orders');
+    if(!user)throw new AppError("User Not Found!",404);
+    res.status(200).json({
+      user : {
+        name : user.name,
+        number : user.phone,
+        isBanned : user.isBanned,
+        role : user.role,
+        orders : user.orders,
+        _id : user._id
+      }
+    });
+  }),
+
 
   manageUsers : catchAsync(async (req,res)=>{
     const {role,id,action} = req.body ;
-    if(role === "waiter" || role === "cook"){
-      const user = await User.findOneAndUpdate({_id : id},{isWorking : action},{runValidators : true , new : true});
-      return res.status(200).json(user);
+    const query = {
+
     }
-    res.status(500);
+    if(role === "waiter" || role === "cook"){
+      query.isWorking = action ;
+    }
+
+    if(role === "customer"){
+      query.isBanned = action ;
+    }
+
+    const user = await User.findOneAndUpdate({_id : id},query,{runValidators : true , new : true});
+    return res.status(200).json(user);
+
   }),
 
   removeStaff : catchAsync(async (req,res)=>{

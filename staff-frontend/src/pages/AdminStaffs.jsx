@@ -1,13 +1,41 @@
 import AdminHeader from "../components/AdminHeader";
 import { Search, UserPlus, Filter } from "lucide-react";
 import StaffCard from '../components/StaffCard';
-import { useOutletContext } from 'react-router-dom';
 import AdminStaffModal from '../components/AdminStaffModal.jsx'
-import { useState } from "react";
+import { useState , useEffect } from "react";
+import api from "../services/axios.js";
 
 export default function AdminStaffs() {
-  const { fetchUsers, users, handleChange, loading ,setForm ,form } = useOutletContext();
   const [show,setShow] = useState(false);
+
+  const [loading,setLoading] = useState(false);
+  const [form,setForm] = useState({
+    q : "",
+    user : "staffs"
+  });
+  const [users,setUsers] = useState([])
+
+  const handleChange = (e)=>{
+    setForm(pre => (
+      {...pre , [e.target.name] : e.target.value}
+    ))
+  }
+
+  async function fetchUsers(){
+    try{
+      setLoading(true);
+      const {data} = await api.get(`/staff/admin?q=${form.q}&user=${form.user}`);
+      setUsers(data);
+    }catch(error){
+      console.log(error.message);
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  useEffect(()=>{
+    fetchUsers();
+  },[form])
 
   return (
     <>

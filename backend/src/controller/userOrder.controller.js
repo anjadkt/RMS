@@ -69,7 +69,7 @@ module.exports = {
     if(!order)throw new AppError("Order Creation Failed!",400);
 
     await Table.updateOne({tableNumber},{$push : {tableOrders : order._id}},{runValidators : true});
-    await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : []}},{runValidators : true});
+    await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : [],name}},{runValidators : true});
 
     if(role === "waiter"){
       //notify chef

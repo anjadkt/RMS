@@ -3,34 +3,6 @@ import api from "../services/axios";
 import {useState,useEffect} from "react"
 
 export default function AdminUsersLayout() {
-  const [loading,setLoading] = useState(false);
-  const [form,setForm] = useState({
-    q : "",
-    user : "staffs"
-  });
-  const [users,setUsers] = useState([])
-
-  const handleChange = (e)=>{
-    setForm(pre => (
-      {...pre , [e.target.name] : e.target.value}
-    ))
-  }
-
-  async function fetchUsers(){
-    try{
-      setLoading(true);
-      const {data} = await api.get(`/staff/admin?q=${form.q}&user=${form.user}`);
-      setUsers(data);
-    }catch(error){
-      console.log(error.message);
-    }finally{
-      setLoading(false);
-    }
-  }
-
-  useEffect(()=>{
-    fetchUsers();
-  },[form])
 
   return (
     <>
@@ -58,14 +30,7 @@ export default function AdminUsersLayout() {
 
       </div>
 
-      <Outlet context={{
-        users,
-        loading,
-        fetchUsers,
-        handleChange,
-        setForm,
-        form
-      }} />
+      <Outlet />
     </>
   );
 }

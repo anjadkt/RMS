@@ -20,7 +20,8 @@ import AdminStaffs from "./pages/AdminStaffs.jsx"
 import AdminUsersLayout from "./components/AdminUserLayout.jsx"
 import AdminCustomers from './pages/AdminCustomers.jsx'
 import AdminStaffDetails from './pages/AdminStaffDetials.jsx'
-import StaffSetPassword from '././pages/StaffSetPassword.jsx'
+import StaffSetPassword from './pages/StaffSetPassword.jsx'
+import AdminCustomerDetails from './pages/AdminCustomerDetails.jsx'
 
 
 function App() {
@@ -59,7 +60,7 @@ function App() {
           <Route path="customers" element={<AdminCustomers />} />
         </Route>
         <Route path="/admin/users/staffs/:id" element={<AdminStaffDetails/>} />
-
+        <Route path="/admin/users/customer/:id" element={<AdminCustomerDetails />} />
       </Route>      
      </Routes>
     </>

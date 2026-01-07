@@ -68,15 +68,15 @@ app.use('/resto',restoDataRouter);
 app.use('/user/cart',verifyToken,verifyUsers("customer","waiter"),userCartRouter);
 app.use('/user/order',verifyToken,verifyUsers("customer","waiter"),userOrderRouter);
 
-const Table = require('./src/model/table.model.js');
-const Item = require('./src/model/items.model.js');
-app.get('/add',async (req,res)=>{
-  await Item.updateMany({},{
-    offer : "",
-    prepTime : 5 ,
-    isVeg : false
-  });
-})
+// const Table = require('./src/model/table.model.js');
+// const Item = require('./src/model/items.model.js');
+// app.get('/add',async (req,res)=>{
+//   await Item.updateMany({},{
+//     offer : "",
+//     prepTime : 5 ,
+//     isVeg : false
+//   });
+// })
 
 //admin routes
 app.use('/auth/admin',adminRouter);

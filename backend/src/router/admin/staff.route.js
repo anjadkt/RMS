@@ -7,6 +7,7 @@ router.post('/',staffController.createStaff);
 router.post('/add',tableController.assignTable);
 router.get('/',staffController.getAllUsers);
 router.get('/:id',staffController.getUserAdminData);
+router.get('/data/:id',staffController.getCusomerData)
 router.post('/manage',staffController.manageUsers);
 router.delete('/:id',staffController.removeStaff);
 
