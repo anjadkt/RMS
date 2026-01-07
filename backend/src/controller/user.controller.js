@@ -50,6 +50,7 @@ function isValidEmail(email) {
 
 
 module.exports = {
+
   sendUserOtp : catchAsync(async (req,res)=>{
 
     const number = req.body.number || "" ;
@@ -433,7 +434,7 @@ module.exports = {
     const {id} = req.params ;
     const user = await User.findOne({_id : id});
     const tables = await Table.find({waiterId : id});
-    const allTables = await Table.find({waiterId : {$ne : id}});
+    const allTables = await Table.find({waiterId : {$ne : id}, tableNumber : {$exists : true}});
     const orders = await Order.find({waiterId : id , status : {$nin : ["completed","pending"]}});
 
     if(!user)throw new AppError("User Not Found!",404);
@@ -469,7 +470,6 @@ module.exports = {
       }
     });
   }),
-
 
   manageUsers : catchAsync(async (req,res)=>{
     const {role,id,action} = req.body ;

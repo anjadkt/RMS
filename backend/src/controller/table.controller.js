@@ -8,7 +8,7 @@ const mongoose = require('mongoose');
 module.exports = {
   createTable : catchAsync(async(req,res)=>{
     const tableNumber = req.body?.tableNumber
-    if(!tableNumber)throw new AppError("Table Number is Required!",400);
+    if(!tableNumber || !tableNumber.includes("TBL-"))throw new AppError("Table Number is Required!",400);
 
     const isTable = await Table.findOne({tableNumber});
     if(isTable)throw new AppError("Table Already Exist!",409)
@@ -103,5 +103,34 @@ module.exports = {
       status : 200,
       tables
     });
+  }),
+
+  getAllTables : catchAsync(async (req,res)=>{
+    const {id} = req.params ;
+    const {q} = req.query ;
+
+    if(id){
+      const table = await Table.findOne({_id : id}).populate('tableOrders');
+      return res.status(200).json(table);
+    }
+
+    const query = {tableNumber : {$exists : true}}
+
+    if(q?.trim()){
+      query.tableNumber = {$regex : q , $options : "i"}
+    }
+
+    const tables = await Table.find(query).sort({tableNumber : 1})
+
+    res.status(200).json(tables);
+  }),
+
+  removeTable : catchAsync(async (req,res)=>{
+    const {id} = req.params
+    const table = await Table.findOne({_id : id});
+    if(table.tableOrders.length > 0)throw new AppError("Table Cannot be Removed!",400);
+
+    await Table.deleteOne({_id : id});
+    res.status(200).json({message : "table deleted successfully!"});
   })
 }

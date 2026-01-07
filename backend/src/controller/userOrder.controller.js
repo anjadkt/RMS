@@ -21,6 +21,7 @@ async function getOrderId(){
 }
 
 module.exports = {
+  
   userCreateOrder : catchAsync(async (req,res)=>{
     const {_id,role} = req.user ;
     const {tableNumber,name,instructions} = req.body ;
@@ -68,7 +69,7 @@ module.exports = {
     });
     if(!order)throw new AppError("Order Creation Failed!",400);
 
-    await Table.updateOne({tableNumber},{$push : {tableOrders : order._id}},{runValidators : true});
+    await Table.updateOne({tableNumber},{$push : {tableOrders : order._id},isOccupied : true},{runValidators : true});
     await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : [],name}},{runValidators : true});
 
     if(role === "waiter"){
@@ -83,6 +84,7 @@ module.exports = {
       order
     });
   }),
+
   viewOrderSummary : catchAsync(async (req,res)=>{
     const {_id} = req.user ;
     const user = await User.findOne({_id}).populate({

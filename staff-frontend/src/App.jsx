@@ -22,6 +22,8 @@ import AdminCustomers from './pages/AdminCustomers.jsx'
 import AdminStaffDetails from './pages/AdminStaffDetials.jsx'
 import StaffSetPassword from './pages/StaffSetPassword.jsx'
 import AdminCustomerDetails from './pages/AdminCustomerDetails.jsx'
+import AdminTables from './pages/AdminTables.jsx'
+import AdminTableDetails from './pages/AdminTableDetails.jsx'
 
 
 function App() {
@@ -61,6 +63,8 @@ function App() {
         </Route>
         <Route path="/admin/users/staffs/:id" element={<AdminStaffDetails/>} />
         <Route path="/admin/users/customer/:id" element={<AdminCustomerDetails />} />
+        <Route path="/admin/tables" element={<AdminTables />} />
+        <Route path="/admin/tables/:id" element={<AdminTableDetails/>} />
       </Route>      
      </Routes>
     </>
