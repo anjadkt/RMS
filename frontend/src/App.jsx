@@ -13,16 +13,19 @@ import Items from "./pages/Items.jsx"
 import Checkout from './pages/Checkout.jsx'
 import Search from "./pages/Search.jsx"
 import History from "./pages/History.jsx"
+import ClosedStoreOverlay from './components/ClosedStoreOverlay.jsx'
 
 
 function App() {
   const dispatch = useDispatch();
+  const [status,setStatus] = useState("open");
 
   useEffect(()=>{
     async function getWebsiteData() {
       try{
         const {data : websiteData} = await api.get('/resto?settings=true');
         dispatch(setWebsiteData(websiteData.settings));
+        setStatus(websiteData.settings?.status);
       }catch(error){
         console.log(error.message);
       }
@@ -33,6 +36,10 @@ function App() {
   useEffect(()=>{
      dispatch(checkAuth());
   },[]);
+
+  if(status === "closed")return (
+    <ClosedStoreOverlay/>
+  )
 
   return (
     <>

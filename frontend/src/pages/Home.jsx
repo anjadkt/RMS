@@ -73,8 +73,9 @@ export default function Home (){
               <SwiperSlide key={i}>
                 <div className="flex justify-center">
                   <img
+                    onClick={()=>navigate(`/items/${offer.product.category}`)}
                     className="rounded-2xl shadow-lg w-full max-w-md lg:max-w-lg"
-                    src={offer}
+                    src={offer.offer}
                     alt="Offer"
                   />
                 </div>

@@ -5,7 +5,6 @@ const tableSchema = new mongoose.Schema({
     type :String,
     unique : true,
   },
-  qrCode : String,
   tableOrders : [
     {
       type : mongoose.Schema.Types.ObjectId,
@@ -21,15 +20,27 @@ const tableSchema = new mongoose.Schema({
     type : Boolean,
     default : false
   },
+
+
   restaurentId : String,
   restaurentName : String,
-  offers : Array,
+  restaurentTimes : String,
+  offers : [
+    {
+      offer : String,
+      product : {
+        type : mongoose.Schema.Types.ObjectId,
+        ref : "Item"
+      },
+      title : String,
+      isMain : Boolean
+    }
+  ],
   logo : String,
-  contactInfo :{
-    phone : Number,
-    email : String,
-    location : String
-  }
+  phone : Number,
+  email : String,
+  location : String,
+  status : String
 });
 
 module.exports = mongoose.model("Table",tableSchema);

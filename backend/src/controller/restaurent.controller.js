@@ -12,37 +12,28 @@ function generateRestaurantId() {
 }
 
 module.exports = {
+
   updateRestoSettings : catchAsync(async (req,res)=>{
-    const {restaurentId,restaurentName,offers,logo,contactInfo,clearOffers} = req.body ;
-    const filter = {
-      restaurentId 
-    }
-    const update = {
+    const {logo,phone,email,location,restaurentTimes,status} = req.body ;
 
-    }
+    if(!["open","closed"].includes(status))throw new AppError("status Not Allowed",400);
 
-    // if(!restaurentId){
-    //   update.$set = {...update.$set,restaurentId : generateRestaurantId()}
-    // }
-
-    if(restaurentName){
-      update.$set = {...update.$set,restaurentName}
-    }
-    if(offers){
-      update.$push = {offers}
-    }
-    if(logo){
-      update.$set = {...update.$set,logo}
-    }
-    if(contactInfo){
-      update.$set = {...update.$set,contactInfo}
+    const query = {
+      $set : {}
     }
 
-    if(clearOffers){
-      update.$set = { ...update.$set,offers : []}
+    if (logo) query.$set.logo = logo;
+    if (phone) query.$set.phone = phone;
+    if (email) query.$set.email = email;
+    if (location) query.$set.location = location;
+    if (restaurentTimes) query.$set.restaurentTimes = restaurentTimes;
+    if(status) query.$set.status = status ;
+
+    if (Object.keys(query.$set).length === 0) {
+      throw new AppError("No fields to update", 400);
     }
 
-    const resto = await Table.findOneAndUpdate(filter,update,{new : true , runValidators : true , upsert : true});
+    const resto = await Table.findOneAndUpdate({restaurentId : "REST-20251221-XGQIW9"},query,{new : true , runValidators : true});
 
     if(!resto)throw new AppError("Restaurent Settings Updation Failed!",400);
 
@@ -52,11 +43,13 @@ module.exports = {
       resto
     })
   }),
+
   getWebsiteData : catchAsync(async(req,res)=>{
     const {settings,best,special} = req.query ;
     const data = {}
+
     if(settings){
-      const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
+      const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"}).populate('offers.product')
       data.settings = resto ;
     }
 
@@ -74,5 +67,38 @@ module.exports = {
       message : "Data Found!",
       ...data
     })
+  }),
+
+  createOffer : catchAsync ( async (req,res)=>{
+    const {title,offer,product,isMain} = req.body ;
+    if(!title || !offer || !product)throw new AppError("Field Required!",400);
+
+    if(isMain){
+      await Table.findOneAndUpdate({restaurentId : "REST-20251221-XGQIW9"},{$pull : {offers : {isMain : true}}})
+    }
+    
+    const resto = await Table.findOneAndUpdate({restaurentId : "REST-20251221-XGQIW9"},{$push : {
+      offers : {
+        isMain,
+        product,
+        offer,
+        title
+      }
+    } });
+
+    res.status(201).json({
+      message : "Offer created Successfully!",
+      resto
+    })
+  }),
+
+  removeOffer : catchAsync (async (req,res)=>{
+    const {id} = req.params  ;
+    if(!id)throw new AppError("need offer id",400);
+    await Table.findOneAndUpdate({restaurentId : "REST-20251221-XGQIW9"},{$pull : {offers : {_id : id}}});
+    res.status(200).json({
+      message : "offer Deleted successfully"
+    })
   })
+
 }

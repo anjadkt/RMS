@@ -41,11 +41,11 @@ export default function Footer() {
         <div>
           <h3 className="text-white font-semibold mb-4">Contact</h3>
           <div className="space-y-2 text-sm text-gray-400">
-            <p>📍 {settings.contactInfo?.location}</p>
-            <p>📞 +91 {settings.contactInfo?.phone}</p>
-            <p>✉️ {settings.contactInfo?.email}</p>
+            <p>📍 {settings?.location}</p>
+            <p>📞 +91 {settings?.phone}</p>
+            <p>✉️ {settings?.email}</p>
             <p className="text-xs text-gray-500 mt-4">
-              Available 7 days a week, 9 AM – 11 PM
+              Available 7 days a week, {settings.restaurentTimes}
             </p>
           </div>
         </div>
