@@ -1,9 +1,8 @@
 import { useNavigate } from "react-router-dom";
 
-export default function Category (){
+export default function Category() {
   const navigate = useNavigate();
-
-  const categories = [
+   const categories = [
     {
       img : "https://res.cloudinary.com/dcsmtagf7/image/upload/v1766660774/biriyaniCat_vppbxo.png",
       name : "Biryani"
@@ -73,37 +72,23 @@ export default function Category (){
       name : "Show All"
     }
   ]
-  return(
-    <>
-      <div className="mt-0 mb-4 py-5 flex gap-2 overflow-x-auto scrollbar-hide px-2">
-        {categories.map((category, i) => (
-          <div 
-            onClick={()=>navigate(`/items/${category.name}`)}
-            key={i}
-            className="
-              min-w-[120px] flex flex-col items-center justify-center
-              rounded-xl shadow-sm bg-white
-              px-2 py-3 cursor-pointer
-              hover:shadow-md transition
-              lg:px-4 lg:py-6
-            "
-          >
-            <img
-              className="h-10 lg:h-12 mb-2 object-contain"
-              src={category.img}
-              alt={category.name}
-            />
-            <div className={
-              `font-semibold text-sm ${category.name === "Show All" ? "text-red-500" : "text-gray-800"}  text-center`
-            }
-            
-            >
-              {category.name}
-            </div>
+
+  return (
+    <div className="mt-4 mb-12 py-4 flex gap-6 overflow-x-auto scrollbar-hide px-4 lg:px-20">
+      {categories.map((cat, i) => (
+        <div 
+          onClick={() => navigate(`/items/${cat.name}`)}
+          key={i}
+          className="group flex flex-col items-center gap-3 min-w-[90px] cursor-pointer"
+        >
+          <div className="w-20 h-20 lg:w-24 lg:h-24 rounded-full bg-white border-2 border-slate-50 flex items-center justify-center shadow-sm group-hover:border-[#cd0045] group-hover:shadow-rose-100 transition-all">
+            <img className="h-10 lg:h-12 object-contain group-hover:scale-110 transition-transform" src={cat.img} alt={cat.name} />
           </div>
-        ))}
-        
-      </div>
-    </>
-  )
+          <span className={`text-[10px] font-black uppercase tracking-widest text-center ${cat.name === "Show All" ? "text-rose-600" : "text-slate-500 group-hover:text-slate-900"}`}>
+            {cat.name}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
 }

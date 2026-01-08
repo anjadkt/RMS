@@ -1,57 +1,55 @@
-import { useState , useEffect} from "react";
-import api from "../services/axios";
+import {useEffect , useState} from 'react'
+import api from '../services/axios.js'
 
 export default function Footer() {
-  const [settings,setSettings] = useState({});
+  const [settings, setSettings] = useState({});
+
+
   useEffect(()=>{
-      async function fetchWebData() {
-        try{
-          const {data} = await api.get('/resto?settings=true');
-          setSettings(data.settings);
-        }catch(error){
-          console.log(error.message);
-        }
+    async function fetchWebData() {
+      try{
+        const {data} = await api.get('/resto?settings=true');
+        setSettings(data.settings);
+          console.log(data)
+      }catch(error){
+        console.log(error.message);
       }
-      fetchWebData();
-    },[])
+    }
+    fetchWebData();
+  },[])
+
   return (
-    <footer className="bg-[#0f0f0f] text-gray-300 mt-20">
-      <div className="max-w-7xl mx-auto px-6 py-14 grid grid-cols-1 md:grid-cols-3 gap-10">
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div >
-              <img className="h-15" src={settings?.logo} alt="" />
-            </div>
-          </div>
-          <p className="text-sm leading-relaxed text-gray-400">
-            Paragon is dedicated to delivering authentic flavors, quality ingredients,
-            and a dining experience that keeps people coming back.
-            Every dish is crafted with care, consistency, and passion.
+    <footer className="bg-[#0A0A0B] text-slate-400 mt-20 pt-20 pb-10">
+      <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-4 gap-12">
+        <div className="md:col-span-2 space-y-6">
+          <img className="h-16 brightness-0 invert" src={settings?.logo} alt="Logo" />
+          <p className="text-sm leading-relaxed max-w-sm">
+            Paragon is dedicated to delivering authentic flavors and a dining experience that keeps people coming back. Every dish is crafted with passion since 1930.
           </p>
         </div>
-        <div>
-          <h3 className="text-white font-semibold mb-3">About Paragon</h3>
-          <p className="text-sm text-gray-400 leading-relaxed">
-            From carefully curated recipes to seamless order handling,
-            Paragon focuses on taste, trust, and timely service.
-            Whether dining in or ordering out, we believe great food
-            should always feel special.
-          </p>
-        </div>
-        <div>
-          <h3 className="text-white font-semibold mb-4">Contact</h3>
-          <div className="space-y-2 text-sm text-gray-400">
-            <p>📍 {settings?.location}</p>
-            <p>📞 +91 {settings?.phone}</p>
-            <p>✉️ {settings?.email}</p>
-            <p className="text-xs text-gray-500 mt-4">
-              Available 7 days a week, {settings.restaurentTimes}
-            </p>
+
+        <div className="space-y-4">
+          <h3 className="text-white font-black text-xs uppercase tracking-[0.2em]">Contact Us</h3>
+          <div className="space-y-3 text-sm font-medium">
+            <p className="hover:text-white transition-colors">📍 {settings?.location}</p>
+            <p className="hover:text-white transition-colors">📞 +91 {settings?.phone}</p>
+            <p className="hover:text-white transition-colors">✉️ {settings?.email}</p>
           </div>
+        </div>
+
+        <div className="space-y-4">
+          <h3 className="text-white font-black text-xs uppercase tracking-[0.2em]">Operating Hours</h3>
+          <p className="text-sm font-medium leading-relaxed">
+            Available 7 days a week<br/>
+            <span className="text-rose-500 font-bold">{settings.restaurentTimes}</span>
+          </p>
         </div>
       </div>
-      <div className="border-t border-white/10 py-4 text-center text-xs text-gray-500">
-        © {new Date().getFullYear()} Paragon. All rights reserved.
+
+      <div className="mt-10 border-t border-white/5 pt-2 text-center">
+        <p className="text-[10px] font-bold uppercase tracking-[0.3em] text-slate-600">
+          © {new Date().getFullYear()} Paragon Excellence.
+        </p>
       </div>
     </footer>
   );

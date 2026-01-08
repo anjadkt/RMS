@@ -1,91 +1,66 @@
 export default function OrderHistory({ data }) {
-   const statusColors = {
-    placed: "bg-purple-100 text-purple-700",
-    accepted: "bg-blue-100 text-blue-700",
-    preparing: "bg-amber-100 text-amber-700",
-    ready: "bg-green-100 text-green-700",
-    served: "bg-emerald-100 text-emerald-700",
-    pending : "bg-rose-100 text-rose-700",
-    completed: "bg-slate-200 text-slate-700",
-    default: "bg-slate-100 text-slate-600"
+  const statusColors = {
+    placed: "bg-indigo-50 text-indigo-600 border-indigo-100",
+    accepted: "bg-blue-50 text-blue-600 border-blue-100",
+    preparing: "bg-orange-50 text-orange-600 border-orange-100",
+    ready: "bg-green-50 text-green-600 border-green-100",
+    served: "bg-emerald-50 text-emerald-600 border-emerald-100",
+    completed: "bg-gray-100 text-gray-600 border-gray-200",
   };
 
-  const total = data.orderItems.reduce(
-    (accum, val) => accum + val.subTotal,
-    0
-  );
+  const total = data.orderItems.reduce((acc, val) => acc + val.subTotal, 0);
 
   return (
-    <>
-      <div
-        key={data._id}
-        className="bg-white w-[340px] border border-[#cd0045]  rounded-lg shadow-md mb-8 relative"
-      >
-        <div className="
-        px-2 py-0 rounded-2xl 
-        absolute -top-2 lg:-top-2.5 left-1/2 -translate-x-14 
-        bg-gradient-to-b from-[#fff5f7] to-white">
-          <div className="text-xs lg:text-sm font-semibold text-[#cd0045] tracking-wide">
-            {data.orderId}
-          </div>
+    <div className="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:border-gray-300 transition-colors">
+      
+      {/* 1. Header: Subtle & Clean */}
+      <div className="px-6 pt-6 pb-4 flex justify-between items-start">
+        <div className="flex flex-col">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Reference</span>
+          <span className="text-lg font-black text-gray-800 font-[REM] leading-none">#{data.orderId}</span>
         </div>
-
-        <div className="px-4 py-2 text-xs lg:text-sm lg:py-3 text-gray-600 flex justify-between mt-2 border-b border-gray-300">
-          <div>
-            <span className="font-semibold text-gray-700">Table Number :</span>{" "}
-            {data.tableNumber}
-          </div>
-          <div>
-            <span className="font-semibold text-gray-700">Order Type :</span>{" "}
-            {data.orderType}
-          </div>
-        </div>
-
-        <div className="divide-y divide-gray-100">
-          {data.orderItems?.map((v, i) => (
-            <div
-              key={v.itemId}
-              className="flex items-center justify-between px-4 py-2"
-            >
-              <div className="bg-gray-100 p-2 rounded-md w-[50px] flex items-center justify-center">
-                <img
-                  className="h-8 lg:h-10 object-contain"
-                  src={v.image}
-                  alt={v.name}
-                />
-              </div>
-
-              <div className="flex items-center gap-2 font-[REM] text-xs lg:text-sm text-gray-600">
-                <span className="font-medium">{v.name}</span>
-                <span className="text-gray-500">x</span>
-                <span className="font-medium">{v.quantity}</span>
-              </div>
-
-              <div className="text-xs lg:text-sm font-medium text-gray-700">
-                ₹{v.subTotal}
-              </div>
-            </div>
-          ))}
-
-          <div className="flex justify-between px-5 py-2 bg-gray-50">
-            <span className="text-sm lg:text-lg font-semibold text-gray-700">
-              Total
-            </span>
-            <span className="text-sm font-bold text-gray-900">
-              ₹{total}
-            </span>
-          </div>
-        </div>
-
-        <div className="flex font-[REM] justify-center px-4 py-2 lg:py-3 border-t border-gray-100">
-          <span
-            className={`text-sm lg:text-lg font-semibold px-10 py-0.5 rounded-lg
-              ${statusColors[data.status]}`}
-          >
-            {data.status}
-          </span>
+        <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border ${statusColors[data.status] || "bg-gray-50 text-gray-500"}`}>
+          {data.status}
         </div>
       </div>
-    </>
+
+      {/* 2. Info Bar: Low Contrast Muted Tones */}
+      <div className="px-6 py-3 flex gap-6 border-y border-gray-50 bg-gray-50/50">
+        <div className="flex flex-col">
+          <span className="text-[9px] font-bold text-gray-400 uppercase">Table</span>
+          <span className="text-sm font-bold text-gray-700">Area {data.tableNumber}</span>
+        </div>
+        <div className="flex flex-col">
+          <span className="text-[9px] font-bold text-gray-400 uppercase">Service</span>
+          <span className="text-sm font-bold text-gray-700">{data.orderType}</span>
+        </div>
+      </div>
+
+      {/* 3. Items: Spacious Layout */}
+      <div className="p-6 space-y-4">
+        {data.orderItems?.map((v, i) => (
+          <div key={i} className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-gray-100 flex-shrink-0 flex items-center justify-center border border-gray-200">
+                <img className="h-7 w-7 object-contain opacity-80" src={v.image} alt={v.name} />
+              </div>
+              <div>
+                <h4 className="text-xs font-bold text-gray-700 uppercase tracking-tight">{v.name}</h4>
+                <p className="text-[10px] text-gray-400 font-medium">Qty: {v.quantity}</p>
+              </div>
+            </div>
+            <span className="text-xs font-bold text-gray-600">₹{v.subTotal}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* 4. Footer: The "Pop" of Color (Muted) */}
+      <div className="px-6 pb-6 mt-auto">
+        <div className="flex items-center justify-between p-4 bg-[#2D2D2D] rounded-2xl shadow-inner">
+          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Amount</span>
+          <span className="text-xl font-black text-white">₹{total}</span>
+        </div>
+      </div>
+    </div>
   );
 }

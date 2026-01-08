@@ -1,206 +1,191 @@
-import { useNavigate , useSearchParams } from "react-router-dom";
-import { fetchCart } from "../app/features/cart/cartSlice";
-import { useDispatch,useSelector } from "react-redux";
-import { useEffect , useState } from "react";
-import { addToCart,removeFromCart } from "../app/features/cart/cartSlice";
-import DotLoader from '../components/DotLoader.jsx'
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { fetchCart, addToCart, removeFromCart } from "../app/features/cart/cartSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { useEffect, useState } from "react";
+import DotLoader from '../components/DotLoader.jsx';
 import api from "../services/axios.js";
-// import SlideToOrder from '../components/OrderButton.jsx'
 
 export default function Checkout() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [orderLoading , setOrderLoading] = useState(false);
-  const [form,setForm] = useState({
-    name : "",
-    tableNumber : ""
-  });
-  const [error,setError] = useState({});
+  const [orderLoading, setOrderLoading] = useState(false);
+  const [form, setForm] = useState({ name: "", tableNumber: "" });
+  const [error, setError] = useState({});
 
   const [searchParams] = useSearchParams();
-  const tableNumber = searchParams.get("table");
+  const tableFromUrl = searchParams.get("table");
 
-  const {cart,loading} = useSelector(state => state.cart);
+  const { cart, loading } = useSelector(state => state.cart);
+  const calcTotal = cart.reduce((accum, val) => accum + (val.item.price * val.quantity), 0);
 
-  const calcTotal = cart.reduce((accum,val)=>accum + (val.item.price * val.quantity),0);
+  const handleChange = (e) => {
+    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+  };
 
-  const handleChange =(e)=>{
-        setForm(prev => ({
-      ...prev,
-      [e.target.name]: e.target.value
-    }))
-  }
-
-  const makeOrder = async () =>{
-    try{
+  const makeOrder = async () => {
+    try {
       setOrderLoading(true);
-      const {data} = await api.post('/user/order',form);
+      await api.post('/user/order', form);
       setError({});
       navigate('/history');
-
-    }catch(error){
-      switch(error.status){
-        case 400 : 
-         setError({tableNumber : "Required!" });
-         break ;
-        case 404 :
-          setError({tableNumber : "Wrong Table Number!" });
-         break ;
-        case 406 :
-          setError({tableNumber : "Cart is Empty!" });
-         break ;
-      }
-    }finally{
+    } catch (error) {
+      if (error.status === 400) setError({ tableNumber: "Table Required!" });
+      else if (error.status === 404) setError({ tableNumber: "Invalid Table!" });
+      else if (error.status === 406) setError({ tableNumber: "Cart is Empty!" });
+    } finally {
       setOrderLoading(false);
     }
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     dispatch(fetchCart());
-  },[dispatch])
+    if (tableFromUrl) setForm(prev => ({ ...prev, tableNumber: tableFromUrl }));
+  }, [dispatch, tableFromUrl]);
 
-  if(loading)return <DotLoader />
+  if (loading) return <DotLoader />;
 
   return (
-  <div className="min-h-screen bg-[#fff5f7] p-4">
-
-    {/* Desktop container */}
-    <div className="mx-auto max-w-md lg:max-w-5xl">
-
-      {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <button onClick={()=>navigate('/')}>
-          <img className="h-3" src="/icons/leftArrow.png" alt="" />
-        </button>
-        <h1 className="text-lg font-semibold text-gray-800">Checkout</h1>
-        <div onClick={()=> navigate('/history')}>
-          <img className="h-4 opacity-80" src="/icons/history.png" alt="history" />
+    <div className="min-h-screen bg-[#F8F9FA] pb-10">
+      {/* --- TOP NAVIGATION --- */}
+      <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
+        <div className="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
+          <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <img className="h-4 rotate-180" src="/icons/leftArrow.png" alt="back" />
+          </button>
+          <h1 className="text-xl font-black text-gray-900 uppercase tracking-tighter font-[REM]"> Checkout</h1>
+          <button onClick={() => navigate('/history')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <img className="h-5 opacity-70" src="/icons/history.png" alt="history" />
+          </button>
         </div>
-      </div>
+      </nav>
 
-      {/* Desktop Grid */}
-      <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+      <main className="max-w-6xl mx-auto px-5 pt-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+          
+          {/* LEFT: ITEM SUMMARY (7 Cols) */}
+          <div className="lg:col-span-7">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest">Your Selection</h2>
+              <span className="text-[10px] bg-gray-200 text-gray-600 px-3 py-1 rounded-full font-bold">
+                {cart.length} ITEMS
+              </span>
+            </div>
 
-        {/* LEFT SIDE */}
-        <div>
-          <div className='h-0.5 mb-5 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center'>
-            <h2 className='bg-[#fff5f7] text-[#cd0045]/60 rounded-3xl text-sm xl:text-xl px-2'>
-              Items Summary
-            </h2>
+            <div className="space-y-4">
+              {cart.length < 1 ? (
+                <div className="bg-white rounded-[2rem] p-10 text-center border border-dashed border-gray-300">
+                  <p className="text-gray-500 font-medium mb-4">Your cart is feeling light...</p>
+                  <button onClick={() => navigate('/')} className="text-[#cd0045] font-black uppercase text-sm border-b-2 border-[#cd0045]">
+                    Browse Menu
+                  </button>
+                </div>
+              ) : (
+                cart.map((v) => (
+                  <div key={v.item._id} className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-50">
+                    <div className="h-16 w-16 bg-gray-50 rounded-xl flex-shrink-0 flex items-center justify-center p-2 border border-gray-100">
+                      <img className="h-full object-contain" src={v.item.image} alt="" />
+                    </div>
+                    
+                    <div className="flex-grow">
+                      <h3 className="text-sm font-black text-gray-800 uppercase leading-none mb-1">{v.item.name}</h3>
+                      <p className="text-xs font-bold text-[#cd0045]">₹{v.item.price}</p>
+                    </div>
+
+                    <div className="flex items-center bg-gray-100 rounded-lg p-1">
+                      <button onClick={() => dispatch(removeFromCart(v.item._id))} className="p-1 hover:bg-white rounded-md transition-colors shadow-sm">
+                        <img className="h-3 w-3" src="/icons/minus.png" alt="minus" />
+                      </button>
+                      <span className="px-3 text-xs font-black text-gray-800">{v.quantity}</span>
+                      <button onClick={() => dispatch(addToCart(v.item._id))} className="p-1 hover:bg-white rounded-md transition-colors shadow-sm">
+                        <img className="h-3 w-3" src="/icons/plus.png" alt="plus" />
+                      </button>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Bill Details Section */}
+            <div className="mt-8 bg-white rounded-[2rem] p-6 shadow-sm border border-gray-50">
+               <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-4">Bill Details</h3>
+               <div className="space-y-3">
+                  <div className="flex justify-between text-xs font-medium text-gray-500">
+                    <span>Item Total</span>
+                    <span>₹{calcTotal}</span>
+                  </div>
+                  <div className="flex justify-between text-xs font-medium text-green-600">
+                    <span>Restaurant Charges</span>
+                    <span>FREE</span>
+                  </div>
+                  <div className="h-[1px] bg-gray-100 my-2"></div>
+                  <div className="flex justify-between items-center pt-2">
+                    <span className="text-sm font-black text-gray-800 uppercase">To Pay</span>
+                    <span className="text-xl font-black text-gray-900">₹{calcTotal}</span>
+                  </div>
+               </div>
+            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 mb-3">
-            {
-              cart.length < 1 ? (
-                <h1 className="text-xs font-semibold uppercase tracking-wide text-gray-500 text-center py-6">
-                  Cart is empty
-                  <button
-                    onClick={()=>navigate('/')}
-                    className="border py-1 px-3 ml-2 rounded-sm text-white bg-[#cd0045]"
-                  >
-                    View Menu
-                  </button>
-                </h1>
-              ) : cart.map((v)=>(
-                <div key={v.item._id} className="flex items-center justify-between px-4 py-2">
-                  <div className="bg-gray-200 p-2 rounded-md w-[50px]">
-                    <img className="h-8" src={v.item.image} alt={v.item.name} />
+          {/* RIGHT: DINE-IN DETAILS (5 Cols) */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-28">
+              <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">Service Details</h2>
+              
+              <div className="bg-white rounded-[2rem] p-8 shadow-xl border border-gray-50">
+                <div className="space-y-5">
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Your Name</label>
+                    <input
+                      name="name"
+                      onChange={handleChange}
+                      placeholder="Enter your name"
+                      className="w-full mt-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#cd0045]/10 focus:border-[#cd0045] outline-none transition-all"
+                    />
                   </div>
 
-                  <div className="flex flex-col items-center">
-                    <div className="font-[Reem_Kufi] text-sm text-gray-800">
-                      {v.item.name}
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <div
-                        className="border border-gray-600 p-0.5 rounded-sm"
-                        onClick={()=>dispatch(removeFromCart(v.item._id))}
-                      >
-                        <img className="h-[14px]" src="/icons/minus.png" />
-                      </div>
-                      <div>{v.quantity}</div>
-                      <div
-                        className="border border-gray-600 p-0.5 rounded-sm"
-                        onClick={()=>dispatch(addToCart(v.item._id))}
-                      >
-                        <img className="h-[14px]" src="/icons/plus.png" />
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Table Selection</label>
+                    <div className="flex gap-3 mt-1">
+                      <input
+                        name="tableNumber"
+                        onChange={handleChange}
+                        defaultValue={tableFromUrl || ""}
+                        placeholder="Table No"
+                        className={`flex-grow bg-gray-50 border ${error.tableNumber ? 'border-red-500' : 'border-gray-100'} rounded-xl px-4 py-3 text-sm outline-none`}
+                      />
+                      <div className="w-14 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-[#cd0045] transition-colors">
+                        <img className="h-5 invert" src="/icons/searchfood.png" alt="scan" />
                       </div>
                     </div>
-                  </div>
-
-                  <div className="text-xs font-semibold text-gray-700">
-                    ₹{v.item.price * v.quantity}
+                    {error.tableNumber && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{error.tableNumber}</p>}
                   </div>
                 </div>
-              ))
-            }
-          </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-4 mb-6">
-            <div className="flex justify-between font-semibold text-gray-800">
-              <span>Total</span>
-              <span>₹{calcTotal || "0"}</span>
-            </div>
-          </div>
-        </div>
-
-        {/* RIGHT SIDE */}
-        <div>
-          <div className='h-0.5 my-6 lg:my-0 lg:mb-5 w-full relative bg-gray-200 font-[Reem_Kufi] font-medium flex items-center justify-center'>
-            <h2 className='bg-[#fff5f7] text-[#cd0045]/60 rounded-3xl text-sm xl:text-xl px-2'>
-              Dine-In Details
-            </h2>
-          </div>
-
-          <div className="bg-white rounded-xl shadow-sm p-4 mb-4 flex items-start justify-center gap-2">
-            <div className="flex flex-col gap-2 w-1/2">
-              <input
-                onChange={handleChange}
-                name="name"
-                type="text"
-                placeholder="Name"
-                className="border rounded-lg px-3 py-2 text-sm
-                focus:outline-none focus:ring-1 focus:ring-[#cd0045]"
-              />
-
-              <input
-                onChange={handleChange}
-                name="tableNumber"
-                defaultValue={tableNumber || ""}
-                type="text"
-                placeholder="Scan/Type Table NO:"
-                className="border rounded-lg px-3 py-2 text-sm
-                focus:outline-none focus:ring-1 focus:ring-[#cd0045]"
-              />
-
-              <div className="text-xs text-red-600 ml-1 -mt-1">
-                {error.tableNumber || ""}
+                <div className="mt-8 pt-6 border-t border-gray-50">
+                  <button
+                    onClick={makeOrder}
+                    disabled={orderLoading || cart.length === 0}
+                    className="w-full bg-[#cd0045] text-white rounded-2xl py-4 font-black uppercase tracking-widest text-sm shadow-lg shadow-[#cd0045]/30 hover:scale-[1.02] active:scale-95 transition-all disabled:grayscale disabled:opacity-50"
+                  >
+                    {orderLoading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <div className="h-4 w-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                        <span>Processing...</span>
+                      </div>
+                    ) : (
+                      "Confirm Order"
+                    )}
+                  </button>
+                  <p className="text-[9px] text-gray-400 text-center mt-4 font-medium italic">
+                    By clicking, a waiter will be notified to assist you.
+                  </p>
+                </div>
               </div>
             </div>
-
-            <div className="w-1/2 h-24 flex items-center justify-center
-              border rounded-lg bg-gray-100 text-xs text-gray-500">
-              QR Scan
-            </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow-sm p-3">
-            <div
-              onClick={makeOrder}
-              className="flex items-center justify-center w-full h-12 bg-[#cd0045] rounded-full text-sm font-semibold text-white"
-            >
-              {
-                orderLoading
-                  ? <span className="inline-block h-6 w-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                  : "Confirm & Call waiter"
-              }
-            </div>
-          </div>
         </div>
-
-      </div>
+      </main>
     </div>
-  </div>
-);
-
+  );
 }

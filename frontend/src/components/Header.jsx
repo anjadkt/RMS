@@ -1,68 +1,60 @@
-import { useState } from "react";
-import {useSelector} from "react-redux"
-import {useNavigate,NavLink} from "react-router-dom"
+import { useSelector } from "react-redux";
+import { useNavigate, NavLink } from "react-router-dom";
+import { Bell, LogOut, User } from "lucide-react";
 
-export default function Header(){
-  const {login,name} = useSelector(state => state.user);
+export default function Header() {
+  const { login, name } = useSelector(state => state.user);
   const logo = useSelector(state => state.website.logo);
   const navigate = useNavigate();
 
   return (
-    <>
-      <header className="
-        fixed top-0 left-0 z-50
-        w-full bg-gray-50 border-b border-gray-200 px-3 py-1 flex items-center justify-between
-        lg:py-2
-      ">
-        
-        <div className="flex items-center">
-          <img
-            src={logo}
-            alt="logo"
-            className="h-12 lg:h-14 w-auto"
-          />
-        </div>
+    <header className="fixed top-0 left-0 z-50 w-full bg-white backdrop-blur-md border-b border-rose-100 px-4 py-2 flex items-center justify-between shadow-sm">
+      <div className="flex items-center">
+        <img src={logo} alt="logo" className="h-10 lg:h-12 w-auto object-contain" />
+      </div>
 
-        <nav className="
-          hidden md:flex items-center gap-6 text-base font-medium
-          lg:text-lg
-        ">
+      <nav className="hidden md:flex items-center gap-8 text-sm font-black uppercase tracking-widest">
+        {['home', '', 'history'].map((path) => (
           <NavLink
-           to='/home'
-           className={({isActive})=>`cursor-pointer ${isActive ? "text-[#cd0045]" : "text-gray-600"}`}
+            key={path}
+            to={`/${path}`}
+            className={({ isActive }) =>
+              `transition-colors duration-300 ${isActive ? "text-[#cd0045]" : "text-slate-400 hover:text-slate-600"}`
+            }
           >
-            Home
+            {path === '' ? 'Menu' : path}
           </NavLink>
-          <NavLink
-           to='/'
-           className={({isActive})=>`cursor-pointer ${isActive ? "text-[#cd0045]" : "text-gray-600"}`}
-          >
-            Menu
-          </NavLink>
-          <NavLink
-           to='/history'
-           className={({isActive})=>`cursor-pointer ${isActive ? "text-[#cd0045]" : "text-gray-600"}`}
-          >
-            History
-          </NavLink>
-        </nav>
+        ))}
+      </nav>
 
+      <div className="flex items-center gap-3">
         {login ? (
-          <div className="text-right">
-            <p className="text-sm lg:text-xl text-gray-700 text-left">
-              Hello, <span className="font-medium">{name || ""}</span>
-            </p>
-            <p className="text-xs text-gray-400">
-              Welcome to Paragon!
-            </p>
-          </div>
+          <>
+            <button className="p-2 text-slate-500 hover:bg-rose-50 rounded-full transition-colors relative">
+              <Bell size={20} />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-rose-500 rounded-full border-2 border-white"></span>
+            </button>
+            <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block"></div>
+            <button 
+              onClick={() => {/* logout logic */}}
+              className="flex items-center gap-2 pl-2 pr-4 py-2 rounded-full bg-rose-50 text-[#cd0045] font-bold text-xs hover:bg-rose-100 transition-all"
+            >
+              <div className="w-6 h-6 rounded-full bg-[#cd0045] flex items-center justify-center text-white">
+                <User size={14} fill="currentColor" />
+              </div>
+              <span className="hidden sm:inline">Logout</span>
+              <LogOut size={14} className="sm:hidden" />
+            </button>
+          </>
         ) : (
-          <button onClick={()=>navigate('/login')} className="bg-[#cd0045] hover:bg-[#b8003f] text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+          <button 
+            onClick={() => navigate('/login')} 
+            className="bg-[#cd0045] hover:bg-[#b8003f] text-white text-xs font-black uppercase tracking-widest px-6 py-2.5 rounded-full transition-all shadow-lg shadow-rose-200"
+          >
             Login
           </button>
         )}
-
-      </header>
-    </>
-  )
+      </div>
+    </header>
+  );
 }
