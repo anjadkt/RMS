@@ -1,5 +1,7 @@
 const catchAsync = require('../utils/catchAsync.js');
 const User = require('../model/users.model.js');
+const Item = require('../model/items.model.js');
+const AppError = require('../utils/AppError.js');
 
 module.exports = {
   getCartItems : catchAsync(async(req,res)=>{
@@ -13,6 +15,9 @@ module.exports = {
   addItemsToCart : catchAsync(async(req,res)=>{
     const {id} = req.params ;
     const {_id} = req.user ;
+
+    const item = await Item.findOne({_id : id , isAvailable : false});
+    if(item)throw new AppError("Item Can't be added!",400);
     
     const update = await User.findOneAndUpdate({_id,"cart.item" : id},{$inc :{"cart.$.quantity" : 1}},{new : true}).populate("cart.item");
     if(update)return res.status(200).json({message : "quantity updated!",status : 200,cart : update.cart});

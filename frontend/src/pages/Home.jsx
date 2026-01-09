@@ -13,11 +13,12 @@ import Cart from '../components/Cart.jsx';
 import "swiper/css";
 import "swiper/css/pagination";
 import { PlayCircle, ArrowRight } from 'lucide-react';
+import {useSelector} from 'react-redux'
+
 
 export default function Home() {
-  const [loading, setLoading] = useState(false);
-  const [data, setData] = useState({ specialItems: [], settings: {}, bestSelling: [] });
-  const { bestSelling, settings, specialItems } = data;
+  const {loading,specialItems , settings , bestSelling , } = useSelector(state => state.website);
+
   const navigate = useNavigate();
 
   const trust = [
@@ -28,17 +29,6 @@ export default function Home() {
     { text: "Since 1930", img: "/icons/rating.png" },
     { text: "Hygiene First", img: "/icons/fresh.png" }
   ];
-
-  useEffect(() => {
-    async function fetchWebData() {
-      try {
-        setLoading(true);
-        const { data } = await api.get('/resto?settings=true&best=true&special=true');
-        setData(data);
-      } catch (e) {} finally { setLoading(false); }
-    }
-    fetchWebData();
-  }, []);
 
   if (loading) return <DotLoader />;
 
@@ -59,7 +49,8 @@ export default function Home() {
               autoplay={{ delay: 4000 }}
               className="rounded-[32px] overflow-hidden shadow-2xl shadow-rose-100"
             >
-              {settings?.offers?.map((offer, i) => (
+              {
+                settings?.offers?.map((offer, i) => (
                 <SwiperSlide key={i}>
                   <div className="relative w-full h-[280px] lg:h-[400px] overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-[#2D2D2D] to-[#1a1a1a] flex items-center shadow-2xl group border border-gray-800">
 

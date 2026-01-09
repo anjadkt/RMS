@@ -1,22 +1,9 @@
 import {useEffect , useState} from 'react'
 import api from '../services/axios.js'
+import {useSelector} from 'react-redux'
 
 export default function Footer() {
-  const [settings, setSettings] = useState({});
-
-
-  useEffect(()=>{
-    async function fetchWebData() {
-      try{
-        const {data} = await api.get('/resto?settings=true');
-        setSettings(data.settings);
-          console.log(data)
-      }catch(error){
-        console.log(error.message);
-      }
-    }
-    fetchWebData();
-  },[])
+  const {settings} = useSelector(state => state.website);
 
   return (
     <footer className="bg-[#0A0A0B] text-slate-400 mt-20 pt-20 pb-10">

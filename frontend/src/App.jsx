@@ -4,37 +4,26 @@ import Menu from './pages/Menu.jsx'
 import Login from "./pages/Login.jsx"
 import ProtectedRoute from './routeProtucter/protectRoute.jsx'
 import PublicRoute from "./routeProtucter/publicRoute.jsx"
-import { useDispatch } from "react-redux"
+import { useDispatch , useSelector } from "react-redux"
 import { useEffect, useState } from "react"
-import api from "./services/axios.js"
-import {setWebsiteData} from "./app/features/website/webSlice.js"
 import { checkAuth } from "./app/features/user/userSlice.js"
 import Items from "./pages/Items.jsx"
 import Checkout from './pages/Checkout.jsx'
 import Search from "./pages/Search.jsx"
 import History from "./pages/History.jsx"
 import ClosedStoreOverlay from './components/ClosedStoreOverlay.jsx'
+import MainOfferWrapper from './components/MainOffer.jsx'
+import {getWebsiteData} from './app/features/website/webSlice.js'
 
 
 function App() {
   const dispatch = useDispatch();
-  const [status,setStatus] = useState("open");
 
-  useEffect(()=>{
-    async function getWebsiteData() {
-      try{
-        const {data : websiteData} = await api.get('/resto?settings=true');
-        dispatch(setWebsiteData(websiteData.settings));
-        setStatus(websiteData.settings?.status);
-      }catch(error){
-        console.log(error.message);
-      }
-    }
-    getWebsiteData();
-  },[])
+  const {status} = useSelector(state => state.website.status);
 
   useEffect(()=>{
      dispatch(checkAuth());
+     dispatch(getWebsiteData());
   },[]);
 
   if(status === "closed")return (
@@ -45,7 +34,7 @@ function App() {
     <>
       <Routes>
         <Route path ="/" element={<Menu/>}/>
-        <Route path ="/home" element={<Home/>}/>
+        <Route path ="/home" element={<MainOfferWrapper><Home/></MainOfferWrapper>}/>
         <Route path="/login" element = {<PublicRoute><Login/></PublicRoute>} />
         <Route path="/items/:c" element = {<Items/>} />
         <Route path="/cart" element = {<ProtectedRoute ><Checkout/></ProtectedRoute>} />

@@ -90,7 +90,7 @@ export default function Order() {
                 <div 
                   onMouseDown={()=>dispatch(addToCart(item._id))}
                   key={item._id} 
-                  className="flex items-center justify-between p-3 border-b border-slate-50 last:border-0">
+                  className={`flex items-center ${!item.isAvailable ? "grayscale pointer-events-none" : ""} justify-between p-3 border-b border-slate-50 last:border-0`}>
 
                   <div className="flex items-center gap-3 ">
                     <img src={item.image} alt="" className="w-6 h-6 rounded-xs object-contain bg-slate-100" />

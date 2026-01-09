@@ -9,7 +9,7 @@
             <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full ${data.isMain ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-500'}`}>
               {data.isMain ? <div className="flex items-center gap-1"><Star size={10} fill="currentColor"/> Main Offer</div> : "Normal Offer"}
             </span>
-            <button onClick={()=>removeOffer(data._id)} className="text-gray-300 hover:text-rose-500 transition-colors cursor-pointer">
+            <button onClick={()=>removeOffer({id : data._id , product : data.product._id})} className="text-gray-300 hover:text-rose-500 transition-colors cursor-pointer">
               <Trash2 size={16} />
             </button>
           </div>

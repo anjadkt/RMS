@@ -104,9 +104,9 @@ export default function AdminSettings() {
     }
   }
 
-  const removeOffer = async (id)=>{
+  const removeOffer = async (obj)=>{
     try{
-      const {data} = await api.delete(`/resto/admin/offer/${id}`);
+      const {data} = await api.delete(`/resto/admin/offer/${obj.id}?product=${obj.product}`);
       getRestoDetails();
     }catch(error){
       console.log(error.message);

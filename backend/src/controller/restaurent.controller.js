@@ -64,7 +64,6 @@ module.exports = {
     }
 
     res.status(200).json({
-      message : "Data Found!",
       ...data
     })
   }),
@@ -76,6 +75,8 @@ module.exports = {
     if(isMain){
       await Table.findOneAndUpdate({restaurentId : "REST-20251221-XGQIW9"},{$pull : {offers : {isMain : true}}})
     }
+
+    await Item.findOneAndUpdate({_id : product},{offer : title});
     
     const resto = await Table.findOneAndUpdate({restaurentId : "REST-20251221-XGQIW9"},{$push : {
       offers : {
@@ -94,7 +95,10 @@ module.exports = {
 
   removeOffer : catchAsync (async (req,res)=>{
     const {id} = req.params  ;
+    const {product} = req.query ;
     if(!id)throw new AppError("need offer id",400);
+
+    await Item.findOneAndUpdate({_id : product},{offer : ""});
     await Table.findOneAndUpdate({restaurentId : "REST-20251221-XGQIW9"},{$pull : {offers : {_id : id}}});
     res.status(200).json({
       message : "offer Deleted successfully"

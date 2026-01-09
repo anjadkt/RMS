@@ -19,6 +19,11 @@ const cartSlice = createSlice({
     cartFetchFail(state,action){
       state.loading = false 
       state.error = action.payload
+    },
+    clearCart(state){
+      state.cart = [],
+      state.loading = false,
+      state.error = null
     }
   }
 });
@@ -30,7 +35,12 @@ export const fetchCart = ()=> async (dispatch)=>{
     const {data} = await api.get("/user/cart");
     dispatch(cartFetchSuccess(data))
   }catch(error){
-    dispatch(cartFetchFail(error.message));
+    if(error.status === 403){
+      dispatch(clearCart());
+    }else{
+      dispatch(cartFetchFail(error.message));
+    }
+    
   }
 }
 
@@ -39,7 +49,12 @@ export const addToCart = (id) => async(dispatch)=>{
     const {data} = await api.get(`/user/cart/add/${id}`);
     dispatch(cartFetchSuccess(data.cart));
   }catch(error){
-    dispatch(fetchCart());
+    if(error.status === 403){
+      dispatch(clearCart());
+    }else{
+      dispatch(fetchCart());
+    }
+    
   }
 }
 
@@ -48,10 +63,14 @@ export const removeFromCart = (id) => async(dispatch)=>{
     const {data} = await api.get(`/user/cart/remove/${id}`);
     dispatch(cartFetchSuccess(data.cart));
   }catch(error){
-    dispatch(fetchCart());
+    if(error.status === 403){
+      dispatch(clearCart());
+    }else{
+      dispatch(fetchCart());
+    }
   }
 }
 
 export default cartSlice.reducer ;
 
-export const {cartFetchFail,cartFetchStart,cartFetchSuccess} = cartSlice.actions
+export const {cartFetchFail,cartFetchStart,cartFetchSuccess,clearCart} = cartSlice.actions

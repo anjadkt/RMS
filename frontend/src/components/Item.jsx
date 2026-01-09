@@ -25,7 +25,7 @@ export default function Item({ item }) {
         >
           {item.items?.map((v) => (
             <SwiperSlide key={v._id}>
-              <div className="relative flex items-center justify-center h-full p-4">
+              <div className={`relative flex items-center justify-center ${!v.isAvailable ? "grayscale pointer-events-none" : ""}  h-full p-4`}>
                 <img
                   src={v.image}
                   alt={v.name}
@@ -43,7 +43,7 @@ export default function Item({ item }) {
                 <div className="absolute bottom-3 left-3">
                   <div className="flex items-center gap-1.5 bg-white px-2 py-1 rounded-md shadow-sm border border-gray-50">
                     <img className="h-3 w-3 animate-pulse" src="/icons/thunder.png" alt="fast" />
-                    <span className="text-[10px] font-bold text-green-700 uppercase">25-30 MINS</span>
+                    <span className="text-[10px] font-bold text-green-700 uppercase">{v.prepTime + "-" + (v.prepTime + 5)} MINS</span>
                   </div>
                 </div>
               </div>

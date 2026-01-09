@@ -1,7 +1,13 @@
+import { useRef , useEffect } from 'react';
 import {useNavigate} from 'react-router-dom'
 
 export default function SearchComp({search}){
   const navigate = useNavigate();
+  const inputElem = useRef(null);
+
+  useEffect(()=>{
+    if(search)inputElem.current.focus();
+  },[])
 
   return(
     <div 
@@ -20,8 +26,9 @@ export default function SearchComp({search}){
       <input
         type="text"
         onChange={search}
-        placeholder="What are you craving today?"
-        className="w-full pl-14 pr-16 py-2 lg:py-3 rounded-2xl bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.08)] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-[#cd0045]/20 focus:border-[#cd0045] transition-all"
+        ref={inputElem}
+        placeholder="type your cravings"
+        className="w-full pl-14 pr-16 py-2 lg:py-3 rounded-2xl bg-white border border-gray-100 shadow-[0_10px_30px_rgba(0,0,0,0.08)] text-gray-800 placeholder:text-gray-400 outline-none focus:ring-2 focus:ring-[#cd0045]/20 transition-all"
       />
 
       {/* Mic Icon / Voice Search Wrapper */}

@@ -39,16 +39,18 @@ module.exports = {
         _id : "$category",
         items : {
           $push : {
-            _id : "$_id",
-            name : "$name",
-            price : "$price",
-            image : "$image",
-            category : "$category",
-            rating : "$rating",
-            isAvailable : "$isAvailable",
-            isSpecial : "$isSpecial",
-            isBest : "$isBest",
-
+              _id : "$_id",
+              name : "$name",
+              price : "$price",
+              image : "$image",
+              category : "$category",
+              rating : "$rating",
+              isAvailable : "$isAvailable",
+              isSpecial : "$isSpecial",
+              isBest : "$isBest",
+              prepTime : "$prepTime",
+              isVeg : "$isVeg",
+              offer : "$offer"
             }
           }
         }

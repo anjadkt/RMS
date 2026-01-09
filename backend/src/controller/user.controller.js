@@ -496,6 +496,21 @@ module.exports = {
     res.status(200).json({
       message : "user deleted!"
     })
+  }),
+
+  setUserLogout : catchAsync(async (req,res)=>{
+    const {_id} = req.user ;
+    await User.findOneAndUpdate({_id},{refreshToken : ""});
+    res.clearCookie("access_token")
+
+    res.clearCookie("refresh_token",{
+      httpOnly: true,
+    });
+
+    res.status(200).json({
+      success: true,
+      message: "Logged out successfully",
+    });
   })
 
 }

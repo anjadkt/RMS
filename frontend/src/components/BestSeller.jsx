@@ -3,7 +3,7 @@ import { Star, Clock } from "lucide-react";
 
 export default function BestSeller({ data }) {
   return (
-    <div className="group relative w-[200px] lg:w-[220px] shrink-0 rounded-xl bg-white border border-slate-100 shadow-xs shadow-gray-700 hover:shadow-sm hover:shadow-gray-800 transition-all duration-300 p-3">
+    <div className={`group relative ${!data.isAvailable ? "grayscale pointer-events-none" : ""} w-[200px] lg:w-[220px] shrink-0 rounded-xl bg-white border border-slate-100 shadow-xs shadow-gray-700 hover:shadow-sm hover:shadow-gray-800 transition-all duration-300 p-3`}>
       <div className="relative h-40 w-full bg-slate-50 rounded-[24px] overflow-hidden flex items-center justify-center">
         <img
           src={data?.image}
@@ -29,7 +29,7 @@ export default function BestSeller({ data }) {
         <div className="flex items-center justify-between pt-1">
           <div className="flex items-center gap-1.5 text-slate-400 font-bold text-[10px] uppercase">
             <Clock size={12} strokeWidth={3} />
-            <span>15 min</span>
+            <span>{data.prepTime + "-" + (data.prepTime + 5)} min</span>
           </div>
           <ItemButton cartItem={data} />
         </div>

@@ -33,11 +33,13 @@ module.exports = {
 
     const {orderId,orderNumber,orderDate} = await Promise.resolve(getOrderId());
 
-    const user = await User.findOne({_id}).populate("cart.item");
+    const user = await User.findOne({_id}).populate("cart.item");    
     if(!user)throw new AppError("User Not Found!",404);
     if(user.cart?.length < 1)throw new AppError("Cart is Empty!",406);
 
-    const orderItems = user.cart?.map(c =>{
+    const availableItems = user.cart.filter( v => v.item.isAvailable !== false );
+
+    const orderItems = availableItems.map(c =>{
       return ({
         itemId : c.item._id,
         price : c.item.price,

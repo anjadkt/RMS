@@ -81,24 +81,47 @@ export default function Checkout() {
                 </div>
               ) : (
                 cart.map((v) => (
-                  <div key={v.item._id} className="bg-white rounded-2xl p-4 flex items-center gap-4 shadow-sm border border-gray-50">
-                    <div className="h-16 w-16 bg-gray-50 rounded-xl flex-shrink-0 flex items-center justify-center p-2 border border-gray-100">
-                      <img className="h-full object-contain" src={v.item.image} alt="" />
-                    </div>
-                    
-                    <div className="flex-grow">
-                      <h3 className="text-sm font-black text-gray-800 uppercase leading-none mb-1">{v.item.name}</h3>
-                      <p className="text-xs font-bold text-[#cd0045]">₹{v.item.price}</p>
+                  <div 
+                    key={v.item._id} 
+                    className={`rounded-2xl relative p-4 flex items-center gap-4 shadow-sm border border-gray-50 transition-all ${
+                    !v.item.isAvailable ? "bg-gray-50 overflow-hidden" : "bg-white"
+                    }`}
+                    >
+                    {/* --- UNAVAILABLE OVERLAY --- */}
+                    {!v.item.isAvailable && (
+                    <div className="absolute inset-0 z-20 bg-white/60 backdrop-blur-[1px] flex items-center justify-center px-6">
+                    {/* Visual Warning Label */}
+                    <div className="bg-gray-900 text-white text-[10px] font-black uppercase tracking-widest px-4 py-2 rounded-lg shadow-xl transform -rotate-2 border border-gray-700">
+                    Currently Unavailable
                     </div>
 
-                    <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                      <button onClick={() => dispatch(removeFromCart(v.item._id))} className="p-1 hover:bg-white rounded-md transition-colors shadow-sm">
-                        <img className="h-3 w-3" src="/icons/minus.png" alt="minus" />
-                      </button>
-                      <span className="px-3 text-xs font-black text-gray-800">{v.quantity}</span>
-                      <button onClick={() => dispatch(addToCart(v.item._id))} className="p-1 hover:bg-white rounded-md transition-colors shadow-sm">
-                        <img className="h-3 w-3" src="/icons/plus.png" alt="plus" />
-                      </button>
+                    {/* Helper text at bottom of card */}
+                    <p className="absolute bottom-2 text-[9px] font-bold text-gray-500 uppercase tracking-tighter">
+                    Will be removed from order automatically
+                    </p>
+                    </div>
+                    )}
+
+                    {/* Item Image */}
+                    <div className={`h-16 w-16 bg-gray-50 rounded-xl flex-shrink-0 flex items-center justify-center p-2 border border-gray-100 ${!v.item.isAvailable && "grayscale opacity-40"}`}>
+                    <img className="h-full object-contain" src={v.item.image} alt="" />
+                    </div>
+
+                    {/* Item Details */}
+                    <div className={`flex-grow ${!v.item.isAvailable && "opacity-40"}`}>
+                    <h3 className="text-sm font-black text-gray-800 uppercase leading-none mb-1">{v.item.name}</h3>
+                    <p className="text-xs font-bold text-[#cd0045]">₹{v.item.price}</p>
+                    </div>
+
+                    {/* Quantity Controls (Disabled when unavailable) */}
+                    <div className={`flex items-center bg-gray-100 rounded-lg p-1 ${!v.item.isAvailable ? "opacity-20 pointer-events-none" : ""}`}>
+                    <button onClick={() => dispatch(removeFromCart(v.item._id))} className="p-1 hover:bg-white rounded-md transition-colors shadow-sm">
+                    <img className="h-3 w-3" src="/icons/minus.png" alt="minus" />
+                    </button>
+                    <span className="px-3 text-xs font-black text-gray-800">{v.quantity}</span>
+                    <button onClick={() => dispatch(addToCart(v.item._id))} className="p-1 hover:bg-white rounded-md transition-colors shadow-sm">
+                    <img className="h-3 w-3" src="/icons/plus.png" alt="plus" />
+                    </button>
                     </div>
                   </div>
                 ))
