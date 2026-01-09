@@ -515,6 +515,14 @@ module.exports = {
       success: true,
       message: "Logged out successfully",
     });
+  }),
+
+  removeNotification : catchAsync(async (req,res)=>{
+    const {_id} = req.user ;
+    const {id} = req.params;
+    const user = await User.findOneAndUpdate({_id},{$pull : {notification : {_id : id} } },{new : true , runValidators : true});
+    if(!user)throw new AppError("Notification Deletion Failed",400);
+    res.status(200).json(user.notification);
   })
 
 }

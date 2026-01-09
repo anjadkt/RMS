@@ -7,6 +7,7 @@ const userSlice = createSlice({
     login: null,
     isBanned: false,
     loading: false,
+    name : null,
     error: null
   },
   reducers: {
@@ -14,10 +15,11 @@ const userSlice = createSlice({
       state.loading = true;
     },
     setfetchSuccess(state, action) {
-      const { isBanned } = action.payload;
+      const { isBanned , name } = action.payload;
       state.loading = false;
       state.login = true;
       state.isBanned = isBanned || false;
+      state.name = name ;
     },
     setFetchFail(state, action) {
       state.loading = false;

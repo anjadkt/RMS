@@ -32,11 +32,10 @@ export default function Menu (){
 
   return(
     <>
-    <div className="hidden lg:block">
-      <Header/>
-    </div>
     
-    <main className="lg:mt-14 pb-20">
+    <Header/>
+    
+    <main className="mt-16 pb-20">
       {/* HERO WRAPPER - This contains the banner + the overlapping search bar */}
      <div className="w-full flex justify-center py-4 lg:py-4 px-5">
       <div className="w-full max-w-lg transform transition-all duration-300 focus-within:scale-[1.02]">

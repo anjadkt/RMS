@@ -53,7 +53,13 @@ const userSchema = new mongoose.Schema({
       ref : "Order"
     }
   ],
-  notification : Array,
+  notification : [
+    {
+      from : String,
+      message : String,
+
+    }
+  ],
   tables : Array,
 
   refreshToken: {

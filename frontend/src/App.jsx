@@ -14,6 +14,7 @@ import History from "./pages/History.jsx"
 import ClosedStoreOverlay from './components/ClosedStoreOverlay.jsx'
 import MainOfferWrapper from './components/MainOffer.jsx'
 import {getWebsiteData} from './app/features/website/webSlice.js'
+import ToastNotification from "./components/ToastNoti.jsx"
 
 
 function App() {
@@ -32,6 +33,7 @@ function App() {
 
   return (
     <>
+      {/* <ToastNotification /> */}
       <Routes>
         <Route path ="/" element={<Menu/>}/>
         <Route path ="/home" element={<MainOfferWrapper><Home/></MainOfferWrapper>}/>

@@ -30,9 +30,7 @@ export default function History() {
 
   return (
     <div className="min-h-screen bg-gray-50 lg:mt-16">
-      <div className="hidden lg:block">
-        <Header />
-      </div>
+      <Header />
 
       {/* MOBILE HEADER */}
       <div className="bg-white sticky top-0 z-40 px-5 py-4 lg:hidden border-b border-gray-100 flex items-center justify-between">

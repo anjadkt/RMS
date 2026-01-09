@@ -29,46 +29,50 @@ export default function OrderHistory({ data }) {
 
 
   return (
-    <div className="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:border-gray-300 transition-colors">
+    <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:border-gray-300 transition-colors">
       
       {/* 1. Header: Subtle & Clean */}
       <div className="px-6 pt-6 pb-4 flex justify-between items-start">
         <div className="flex flex-col">
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Reference</span>
-          <span className="text-lg font-black text-gray-800 font-[REM] leading-none">#{data.orderId}</span>
+          <span className="text-sm lg:text-lg font-black text-gray-800 font-[REM] leading-none">#{data.orderId}</span>
         </div>
         <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border ${statusColors[data.status] || "bg-gray-50 text-gray-500"}`}>
           {data.status}
         </div>
       </div>
 
-      {/* 2. Info Bar: Low Contrast Muted Tones */}
-      <div className="px-6 py-3 pr-8 flex justify-between gap-6 border-y border-gray-50 bg-gray-50/50">
-        <div className="flex gap-6">
+      {/* 2. Info Bar: High Contrast & Improved Visibility */}
+      <div className="px-6 py-4 flex justify-between items-center border-y border-gray-200 bg-white">
+        <div className="flex gap-8">
           <div className="flex flex-col">
-            <span className="text-[9px] font-bold text-gray-400 uppercase">Table</span>
-            <span className="text-sm font-bold text-gray-700">{data.tableNumber}</span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Table</span>
+            <span className="text-sm font-extrabold text-gray-900">{data.tableNumber}</span>
           </div>
           <div className="flex flex-col">
-            <span className="text-[9px] font-bold text-gray-400 uppercase">Service</span>
-            <span className="text-sm font-bold text-gray-700">{data.orderType}</span>
+            <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider">Service</span>
+            <span className="text-sm font-extrabold text-gray-900">{data.orderType}</span>
           </div>
         </div>
+
         <div>
-          {
-            !["served","pending","completed"].includes(data.status) && (
-              <div className="flex flex-col items-center">
-                <span className="text-[9px] font-bold text-gray-400 uppercase">Ready in</span>
-                {
-                  !time && ["placed","accepted","preparing","ready"].includes(data.status) ? (
-                    <span className="text-sm font-bold text-orange-600">Order Delay</span>
-                  ) : (
-                    <span className="text-sm font-bold text-green-700"><span className="text-[16px]">{time}</span>min</span>
-                  )
-                }
-             </div>
-            )
-          }
+          {!["served", "pending", "completed"].includes(data.status) && (
+            <div className="flex flex-col items-end">
+              <span className="text-[10px] font-black text-gray-400 uppercase tracking-wider mb-0.5">
+                Ready In
+              </span>
+              {!time && ["placed", "accepted", "preparing", "ready"].includes(data.status) ? (
+                <span className="px-2 py-1 rounded bg-red-50 text-[12px] font-black text-red-600 ring-1 ring-inset ring-red-600/20 animate-pulse">
+                  ORDER DELAY
+                </span>
+              ) : (
+                <div className="flex items-baseline gap-0.5 px-3 py-1 rounded-full bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20">
+                  <span className="text-xl font-black tabular-nums leading-none">{time}</span>
+                  <span className="text-[10px] font-bold uppercase">min</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
