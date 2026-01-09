@@ -9,7 +9,7 @@ export default function StaffCard({ data }) {
     <div key={data._id} className="relative max-w-2xs bg-white border border-gray-100 rounded-xl p-5 shadow-sm hover:shadow-md transition-all group overflow-hidden">
       
       <div className="absolute top-0 left-0 z-10">
-        {data.isWorking || data.isBanned ? (
+        {data.isWorking || !data.isBanned ? (
           <div className="bg-green-700 text-white px-3 py-1.5 rounded-br-2xl flex items-center gap-1.5 shadow-sm">
             <ShieldCheck size={14} strokeWidth={3} />
             <span className="text-[10px] font-black uppercase tracking-wider">Verified</span>

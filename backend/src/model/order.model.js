@@ -55,7 +55,13 @@ const orderSchema = new mongoose.Schema({
     type :Boolean,
     default : false
   },
-  orderTotal : Number
+  orderTotal : Number,
+  prepareTime : {
+    type : Date
+  },
+  createdAt : {
+    type : Date
+  }
 });
 
 

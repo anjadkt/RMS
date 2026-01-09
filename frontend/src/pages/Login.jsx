@@ -4,6 +4,7 @@ import api from "../services/axios";
 import DotLoader from '../components/DotLoader.jsx'
 import {checkAuth} from '../app/features/user/userSlice.js'
 import { useDispatch } from "react-redux";
+import { useRef } from "react";
 
 export default function Login(){
 
@@ -12,7 +13,11 @@ export default function Login(){
   const [Otploading,setOtpLoading] = useState(false);
   const [loading,setLoading] = useState(false);
   const [ok,setOk] = useState(false);
-  const [time,setTime] = useState(0)
+  const [time,setTime] = useState(0);
+  const inputElem = useRef({
+    number : null,
+    otp : null
+  });
 
   const [form,setForm] = useState({
     number : "",
@@ -75,11 +80,17 @@ export default function Login(){
       switch(error.response.status){
 
         case 400 :
-          newError.number = "Enter a valid Number"
+          newError.number = "Enter a valid Number";
+          break ;
         case 429 :
           newError.common = "Too Many Attempts! Try after 5min"
+          break;
         case 500 :
           newError.common = "Internal Server Errror!"
+          break ;
+        case 403 :
+          newError.common = "User Blocked!"
+          break ;
       }
 
       setError(newError);
@@ -119,6 +130,9 @@ export default function Login(){
         case 406 :
           newError.otp =  "incorrect otp";
           break ;
+        case 403 :
+          newError.common = "User Blocked!"
+          break;
       }
       setError(newError);
 
@@ -126,6 +140,10 @@ export default function Login(){
         setLoading(false);
     }
   }
+
+  useEffect(()=>{
+    inputElem.current.number?.focus();
+  },[])
 
   useEffect(()=>{
     if(time===0)return ;
@@ -176,6 +194,7 @@ export default function Login(){
                   id="number"
                   name="number"
                   type="text"
+                  ref={(e)=>inputElem.current.number = e}
                   maxLength={10}
                   value={form.number}
                   inputMode="numeric"
@@ -190,7 +209,10 @@ export default function Login(){
               </div>
               <button
                   type="button"
-                  onClick={sendOtp}
+                  onClick={()=>{
+                    sendOtp();
+                    inputElem.current.otp?.focus();
+                  }}
                   className="w-full bg-[#cd0045] mt-4 cursor-pointer text-white font-semibold py-1.5 rounded-lg transition"
                 > 
                 Continue
@@ -208,6 +230,7 @@ export default function Login(){
                   name="otp"
                   type="text"
                   inputMode="numeric"
+                  ref={(e)=>inputElem.current.otp = e}
                   maxLength={6}
                   value={form.otp || ""}
                   onChange={handleChange}
@@ -243,7 +266,7 @@ export default function Login(){
               </button>
             </div>
 
-            <div className="text-sm text-center text-red-500">
+            <div className="text-sm font-bold text-center text-red-500">
               {error.common || ""}
             </div>
           </form>

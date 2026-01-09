@@ -39,6 +39,11 @@ module.exports = {
 
     const availableItems = user.cart.filter( v => v.item.isAvailable !== false );
 
+    const prepareTime = availableItems.reduce((accum,value)=>accum + value.item.prepTime,0);
+
+    const createdAt = new Date();
+    const readyAt = new Date(createdAt.getTime() + prepareTime * 60000);
+
     const orderItems = availableItems.map(c =>{
       return ({
         itemId : c.item._id,
@@ -47,7 +52,7 @@ module.exports = {
         category : c.item.category,
         quantity : c.quantity,
         name : c.item.name,
-        subTotal : c.item.price * c.quantity
+        subTotal : c.item.price * c.quantity,
       })
     });
 
@@ -67,7 +72,9 @@ module.exports = {
       orderItems,
       orderDate,
       instructions,
-      orderTotal
+      orderTotal,
+      createdAt,
+      prepareTime : readyAt
     });
     if(!order)throw new AppError("Order Creation Failed!",400);
 

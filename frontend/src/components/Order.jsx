@@ -1,4 +1,8 @@
+import {useState,useEffect} from 'react'
+
 export default function OrderHistory({ data }) {
+  const [time,setTime] = useState("..");
+
   const statusColors = {
     placed: "bg-indigo-50 text-indigo-600 border-indigo-100",
     accepted: "bg-blue-50 text-blue-600 border-blue-100",
@@ -8,7 +12,21 @@ export default function OrderHistory({ data }) {
     completed: "bg-gray-100 text-gray-600 border-gray-200",
   };
 
-  const total = data.orderItems.reduce((acc, val) => acc + val.subTotal, 0);
+  useEffect(()=>{
+    if(!data?.prepareTime || !time)return ;
+
+    const interval = setInterval(()=>{
+      const currentTime = new Date();
+      const ready = new Date(data?.prepareTime);
+      const diff = Math.max( Math.ceil((ready - currentTime ) / 60000) , 0);
+      setTime(diff);
+    },1000);
+
+    return ()=> clearInterval(interval);
+
+  },[data.prepareTime])
+
+
 
   return (
     <div className="bg-white rounded-[2rem] border border-gray-200 shadow-sm overflow-hidden flex flex-col hover:border-gray-300 transition-colors">
@@ -25,14 +43,32 @@ export default function OrderHistory({ data }) {
       </div>
 
       {/* 2. Info Bar: Low Contrast Muted Tones */}
-      <div className="px-6 py-3 flex gap-6 border-y border-gray-50 bg-gray-50/50">
-        <div className="flex flex-col">
-          <span className="text-[9px] font-bold text-gray-400 uppercase">Table</span>
-          <span className="text-sm font-bold text-gray-700">Area {data.tableNumber}</span>
+      <div className="px-6 py-3 pr-8 flex justify-between gap-6 border-y border-gray-50 bg-gray-50/50">
+        <div className="flex gap-6">
+          <div className="flex flex-col">
+            <span className="text-[9px] font-bold text-gray-400 uppercase">Table</span>
+            <span className="text-sm font-bold text-gray-700">{data.tableNumber}</span>
+          </div>
+          <div className="flex flex-col">
+            <span className="text-[9px] font-bold text-gray-400 uppercase">Service</span>
+            <span className="text-sm font-bold text-gray-700">{data.orderType}</span>
+          </div>
         </div>
-        <div className="flex flex-col">
-          <span className="text-[9px] font-bold text-gray-400 uppercase">Service</span>
-          <span className="text-sm font-bold text-gray-700">{data.orderType}</span>
+        <div>
+          {
+            !["served","pending","completed"].includes(data.status) && (
+              <div className="flex flex-col items-center">
+                <span className="text-[9px] font-bold text-gray-400 uppercase">Ready in</span>
+                {
+                  !time && ["placed","accepted","preparing","ready"].includes(data.status) ? (
+                    <span className="text-sm font-bold text-orange-600">Order Delay</span>
+                  ) : (
+                    <span className="text-sm font-bold text-green-700"><span className="text-[16px]">{time}</span>min</span>
+                  )
+                }
+             </div>
+            )
+          }
         </div>
       </div>
 
@@ -58,7 +94,7 @@ export default function OrderHistory({ data }) {
       <div className="px-6 pb-6 mt-auto">
         <div className="flex items-center justify-between p-4 bg-[#2D2D2D] rounded-2xl shadow-inner">
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Total Amount</span>
-          <span className="text-xl font-black text-white">₹{total}</span>
+          <span className="text-xl font-black text-white">₹{data.orderTotal}</span>
         </div>
       </div>
     </div>

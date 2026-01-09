@@ -55,6 +55,9 @@ module.exports = {
 
     const number = req.body.number || "" ;
 
+    const user = await User.findOne({phone : number});
+    if(user.isBanned)throw new AppError("User Blocked",403);
+
     if(!number)throw new AppError("Number Required",400);
     if( !/^\+91[0-9]{10}$/.test(number)) throw new AppError("Enter a valid Number",400);
 
@@ -103,6 +106,7 @@ module.exports = {
     await OTP.deleteMany({phone : number});
 
     const user = await User.findOneAndUpdate({phone : number},{$setOnInsert : {phone : number,role : "customer"}},{upsert : true,new : true , runValidators : true});
+    if(user.isBanned)throw new AppError("User Blocked",403);
 
     const accessToken = getAccessToken(user);
 
