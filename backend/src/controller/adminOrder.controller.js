@@ -42,13 +42,16 @@ module.exports = {
     ]);
 
     const tables = await Table.aggregate([
+      {$match : {
+        tableNumber : {$exists : true}
+      }},
       {$group : {
         _id : "$isOccupied",
         count : {$sum : 1}
       }}
     ]);
 
-    const totalTable = await Table.countDocuments();
+    const totalTable = await Table.countDocuments({tableNumber : {$exists : true}});
 
     res.status(200).json({
      totalToday : total[0]?.total || 0 ,

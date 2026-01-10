@@ -77,15 +77,19 @@ module.exports = {
         {$match : {_id : {$in : orderIds}}},
         {$group : {
           _id : "$customerId",
+          customerNames : {
+            $push : "$customerName"
+          },
           orders : {$push : {
             _id : "$_id",
             orderId : "$orderId",
             status : "$status",
             orderItems : "$orderItems",
-            isAssisted : "$isAssisted"
+            isAssisted : "$isAssisted",
+            customerName : "$customerName"
           }}
         }}
-      ])
+      ]);
 
       return res.status(200).json({
         message : "Table Found!",

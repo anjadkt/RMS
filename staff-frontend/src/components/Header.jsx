@@ -1,8 +1,21 @@
 import { LogOut, Package, ShoppingCart } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink , useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
+import {setLogout} from '../app/features/user/userSlice.js'
+import {useDispatch} from 'react-redux'
+import api from '../services/axios.js'
 
 export default function Header() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const setUserLogout = async () => {
+    try {
+      await api.get('/user/logout');
+      dispatch(setLogout());
+      navigate('/login');
+    } catch (error) {}
+  };
   
   return (
     <header className={
@@ -47,7 +60,7 @@ export default function Header() {
 
       <div className="flex items-center gap-4">
 
-        <button className="flex items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-5 py-2.5 rounded-xl font-bold transition-all active:scale-95 shadow-sm">
+        <button onClick={setUserLogout} className="flex cursor-pointer items-center gap-2 bg-white border border-slate-200 text-slate-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-5 py-2.5 rounded-xl font-bold transition-all active:scale-95 shadow-sm">
           <LogOut size={18} />
           <span>Logout</span>
         </button>

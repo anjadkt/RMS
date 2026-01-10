@@ -67,7 +67,7 @@ module.exports = {
       isAssisted : role === "waiter" ? true : false ,
       customerId : user._id,
       waiterId : table.waiterId,
-      customerName : name,
+      customerName : name || user.name + ` (${user.role})` ,
       status : role === "waiter" ? "accepted" : "placed",
       orderItems,
       orderDate,

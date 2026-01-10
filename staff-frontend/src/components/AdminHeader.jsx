@@ -10,6 +10,8 @@ export default function AdminHeader() {
     { name: "Settings", link: "/admin/settings" }
   ];
 
+  
+
   return (
     <header className="fixed top-0 z-50 w-full flex items-center justify-between bg-white border-b px-10 py-3 border-slate-200">
 

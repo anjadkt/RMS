@@ -1,7 +1,7 @@
 import { useSelector } from "react-redux";
 import { Navigate , Outlet } from "react-router-dom";
 
-export default function ProtectedRoute({ roleP, children }) {
+export default function ProtectedRoute({ roleP }) {
   const { login, role ,loading } = useSelector(state => state.user);
 
   if(loading || login === null)return (
@@ -10,7 +10,7 @@ export default function ProtectedRoute({ roleP, children }) {
     </div>
   )
 
-  if (login === false) {
+  if (!login) {
     return <Navigate to="/login" replace />;
   }
 

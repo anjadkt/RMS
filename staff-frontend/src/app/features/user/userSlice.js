@@ -30,6 +30,15 @@ const userSlice = createSlice({
       state.login = false;
       state.error = action.payload;
     },
+    setLogout(state){
+      state.login = null,
+      state.isBanned = false,
+      state.isWorking  = true,
+      state.name  = null,
+      state.role  = null,
+      state.loading = false,
+      state.error = null
+    }
   },
 });
 
@@ -44,7 +53,7 @@ export const checkAuth = () => async (dispatch) => {
 };
 
 
-export const { setfetchSuccess, setfetchStart, setFetchFail } =
+export const { setfetchSuccess, setfetchStart, setFetchFail , setLogout} =
   userSlice.actions;
 
 export default userSlice.reducer;
