@@ -40,7 +40,13 @@ const tableSchema = new mongoose.Schema({
   phone : Number,
   email : String,
   location : String,
-  status : String
+  status : String,
+  categories : [
+    {
+      img : String,
+      name : String
+    }
+  ]
 });
 
 module.exports = mongoose.model("Table",tableSchema);

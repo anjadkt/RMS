@@ -17,7 +17,7 @@ module.exports = {
     }
 
     if(category){
-      filter.category = category
+      filter.category = {$regex : category , $options : "i"}
     }
 
     const items = await Item.find(filter);
@@ -30,7 +30,7 @@ module.exports = {
     const {c} = req.query ;
     const match = {$match : {isRemoved : false}}
     if(c){
-      match.$match.category = c
+      match.$match.category = {$regex : c , $options : "i"}
     }
 
     const items = await Item.aggregate([

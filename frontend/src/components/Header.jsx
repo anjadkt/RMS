@@ -59,7 +59,7 @@ export default function Header() {
 
   return (
     <header className="fixed top-0 left-0 z-50 w-full bg-white backdrop-blur-md border-b border-rose-100 px-4 py-2 flex items-center justify-between shadow-sm">
-      <div className="flex items-center">
+      <div onClick={()=>navigate('/home')} className="flex items-center">
         <img src={settings.logo} alt="logo" className="h-10 lg:h-12 w-auto object-contain" />
       </div>
 

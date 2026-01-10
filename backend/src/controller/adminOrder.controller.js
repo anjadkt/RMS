@@ -100,7 +100,7 @@ module.exports = {
 
     if(status === "cancel"){
       await Order.deleteOne({_id : id});
-      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id}});
+      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id} , $set : {isOccupied : false}});
       return res.status(200).json({
         message : "Order"+status,
         status : 200
@@ -115,7 +115,7 @@ module.exports = {
       }
     }
 
-    const update = await Order.findOneAndUpdate({_id : id},{status},{runValidators : true,new : true});
+    const update = await Order.findOneAndUpdate({_id : id},{status},{runValidators : true,new : true}).populate("waiterId");
     if(!update)throw new AppError("Update Failed!",400);
 
     res.status(200).json(update);

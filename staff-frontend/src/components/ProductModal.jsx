@@ -3,7 +3,7 @@ import { X, Upload, Clock, Tag, Leaf } from 'lucide-react';
 import api from '../services/axios.js';
 import uploadImageToCloudinary from '../services/cloudnary.js'
 
-export default function ProductModal({ data, setShow, setData , fetchProducts }) {
+export default function ProductModal({ data, setShow, setData , fetchProducts , categories }) {
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState({});
   const [form, setForm] = useState({
@@ -16,11 +16,11 @@ export default function ProductModal({ data, setShow, setData , fetchProducts })
   });
 
   const [toggle,setToggle] = useState({
-    isBest: data?.isBest || false,
-    isAvailable: data?.isAvailable || true,
-    isSpecial: data?.isSpecial || false,
-    isRemoved: data?.isRemoved || false,
-    isVeg: data?.isVeg || false
+    isBest: data?.isBest,
+    isAvailable: data?.isAvailable,
+    isSpecial: data?.isSpecial,
+    isRemoved: data?.isRemoved,
+    isVeg: data?.isVeg
   });
 
   const handleChange = (e)=>{
@@ -57,7 +57,7 @@ export default function ProductModal({ data, setShow, setData , fetchProducts })
     }
   }
 
-  async function handleProduct(action) {
+  async function handleProduct() {
     try{
       setLoading(true);
       if(data){
@@ -131,14 +131,19 @@ export default function ProductModal({ data, setShow, setData , fetchProducts })
                 placeholder="Product Name" 
                 className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-gray-200 outline-none"
               />
-              <input 
-                type="text" 
+
+              <select
                 name='category'
                 onChange={handleChange}
-                defaultValue={form.category}
-                placeholder="Product Category" 
                 className="w-full border border-gray-200 bg-gray-50 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-gray-200 outline-none"
-              />
+              >
+                <option defaultValue={form.category || ""}>{form.category || "SELECT CATEGORY"}</option>
+                {
+                  categories.map(v =>(
+                    <option value={v.name}>{v.name}</option>
+                  ))
+                }
+              </select>
               <div className="relative">
                 <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">₹</span>
                 <input 

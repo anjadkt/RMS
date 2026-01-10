@@ -3,23 +3,24 @@ const AppError = require('../utils/AppError.js');
 const Table = require('../model/table.model.js');
 const Item = require('../model/items.model.js');
 
-function generateRestaurantId() {
-  const prefix = "REST";
-  const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
-  const random = Math.random().toString(36).substring(2, 8).toUpperCase();
+// function generateRestaurantId() {
+//   const prefix = "REST";
+//   const date = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+//   const random = Math.random().toString(36).substring(2, 8).toUpperCase();
 
-  return `${prefix}-${date}-${random}`;
-}
+//   return `${prefix}-${date}-${random}`;
+// }
 
 module.exports = {
 
   updateRestoSettings : catchAsync(async (req,res)=>{
-    const {logo,phone,email,location,restaurentTimes,status} = req.body ;
+    const {logo,phone,email,location,restaurentTimes,status,category} = req.body ;
 
-    if(!["open","closed"].includes(status))throw new AppError("status Not Allowed",400);
+    if(status && !["open","closed"].includes(status))throw new AppError("status Not Allowed",400);
 
     const query = {
-      $set : {}
+      $set : {},
+      $push : {}
     }
 
     if (logo) query.$set.logo = logo;
@@ -28,8 +29,12 @@ module.exports = {
     if (location) query.$set.location = location;
     if (restaurentTimes) query.$set.restaurentTimes = restaurentTimes;
     if(status) query.$set.status = status ;
+    if(category) query.$push.categories = category ;
 
-    if (Object.keys(query.$set).length === 0) {
+    const hasSet = Object.keys(query.$set).length > 0;
+    const hasPush = Object.keys(query.$push).length > 0;
+
+    if (!hasSet && !hasPush) {
       throw new AppError("No fields to update", 400);
     }
 
@@ -45,7 +50,7 @@ module.exports = {
   }),
 
   getWebsiteData : catchAsync(async(req,res)=>{
-    const {settings,best,special} = req.query ;
+    const {settings,best,special,categories} = req.query ;
     const data = {}
 
     if(settings){
@@ -61,6 +66,11 @@ module.exports = {
     if(special){
       const items = await Item.find({isSpecial : true});
       data.specialItems = items ;
+    }
+
+    if(categories){
+      const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
+      data.categories = resto.categories ;
     }
 
     res.status(200).json({
