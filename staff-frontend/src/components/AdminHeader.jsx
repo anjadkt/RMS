@@ -1,4 +1,7 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink , useNavigate } from 'react-router-dom';
+import api from '../services/axios.js'
+import {useDispatch} from 'react-redux'
+import {setLogout} from '../app/features/user/userSlice.js'
 
 export default function AdminHeader() {
   const routes = [
@@ -10,6 +13,16 @@ export default function AdminHeader() {
     { name: "Settings", link: "/admin/settings" }
   ];
 
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const setUserLogout = async () => {
+    try {
+      await api.get('/user/logout');
+      dispatch(setLogout());
+      navigate('/login');
+    } catch (error) {}
+  };
   
 
   return (
@@ -51,7 +64,7 @@ export default function AdminHeader() {
 
         </button>
         
-        <button className="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all duration-200">
+        <button onClick={setUserLogout} className="flex cursor-pointer items-center gap-2 px-4 py-2 text-sm font-medium text-slate-700 bg-slate-50 border border-slate-200 rounded-xl hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all duration-200">
           <span>Logout</span>
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
