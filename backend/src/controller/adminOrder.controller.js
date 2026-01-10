@@ -111,10 +111,10 @@ module.exports = {
     }
 
     if(status === "completed"){
-      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id}});
-      if(update.tableOrders.length === 0){
+      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id}},{new : true , runValidators : true});
+      if(update && update.tableOrders.length === 0){
         update.isOccupied = false ;
-        update.save();
+        await update.save();
       }
     }
 

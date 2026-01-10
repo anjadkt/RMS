@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams , useNavigate } from 'react-router-dom'
 import AdminHeader from "../components/AdminHeader";
-import { User, Phone, MapPin, ShieldCheck, ShieldAlert, Table, ShoppingBag, Trash2, PlusCircle, CheckCircle2 } from "lucide-react";
+import { User, Phone,Mail, MapPin, ShieldCheck, ShieldAlert, Table, ShoppingBag, Trash2, PlusCircle, CheckCircle2 } from "lucide-react";
 import api from "../services/axios";
 
 export default function AdminStaffDetails() {
@@ -111,6 +111,10 @@ export default function AdminStaffDetails() {
                 <div className="flex items-center gap-1">
                   <Phone size={12} className="text-black" />
                   <span className="text-sm text-gray-400 font-semibold">+91 {data.user?.number}</span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Mail size={12} className="text-black" />
+                  <span className="text-sm text-gray-400 font-semibold">{data.user?.email}</span>
                 </div>
               </div>
             </div>

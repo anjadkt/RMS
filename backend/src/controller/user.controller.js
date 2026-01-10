@@ -446,6 +446,7 @@ module.exports = {
       user : {
         name : user.name,
         number : user.details.number,
+        email : user.email,
         address : user.details.address,
         photo : user.details.photo,
         isWorking : user.isWorking,
@@ -466,6 +467,7 @@ module.exports = {
     res.status(200).json({
       user : {
         name : user.name,
+        email : user.email,
         number : user.phone,
         isBanned : user.isBanned,
         role : user.role,

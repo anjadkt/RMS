@@ -10,6 +10,7 @@ import ProtectedRoute from './routeProtecter/ProtectedRoute.jsx'
 import Table from "./pages/Tables.jsx"
 import EachTable from "./pages/EachTable.jsx"
 import Order from "./pages/Order.jsx"
+import Updates from './pages/WaiterUpdates.jsx'
 import KitchenOrders from './pages/KitchenOrder.jsx'
 import KitchenProducts from "./pages/kitchenProducts.jsx"
 import RootRedirect from './routeProtecter/RootRedirect.jsx'
@@ -46,6 +47,7 @@ function App() {
         <Route path="/waiter/tables" element={<Table/>} />
         <Route path="/waiter/tables/:id" element ={<EachTable/>} />
         <Route path='/waiter/order' element={<Order/>} />
+        <Route path='/waiter/updates' element={<Updates/>} />
       </Route>
 
       <Route element={<ProtectedRoute roleP={"cook"}></ProtectedRoute>}>
@@ -67,7 +69,8 @@ function App() {
         <Route path="/admin/tables" element={<AdminTables />} />
         <Route path="/admin/tables/:id" element={<AdminTableDetails/>} />
         <Route path="/admin/settings" element={<AdminSettings/>} />
-      </Route>      
+      </Route>     
+
      </Routes>
     </>
   )

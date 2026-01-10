@@ -11,8 +11,9 @@ export default function EachTable() {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [table, setTables] = useState({});
+
   const [orderIds, setOrderId] = useState([]);
-  const [error, setError] = useState({});
+
   const [billData, setBillData] = useState({});
 
   const { id } = useParams();
@@ -27,15 +28,19 @@ export default function EachTable() {
     try {
       setLoading(true);
       const { data } = await api.post('/waiter/orders/bill', { orderIds, tableId: table._id });
-      setError({});
-      setFall(!fall)
       setBillData(data.billData);
+      setFall(true);
     } catch (error) {
       if (error.status === 400) setError({ data: "Select an Order!" });
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(()=>{
+    if(orderIds.length===0)return ;
+    generateBill();
+  },[orderIds])
 
   useEffect(() => {
     async function fetchDetails() {
@@ -78,7 +83,7 @@ export default function EachTable() {
         </div>
       </header>
 
-      <main className="pt-24 px-4 lg:ml-54 flex flex-col items-center max-w-4xl mx-auto">
+      <main className="pt-24 px-4 flex flex-col items-center max-w-4xl lg:max-w-6xl mx-auto lg:flex-row lg:items-start lg:gap-10">
         {loading && !orders.length ? (
           <div className="flex justify-center py-20">
             <span className="h-8 w-8 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
@@ -115,16 +120,6 @@ export default function EachTable() {
 
         {/* Bill Actions */}
         <div className="w-full max-w-2xl mt-8 space-y-4">
-          <div className="flex flex-col items-center">
-            <button 
-              disabled={loading}
-              onClick={() => generateBill()}
-              className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
-            >
-              {loading ? <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : <><Receipt size={20}/> Generate Combined Bill</>}
-            </button>
-            {error.data && <div className="text-xs mt-3 font-bold text-red-500 flex items-center gap-1">⚠️ {error.data}</div>}
-          </div>
 
           <button 
             onClick={() => setFall(!fall)}
@@ -141,7 +136,7 @@ export default function EachTable() {
             {fall && (
               Object.keys(billData).length ? (
                 <div className="bg-white rounded-3xl p-1 shadow-2xl border border-slate-200">
-                  <Bill restaurantInfo={billData.restaurantInfo} billInfo={billData.billInfo} orderDetails={billData.orderDetails} billSummary={billData.billSummary}/>
+                  <Bill orderIds={orderIds} restaurantInfo={billData.restaurantInfo} billInfo={billData.billInfo} orderDetails={billData.orderDetails} billSummary={billData.billSummary}/>
                 </div>
               ) : (
                 <div className="text-center py-10 bg-slate-100 rounded-2xl text-slate-400 font-bold border border-slate-200">
@@ -151,6 +146,7 @@ export default function EachTable() {
             )}
           </div>
         </div>
+        
       </main>
     </div>
   )
