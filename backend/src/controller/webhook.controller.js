@@ -8,7 +8,7 @@ module.exports = {
   markPaymentCompleted : catchAsync(async (req,res)=>{
     const event = JSON.parse(req.body.toString());
 
-    if(event.event === "qr_code.credited"){
+    if(event.event === "qr_code.creditedww"){
 
       const payment = event.payload?.payment?.entity ;
 
@@ -38,7 +38,12 @@ module.exports = {
         {runValidators : true}
       );
 
-      await Table.updateOne({_id : bills.tableId},{$pull : {tableOrders : {$in : orderObjectIds}}});
+      const table = await Table.fineOneAndUpdate({_id : bills.tableId},{$pull : {tableOrders : {$in : orderObjectIds}}},{new : true});
+
+      if(table && table.tableOrders.length === 0){
+        table.isOccupied = false ;
+        await table.save();
+      }
       
     }
 

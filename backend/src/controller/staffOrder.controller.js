@@ -74,6 +74,16 @@ module.exports = {
 
     if(s && !["placed","accepted","preparing","ready","served","pending","completed"].includes(s))throw new AppError("Wrong Query!",400);
 
+    if(s==="completed"){
+      const today = new Date().toISOString().slice(0, 10);
+      const orders = await Order.find({waiterId : _id , orderDate :today ,status : "completed"}).sort({orderDate : -1,orderNumber : -1});
+      return res.status(200).json({
+        message : "send all current orders!",
+        status :200,
+        orders
+      });
+    }
+
     // const table = await Table.aggregate([
     //   {$match : {waiterId : _id}}
     // ])
