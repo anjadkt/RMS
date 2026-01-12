@@ -1,12 +1,36 @@
 import { Printer, MapPin, Calendar, Hash, ChevronRight, QrCode } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import api from '../services/axios';
 
-export default function Bill({ restaurantInfo, billInfo, orderDetails, billSummary }) {
-  // Use a payment URL or UPI ID here for the QR
-  const paymentUrl = `upi://pay?pa=merchant@upi&pn=${restaurantInfo.name}&am=${billSummary.total}&cu=INR`;
+export default function Bill({orderIds, restaurantInfo, billInfo, orderDetails, billSummary }) {
+  const [loading,setLoading] = useState(false);
+  const [billData,setBillData] = useState({});
+  const [imgLoad,setImgLoad] = useState(false);
+
+  // const paymentUrl = `upi://pay?pa=merchant@upi&pn=${restaurantInfo.name}&am=${billSummary.total}&cu=INR`;
+
+  const printBill = async () => {
+    try{
+      setLoading(true);
+      const {data} = await api.post('/waiter/orders/payment',{orderIds,tableId : billInfo.tableId});
+      setBillData(data.billData);
+    }catch(error){
+      if(error.status === 400){
+        window.print();
+      }
+    }finally{
+      setLoading(false);
+    }
+  }
+
+  useEffect(()=>{
+    if(!imgLoad)return ;
+     window.print();
+  },[imgLoad]);
 
   return (
     <div className="bg-slate-100 px-4 min-h-screen flex flex-col gap-6 justify-center items-center py-6 lg:py-0 lg:py-12">
-      <div className="bg-white w-full max-w-[380px] border border-slate-200 shadow-2xl rounded-sm overflow-hidden flex flex-col relative">
+      <div id='bill-print' className="bg-white w-full max-w-[380px] border border-slate-200 shadow-2xl rounded-sm overflow-hidden flex flex-col relative">
         
         {/* Top Decorative Edge */}
         <div className="h-2 w-full bg-[repeating-linear-gradient(45deg,#cbd5e1,#cbd5e1_10px,#ffffff_10px,#ffffff_20px)] opacity-50"></div>
@@ -29,8 +53,8 @@ export default function Bill({ restaurantInfo, billInfo, orderDetails, billSumma
           {/* Bill Meta Info */}
           <div className="flex flex-col gap-1 mb-6 text-[11px] lg:text-sm text-slate-500 font-mono border-y border-dashed border-slate-200 py-4">
             <div className="flex justify-between">
-              <span className="flex items-center gap-1"><Hash size={12}/> ID: {billInfo.billId.slice(-8)}</span>
-              <span className="flex items-center gap-1"><Calendar size={12}/> {billInfo.date}</span>
+              <span className="flex items-center gap-1"><Hash size={12}/> ID: {billData.billId || billInfo.billId}</span>
+              <span className="flex items-center gap-1"><Calendar size={12}/> {billData.billDate || billInfo.date}</span>
             </div>
             <div className="flex justify-between items-center mt-1">
               <span className="text-slate-800 font-bold">TABLE: {billInfo.tableNumber}</span>
@@ -66,42 +90,66 @@ export default function Bill({ restaurantInfo, billInfo, orderDetails, billSumma
           <div className="border-t-2 border-slate-900 pt-4 mb-8">
             <div className="flex justify-between items-center">
               <span className="text-sm font-black text-slate-900 uppercase tracking-tight">Total Amount</span>
-              <span className="text-base font-black text-slate-900">₹{billSummary.total.toFixed(2)}</span>
+              <span className="text-base font-black text-slate-900">₹{billData.billTotal || billSummary.total.toFixed(2)}</span>
             </div>
           </div>
 
           {/* NEW: Pay & Go Section */}
-          <div className="bg-slate-900 rounded-xl p-6 text-center text-white mb-6 shadow-lg">
-            <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4 flex items-center justify-center gap-2">
-              Fast Pay <ChevronRight size={14} className="text-slate-400" />
-            </h3>
+          {
+            billData.qrImage && (
+              <div className="bg-slate-900 rounded-xl p-6 flex flex-col items-center text-white mb-6 shadow-lg">
             
-            {/* Replace src with your QR generator URL or local component */}
-            <div className="bg-white p-2 rounded-lg inline-block mb-4">
-              <img 
-                src={`https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(paymentUrl)}`} 
-                alt="Payment QR"
-                className="w-32 h-32 lg:w-40 lg:h-40"
-              />
-            </div>
-            
-            <p className="text-[10px] text-slate-400 leading-relaxed px-4">
-              Scan the QR code with any UPI app to pay instantly. 
-              Please show the success screen to your waiter.
-            </p>
-          </div>
+                <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4 flex items-center justify-center gap-2">
+                  Fast Pay <ChevronRight size={14} className="text-slate-400" />
+                </h3>
+                
+                {/* Replace src with your QR generator URL or local component */}
+                <div className="bg-white relative w-36 h-36 lg:w-40 lg:h-40 rounded-lg overflow-hidden flex items-center justify-center mb-4">
+                  <img
+                    onLoad={()=>setImgLoad(true)}
+                    src={billData.qrImage}
+                    alt="Payment QR"
+                    className="
+                      w-[180px]
+                      max-w-none
+                    "
+                  />
+                    
+                </div>
+                
+                <p className="text-[10px] text-slate-400 text-center leading-relaxed px-4">
+                  Scan the QR code with any UPI app to pay instantly. 
+                  Please show the success screen to your waiter.
+                </p>
+
+              </div>
+            )
+          }
+          
+
         </div>
+
+
         
         {/* Zig Zag Bottom */}
         <div className="h-4 w-full bg-[radial-gradient(circle_at_10px_-7px,#ffffff_12px,transparent_13px)] bg-[length:20px_20px]"></div>
       </div>
       <button 
-        onClick={() => window.print()}
-        className="w-full flex items-center justify-center gap-2 bg-slate-900 border-2 border-slate-200 text-white py-3 rounded-lg font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 print:hidden"
-      >
-        <Printer size={18} />
-        Print Receipt
-      </button>
+          onClick={printBill}
+          className="w-[200px] flex items-center justify-center gap-2 bg-slate-900 border-2 border-slate-200 text-white py-3 rounded-lg font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 print:hidden"
+        >
+          {
+            loading ? (
+              <div className="inline-block h-4 w-4 border-3 border-white border-t-transparent rounded-full animate-spin"></div>
+            ) : (
+              <>
+               <Printer size={18} />
+               Print Receipt
+              </>
+            )
+          }
+          
+        </button>
     </div>
   );
 }

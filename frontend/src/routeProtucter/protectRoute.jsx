@@ -7,7 +7,7 @@ export default function ProtecteRoute({ children }) {
 
   if (loading) return <DotLoader />;
 
-  if (!login || isBanned) return <Navigate to="/login" />;
+  if ((!login || isBanned) && login !== null) return <Navigate to="/login" />;
 
   return children;
 }

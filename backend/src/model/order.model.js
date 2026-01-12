@@ -47,6 +47,10 @@ const orderSchema = new mongoose.Schema({
   orderNumber :{
     type : Number
   },
+  billId : {
+    type : mongoose.Schema.Types.ObjectId,
+    ref : "Bill"
+  },
   orderDate : {
     type :String,
     require : true

@@ -74,7 +74,7 @@ module.exports = {
       );
 
       const orders = await Order.aggregate([
-        {$match : {_id : {$in : orderIds}}},
+        {$match : {_id : {$in : orderIds},status : {$nin : ["pending","completed"]}}},
         {$group : {
           _id : "$customerId",
           customerNames : {

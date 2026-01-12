@@ -1,23 +1,52 @@
 const catchAsync = require('../utils/catchAsync.js');
 const Table = require('../model/table.model.js');
 const Order = require('../model/order.model.js');
+const Bill = require('../model/bill.model.js');
 const AppError = require('../utils/AppError.js');
 const mongoose = require('mongoose');
+const razorpay = require('../utils/razorPay.js');
 
-async function getOrderId(){
+
+async function getBillId(){
   const today = new Date().toISOString().slice(0, 10);
   const todayString = today.split("-").join("");
 
-  const order = await Order.aggregate([
-    {$match :{orderDate : today}},
-    {$sort : {orderNumber : -1}},
+  const order = await Bill.aggregate([
+    {$match : {billDate : today}},
+    {$sort : {billNumber : -1}},
     {$limit : 1}
   ])
 
-  const orderNumber =  order[0] ? order[0].orderNumber + 1 : 1 ;
-  const orderId = `ODR-${todayString}-${orderNumber}`
+  const billNumber =  order[0] ? order[0].billNumber + 1 : 1 ;
+  const billId = `BILL-${todayString}-${billNumber}`
 
-  return {orderNumber,orderId,orderDate : today}
+  return {billNumber,billId,billDate : today}
+}
+
+async function computeOrder(orderIds){
+  const orders = await Order.find({_id : {$in : orderIds}});
+  const orderItemsObj = {}
+  let orderBillId = ""
+
+  for(let order of orders){
+    for(let v of order?.orderItems){
+      if(!orderItemsObj[v.itemId]){
+        orderItemsObj[v.itemId] = {
+          name : v.name,
+          quantity : v.quantity,
+          subTotal : v.price * v.quantity,
+          price : v.price
+        }
+      }else{
+        orderItemsObj[v.itemId].quantity += v.quantity ;
+        orderItemsObj[v.itemId].subTotal = orderItemsObj[v.itemId].quantity * v.price ;
+      }
+    }
+    orderBillId += (order.orderId + " | ");
+  }
+  const grandTotal = orders.reduce((acc,val)=>acc+val.orderTotal,0);
+
+  return {orderDetails : Object.values(orderItemsObj),orderBillId,TOTAL :grandTotal}
 }
 
 module.exports = {
@@ -134,31 +163,12 @@ module.exports = {
     const table = await Table.findOne({_id : new mongoose.Types.ObjectId(tableId) , tableOrders: { $all: orderObjectIds } });
     if(!table)throw new AppError("orders should from same table!",400);
 
-    const orders = await Order.find({_id : {$in : orderIds}});
-    const orderItemsObj = {}
-    let orderBillId = ""
+    const orderItemsObj = await Promise.resolve(computeOrder(orderObjectIds));
 
-    for(let order of orders){
-      for(let v of order?.orderItems){
-        if(!orderItemsObj[v.itemId]){
-          orderItemsObj[v.itemId] = {
-            name : v.name,
-            quantity : v.quantity,
-            subTotal : v.price * v.quantity,
-            price : v.price
-          }
-        }else{
-          orderItemsObj[v.itemId].quantity += v.quantity ;
-          orderItemsObj[v.itemId].subTotal = orderItemsObj[v.itemId].quantity * v.price ;
-        }
-      }
-      orderBillId += (order.orderId + " | ");
-    }
-
-    const grandTotal = Object.values(orderItemsObj).reduce((acc,val)=>acc+val.subTotal,0);
+    const billObj = await Promise.resolve(getBillId());
     
     return res.status(201).json({
-      message : "bill generated for " + orderBillId,
+      message : "bill generated for " + orderItemsObj.orderBillId,
       status : 201,
       billData :{
         restaurantInfo : {
@@ -166,16 +176,18 @@ module.exports = {
           address : "manjeri,malappuram",
         },
         billInfo : {
-          date : new Date().toISOString().split("T")[0],
-          orderNumbers : orderBillId,
+          date : billObj.billDate,
+          orderNumbers : orderItemsObj.orderBillId,
           gstn : "32PQRSX5678L1Z2",
           paymentStatus : "",
           tableNumber : table.tableNumber,
-          billId : "BILL-" + Date.now()
+          tableId : table._id,
+          billId : billObj.billId
         },
-        orderDetails : Object.values(orderItemsObj),
+        orderDetails : orderItemsObj.orderDetails,
         billSummary :{
-          total : grandTotal
+          billNumber : billObj.billNumber,
+          total : orderItemsObj.TOTAL
         }
       }
 
@@ -183,7 +195,7 @@ module.exports = {
   }),
 
   orderPayment : catchAsync(async (req,res)=>{
-    const {action,orderIds,tableId} = req.body ;
+    const {orderIds,tableId} = req.body ;
 
     if (!Array.isArray(orderIds) || orderIds.length === 0 || !tableId)throw new AppError("fields required", 400);
 
@@ -191,31 +203,88 @@ module.exports = {
       id => new mongoose.Types.ObjectId(id)
     );
 
+    const existingBill = await Bill.findOne({
+      orderIds: { $in : orderObjectIds }
+    });
+
+    if (existingBill) {
+      throw new AppError("Bill already generated for these orders", 400);
+    }
+
     const table = await Table.findOne({_id : new mongoose.Types.ObjectId(tableId) , tableOrders: { $all: orderObjectIds } });
     if(!table)throw new AppError("orders should from same table!",400);
 
-    if(!["paynow","paylater"].includes(action))throw new AppError(action + " not a proper status!",400);
+    const orderItemsObj = await computeOrder(orderObjectIds);
 
-    if(action === "paylater"){
+    if (!orderItemsObj?.TOTAL || orderItemsObj.TOTAL <= 0) {
+      throw new AppError("Invalid bill amount", 400);
+    }
+
+    const billObj = await getBillId();
+
+    const order = await razorpay.orders.create({
+      amount : orderItemsObj.TOTAL * 100,
+      currency: "INR",
+      receipt: `bill_${billObj.billId}`
+    });
+
+    try {
+      const qr = await razorpay.qrCode.create({
+        type: "upi_qr",
+        name: `Bill #${orderItemsObj.orderBillId}`,
+        usage: "single_use",
+        fixed_amount: true,
+        payment_amount: orderItemsObj.TOTAL * 100, // NOTE: Some versions use 'payment_amount'
+        description: `Payment for Bill ${billObj.billId}`,
+        close_by: Math.floor(Date.now() / 1000) + 20 * 60,
+        notes: {
+          billId: billObj.billId,
+          razorpayOrderId: order.id
+        }
+      });
+
+      const bills = await Bill.create({
+        billNumber : billObj.billNumber,
+        billDate : billObj.billDate,
+        billId : billObj.billId,
+        orderIds,
+        tableNumber : table.tableNumber,
+        tableId : table._id,
+        waiterId : table.waiterId,
+        billItems : orderItemsObj.orderDetails,
+        billTotal : orderItemsObj.TOTAL,
+        paymentStatus : "unpaid",
+        razorpayOrderId : order.id,
+        qrId : qr.id,
+        qrAmount : qr.amount,
+        qrImage : qr.image_url
+      });
+
       const update = await Order.updateMany(
-        {_id : {$in : orderIds}},
-        {status : "pending"},
+        {_id : {$in : orderObjectIds}},
+        {status : "pending",billId : bills._id,paymentStatus : "pending"},
         {runValidators : true}
       );
 
       if (update.modifiedCount !== orderIds.length) {
         throw new AppError("Some orders were not updated", 400);
       }
-      return res.status(200).json({
-        message : "PayLater Alloted and Changed order status to pending..",
-        status : 200
-      })
+  
+      res.status(200).json({
+        message : "Bill generated and Changed order status to pending..",
+        status : 200,
+        billData : {
+          qrImage : qr.image_url,
+          billId : bills.billId,
+          billDate : billObj.billDate,
+          billTotal : bills.billTotal
+        }
+      });
+
+    } catch (error) {
+      console.error("RAZORPAY QR ERROR:", error);
+      throw new AppError(error.description || "QR Generation Failed", 400);
     }
-
-    if(action === "paynow"){
-
-    }
-
   })
 
 }

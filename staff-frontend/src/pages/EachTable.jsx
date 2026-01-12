@@ -42,26 +42,38 @@ export default function EachTable() {
     generateBill();
   },[orderIds])
 
-  useEffect(() => {
-    async function fetchDetails() {
-      try {
-        setLoading(true);
-        const { data } = await api.get(`/waiter/table/${id}`);
-        console.log(data);
-        setTables(data.table);
-        setOrders(data.orders);
-      } catch (error) {
-        console.log(error.message);
-      } finally {
-        setLoading(false);
-      }
+  async function fetchDetails() {
+    try {
+      setLoading(true);
+      const { data } = await api.get(`/waiter/table/${id}`);
+      setTables(data.table);
+      setOrders(data.orders);
+    } catch (error) {
+      console.log(error.message);
+    } finally {
+      setLoading(false);
     }
+  }
+
+  useEffect(() => {
     fetchDetails();
   }, [])
 
+  useEffect(() => {
+    const handleAfterPrint = () => {
+      fetchDetails();
+    };
+
+    window.addEventListener("afterprint", handleAfterPrint);
+
+    return () => {
+      window.removeEventListener("afterprint", handleAfterPrint);
+    };
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 pb-20">
-      <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3 lg:px-10">
+      <header className="fixed top-0 left-0 right-0 z-40 flex items-center justify-between bg-white/80 backdrop-blur-md border-b border-slate-200 px-4 py-3 lg:px-10 print:hidden">
         <div className="flex items-center gap-4">
           <button 
             onClick={() => window.history.back()}
@@ -85,11 +97,11 @@ export default function EachTable() {
 
       <main className="pt-24 px-4 flex flex-col items-center max-w-4xl lg:max-w-6xl mx-auto lg:flex-row lg:items-start lg:gap-10">
         {loading && !orders.length ? (
-          <div className="flex justify-center py-20">
+          <div className="flex justify-center py-20 print:hidden">
             <span className="h-8 w-8 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
           </div>
         ) : (
-          <div className="w-full space-y-3">
+          <div className="w-full space-y-3 print:hidden">
             {orders.map((v, i) => (
               <div key={i} className="w-full">
                 <button 
@@ -124,9 +136,9 @@ export default function EachTable() {
           <button 
             onClick={() => setFall(!fall)}
             className={`flex items-center justify-between w-full px-5 py-4 rounded-2xl border-2 border-dashed transition-all
-              ${fall ? "bg-emerald-50 border-emerald-500 text-emerald-800" : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"}`}
+              ${fall ? "bg-emerald-50 border-emerald-500 text-emerald-800" : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 print:hidden"}`}
           >
-            <div className="flex items-center gap-2 font-bold uppercase text-xs tracking-widest">
+            <div className="flex items-center gap-2 font-bold uppercase text-xs tracking-widest print:hidden">
               <Receipt size={16} /> {fall ? "Hide Bill Preview" : "View Generated Bill"}
             </div>
             <div>{fall ? <ChevronUp size={20} /> : <ChevronDown size={20} />}</div>
@@ -139,7 +151,7 @@ export default function EachTable() {
                   <Bill orderIds={orderIds} restaurantInfo={billData.restaurantInfo} billInfo={billData.billInfo} orderDetails={billData.orderDetails} billSummary={billData.billSummary}/>
                 </div>
               ) : (
-                <div className="text-center py-10 bg-slate-100 rounded-2xl text-slate-400 font-bold border border-slate-200">
+                <div className="text-center py-10 bg-slate-100 rounded-2xl text-slate-400 font-bold border border-slate-200 print:hidden">
                   No Bill Generated Yet
                 </div>
               )
@@ -148,6 +160,7 @@ export default function EachTable() {
         </div>
         
       </main>
+
     </div>
   )
 }

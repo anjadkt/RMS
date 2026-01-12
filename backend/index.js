@@ -7,9 +7,11 @@ const mongoose = require('mongoose');
 const cookieParser = require('cookie-parser');
 const verifyToken = require('./src/middleware/verifyToken.js');
 const verifyUsers = require('./src/middleware/verifyUsers.js');
+const signatureTest = require('./src/middleware/signature.js');
 
 const refreshController = require('./src/controller/user.controller.js');
 const itemsController = require('./src/controller/product.controller.js');
+const webhooksController = require('./src/controller/webhook.controller.js');
 
 const userRouter = require('./src/router/customer/customer.route.js');
 const productRouter = require('./src/router/customer/product.route.js');
@@ -50,6 +52,7 @@ mongoose.connect(MONGO_DB_URL)
   })
 });
 
+app.post('/webhooks/razorpay',express.raw({ type: "application/json" }),signatureTest,webhooksController.markPaymentCompleted);
 
 //system middlewares
 app.use(express.json());
@@ -86,7 +89,7 @@ app.use('/resto/admin',verifyToken,verifyUsers("admin"),restoRouter);
 //waiter routes
 app.use('/auth/staff',staffRouter);
 app.use('/waiter/table',verifyToken,verifyUsers("admin","waiter"),waiterTableRouter);
-app.use('/waiter/orders',verifyToken,verifyUsers("waiter"),waiterOrderRouter);
+app.use('/waiter/orders',verifyToken,verifyUsers("waiter","admin"),waiterOrderRouter);
 
 //cook routes
 app.use('/items/cook',verifyToken,verifyUsers("cook","admin"),cookProductRouter);
