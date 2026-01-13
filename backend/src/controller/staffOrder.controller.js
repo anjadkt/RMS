@@ -11,13 +11,13 @@ async function getBillId(){
   const today = new Date().toISOString().slice(0, 10);
   const todayString = today.split("-").join("");
 
-  const order = await Bill.aggregate([
+  const bill = await Bill.aggregate([
     {$match : {billDate : today}},
     {$sort : {billNumber : -1}},
     {$limit : 1}
   ])
 
-  const billNumber =  order[0] ? order[0].billNumber + 1 : 1 ;
+  const billNumber =  bill[0] ? bill[0].billNumber + 1 : 1 ;
   const billId = `BILL-${todayString}-${billNumber}`
 
   return {billNumber,billId,billDate : today}
@@ -176,29 +176,25 @@ module.exports = {
     const orderItemsObj = await Promise.resolve(computeOrder(orderObjectIds));
 
     const billObj = await Promise.resolve(getBillId());
+
+    const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
     
     return res.status(201).json({
       message : "bill generated for " + orderItemsObj.orderBillId,
       status : 201,
       billData :{
-        restaurantInfo : {
-          name : "paragon",
-          address : "manjeri,malappuram",
-        },
-        billInfo : {
-          date : billObj.billDate,
-          orderNumbers : orderItemsObj.orderBillId,
-          gstn : "32PQRSX5678L1Z2",
-          paymentStatus : "",
-          tableNumber : table.tableNumber,
-          tableId : table._id,
-          billId : billObj.billId
-        },
-        orderDetails : orderItemsObj.orderDetails,
-        billSummary :{
-          billNumber : billObj.billNumber,
-          total : orderItemsObj.TOTAL
-        }
+        restaurentName : resto.restaurentName,
+        location : resto.location,
+        gstn : "32PQRSX5678L1Z2",
+        date : billObj.billDate,
+        orderNumbers : orderItemsObj.orderBillId,
+        paymentStatus : "",
+        tableNumber : table.tableNumber,
+        tableId : table._id,
+        billId : billObj.billId,
+        billItems : orderItemsObj.orderDetails,
+        billNumber : billObj.billNumber,
+        billTotal : orderItemsObj.TOTAL
       }
 
     });
@@ -214,12 +210,21 @@ module.exports = {
     );
 
     const existingBill = await Bill.findOne({
-      orderIds: { $in : orderObjectIds }
-    });
+      orderIds: { $all : orderObjectIds }
+    }).lean();
 
     if (existingBill) {
-      throw new AppError("Bill already generated for these orders", 400);
+      return res.status(200).json({
+        message : "Bill Already generated",
+        status : 200,
+        billData : {
+          ...existingBill,
+          created : true
+        }
+      });
     }
+
+    if(!tableId)throw new AppError("fields required", 400);
 
     const table = await Table.findOne({_id : new mongoose.Types.ObjectId(tableId) , tableOrders: { $all: orderObjectIds } });
     if(!table)throw new AppError("orders should from same table!",400);
@@ -231,6 +236,8 @@ module.exports = {
     }
 
     const billObj = await getBillId();
+
+    const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
 
     const order = await razorpay.orders.create({
       amount : orderItemsObj.TOTAL * 100,
@@ -267,7 +274,9 @@ module.exports = {
         razorpayOrderId : order.id,
         qrId : qr.id,
         qrAmount : qr.amount,
-        qrImage : qr.image_url
+        qrImage : qr.image_url,
+        restaurentName : resto.restaurentName,
+        location : resto.location
       });
 
       const update = await Order.updateMany(
@@ -283,12 +292,7 @@ module.exports = {
       res.status(200).json({
         message : "Bill generated and Changed order status to pending..",
         status : 200,
-        billData : {
-          qrImage : qr.image_url,
-          billId : bills.billId,
-          billDate : billObj.billDate,
-          billTotal : bills.billTotal
-        }
+        billData : bills
       });
 
     } catch (error) {

@@ -26,6 +26,7 @@ import AdminCustomerDetails from './pages/AdminCustomerDetails.jsx'
 import AdminTables from './pages/AdminTables.jsx'
 import AdminTableDetails from './pages/AdminTableDetails.jsx'
 import AdminSettings from './pages/AdminSettings.jsx'
+import WaiterBills from "./pages/WaiterBills.jsx"
 
 
 function App() {
@@ -47,7 +48,8 @@ function App() {
         <Route path="/waiter/tables" element={<Table/>} />
         <Route path="/waiter/tables/:id" element ={<EachTable/>} />
         <Route path='/waiter/order' element={<Order/>} />
-        <Route path='/waiter/updates' element={<Updates/>} />
+        <Route path="/waiter/bills" element={<WaiterBills/>} />
+        <Route path='/waiter/updates' element={<Updates/>} /> 
       </Route>
 
       <Route element={<ProtectedRoute roleP={"cook"}></ProtectedRoute>}>

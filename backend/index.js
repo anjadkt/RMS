@@ -30,6 +30,7 @@ const adminOrderRouter = require('./src/router/admin/adminOrder.route.js');
 const staffRouter = require('./src/router/waiter/users.route.js');
 const waiterTableRouter = require('./src/router/waiter/table.route.js');
 const waiterOrderRouter = require('./src/router/waiter/orders.route.js');
+const billRouter = require('./src/router/waiter/bills.route.js');
 
 const cookProductRouter = require('./src/router/cook/product.route.js');
 const cookOrderRouter = require('./src/router/cook/order.route.js');
@@ -90,6 +91,7 @@ app.use('/resto/admin',verifyToken,verifyUsers("admin"),restoRouter);
 app.use('/auth/staff',staffRouter);
 app.use('/waiter/table',verifyToken,verifyUsers("admin","waiter"),waiterTableRouter);
 app.use('/waiter/orders',verifyToken,verifyUsers("waiter","admin"),waiterOrderRouter);
+app.use('/waiter/bills',verifyToken,verifyUsers("waiter","admin"),billRouter);
 
 //cook routes
 app.use('/items/cook',verifyToken,verifyUsers("cook","admin"),cookProductRouter);

@@ -2,68 +2,65 @@ import { Printer, MapPin, Calendar, Hash, ChevronRight, QrCode } from 'lucide-re
 import { useEffect, useState } from 'react';
 import api from '../services/axios';
 
-export default function Bill({orderIds, restaurantInfo, billInfo, orderDetails, billSummary }) {
+export default function Bill({ data }) {
   const [loading,setLoading] = useState(false);
   const [billData,setBillData] = useState({});
   const [imgLoad,setImgLoad] = useState(false);
 
-  // const paymentUrl = `upi://pay?pa=merchant@upi&pn=${restaurantInfo.name}&am=${billSummary.total}&cu=INR`;
-
   const printBill = async () => {
     try{
       setLoading(true);
-      const {data} = await api.post('/waiter/orders/payment',{orderIds,tableId : billInfo.tableId});
-      setBillData(data.billData);
+      const {data : printBill} = await api.post('/waiter/orders/payment',{orderIds : data.orderIds ,tableId : data?.tableId});
+      setBillData(printBill.billData);
     }catch(error){
-      if(error.status === 400){
-        window.print();
-      }
+      console.log(error.message);
     }finally{
       setLoading(false);
     }
   }
 
   useEffect(()=>{
-    if(!imgLoad)return ;
+    if(!imgLoad || data.qrImage)return ;
      window.print();
   },[imgLoad]);
 
   return (
-    <div className="bg-slate-100 px-4 min-h-screen flex flex-col gap-6 justify-center items-center py-6 lg:py-0 lg:py-12">
-      <div id='bill-print' className="bg-white w-full max-w-[380px] border border-slate-200 shadow-2xl rounded-sm overflow-hidden flex flex-col relative">
+    <div key={data.billId} className="flex flex-col gap-6 justify-center items-center m-4">
+
+      <div id={'bill-print'} className="bg-white w-lg max-w-xs border border-slate-200 rounded-sm overflow-hidden flex flex-col relative">
         
         {/* Top Decorative Edge */}
-        <div className="h-2 w-full bg-[repeating-linear-gradient(45deg,#cbd5e1,#cbd5e1_10px,#ffffff_10px,#ffffff_20px)] opacity-50"></div>
+        <div className="h-2 w-sm bg-[repeating-linear-gradient(45deg,#cbd5e1,#cbd5e1_10px,#ffffff_10px,#ffffff_20px)] opacity-50"></div>
 
-        <div className="px-6 py-6 lg:px-10 lg:py-8">
+        <div className="px-6 py-2 lg:px-10 lg:py-4">
           {/* Header */}
-          <header className="text-center mb-6">
-            <div className="inline-flex items-center justify-center p-2 rounded-full bg-slate-100 mb-3">
-               <QrCode size={20} className="text-slate-800" />
-            </div>
+          <header className="text-center mb-2">
             <h1 className="text-2xl lg:text-3xl font-black uppercase tracking-tighter text-slate-800 leading-none">
-              {restaurantInfo.name}
+              {data.restaurentName}
             </h1>
             <div className="flex items-center justify-center gap-1 text-slate-500 text-[10px] lg:text-xs mt-2 font-medium">
               <MapPin size={10} />
-              <span>{restaurantInfo.address}</span>
+              <span>{data.location}</span>
             </div>
           </header>
 
           {/* Bill Meta Info */}
           <div className="flex flex-col gap-1 mb-6 text-[11px] lg:text-sm text-slate-500 font-mono border-y border-dashed border-slate-200 py-4">
-            <div className="flex justify-between">
-              <span className="flex items-center gap-1"><Hash size={12}/> ID: {billData.billId || billInfo.billId}</span>
-              <span className="flex items-center gap-1"><Calendar size={12}/> {billData.billDate || billInfo.date}</span>
+              
+            <div className='flex justify-between items-center'>
+              <div className="flex items-center gap-1"><Hash size={12}/>{billData.billId || data.billId}</div>
+              <div className="flex items-center gap-1"><Calendar size={12}/> {billData.billDate || data.date}</div>
             </div>
-            <div className="flex justify-between items-center mt-1">
-              <span className="text-slate-800 font-bold">TABLE: {billInfo.tableNumber}</span>
-              <span className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-widest ${
-                billInfo.paymentStatus === 'PAID' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
+
+            <div className='flex justify-between items-center'>
+              <div className="text-slate-800 font-bold">TABLE : {data.tableNumber}</div>
+              <div className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-widest ${
+                data.paymentStatus === 'paid' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
               }`}>
-                {billInfo.paymentStatus || "UNPAID"}
-              </span>
+                {data.paymentStatus || "unpaid"}
+              </div>
             </div>
+            
           </div>
 
           {/* Items Table */}
@@ -76,7 +73,7 @@ export default function Bill({orderIds, restaurantInfo, billInfo, orderDetails, 
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-50">
-              {orderDetails.map((item, index) => (
+              {data.billItems?.map((item, index) => (
                 <tr key={index} className="text-xs lg:text-sm text-slate-700">
                   <td className="py-3 font-medium capitalize">{item.name}</td>
                   <td className="py-3 text-center text-slate-400">x{item.quantity}</td>
@@ -90,14 +87,14 @@ export default function Bill({orderIds, restaurantInfo, billInfo, orderDetails, 
           <div className="border-t-2 border-slate-900 pt-4 mb-8">
             <div className="flex justify-between items-center">
               <span className="text-sm font-black text-slate-900 uppercase tracking-tight">Total Amount</span>
-              <span className="text-base font-black text-slate-900">₹{billData.billTotal || billSummary.total.toFixed(2)}</span>
+              <span className="text-base font-black text-slate-900">₹{billData.billTotal || data.billTotal?.toFixed(2)}</span>
             </div>
           </div>
 
           {/* NEW: Pay & Go Section */}
           {
-            billData.qrImage && (
-              <div className="bg-slate-900 rounded-xl p-6 flex flex-col items-center text-white mb-6 shadow-lg">
+            (billData.qrImage || data.qrImage) && (
+              <div className="bg-slate-900 rounded-xl p-6 flex flex-col items-center text-white mb-6">
             
                 <h3 className="text-xs font-bold uppercase tracking-[0.2em] mb-4 flex items-center justify-center gap-2">
                   Fast Pay <ChevronRight size={14} className="text-slate-400" />
@@ -107,7 +104,7 @@ export default function Bill({orderIds, restaurantInfo, billInfo, orderDetails, 
                 <div className="bg-white relative w-36 h-36 lg:w-40 lg:h-40 rounded-lg overflow-hidden flex items-center justify-center mb-4">
                   <img
                     onLoad={()=>setImgLoad(true)}
-                    src={billData.qrImage}
+                    src={billData.qrImage || data.qrImage}
                     alt="Payment QR"
                     className="
                       w-[180px]
@@ -134,6 +131,7 @@ export default function Bill({orderIds, restaurantInfo, billInfo, orderDetails, 
         {/* Zig Zag Bottom */}
         <div className="h-4 w-full bg-[radial-gradient(circle_at_10px_-7px,#ffffff_12px,transparent_13px)] bg-[length:20px_20px]"></div>
       </div>
+
       <button 
           onClick={printBill}
           className="w-[200px] flex items-center justify-center gap-2 bg-slate-900 border-2 border-slate-200 text-white py-3 rounded-lg font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 print:hidden"
@@ -149,7 +147,7 @@ export default function Bill({orderIds, restaurantInfo, billInfo, orderDetails, 
             )
           }
           
-        </button>
+      </button>
     </div>
   );
 }

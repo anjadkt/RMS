@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ShoppingCart, Table, CirclePlus, LogOut, Bell } from 'lucide-react';
+import { ShoppingCart, Table, CirclePlus, LogOut, Bell, Receipt } from 'lucide-react'; // Added Receipt icon
 import { NavLink , useNavigate } from 'react-router-dom';
 import {setLogout} from '../app/features/user/userSlice.js'
 import api from '../services/axios.js'
@@ -11,11 +11,13 @@ export default function Nav() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // Rearranged and added "Bills"
   const navItems = [
     { name: 'Orders', icon: <ShoppingCart size={20} />, href: '/waiter/orders' },
-    { name: 'Create', icon: <CirclePlus size={20} />, href: '/waiter/order', primary: true },
     { name: 'Tables', icon: <Table size={20} />, href: '/waiter/tables' },
-    { name: 'Updates', icon: <Bell size={20} />, href: '/waiter/updates' }, // Added Updates
+    { name: 'Create', icon: <CirclePlus size={20} />, href: '/waiter/order', primary: true },
+    { name: 'Bills', icon: <Receipt size={20} />, href: '/waiter/bills' },
+    { name: 'Updates', icon: <Bell size={20} />, href: '/waiter/updates' },
   ];
 
   const setUserLogout = async () => {
@@ -29,7 +31,6 @@ export default function Nav() {
   useEffect(() => {
     const handleScroll = () => {
       const currentScrollY = window.scrollY;
-      // Show if scrolling up, hide if scrolling down
       if (currentScrollY > lastScrollY && currentScrollY > 100) {
         setShow(false);
       } else {

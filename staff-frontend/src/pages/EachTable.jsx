@@ -28,7 +28,7 @@ export default function EachTable() {
     try {
       setLoading(true);
       const { data } = await api.post('/waiter/orders/bill', { orderIds, tableId: table._id });
-      setBillData(data.billData);
+      setBillData({...data.billData , orderIds});
       setFall(true);
     } catch (error) {
       if (error.status === 400) setError({ data: "Select an Order!" });
@@ -100,7 +100,15 @@ export default function EachTable() {
           <div className="flex justify-center py-20 print:hidden">
             <span className="h-8 w-8 border-4 border-slate-900 border-t-transparent rounded-full animate-spin" />
           </div>
-        ) : (
+        ) : orders.length === 0 ? (
+          <div className="w-full flex flex-col items-center justify-center py-20 bg-white rounded-3xl border-2 border-dashed border-slate-200 text-slate-400 print:hidden">
+            <div className="bg-slate-50 p-4 rounded-full mb-4">
+              <Receipt size={40} className="text-slate-300" />
+            </div>
+            <p className="font-bold text-lg">No active orders found</p>
+            <p className="text-sm">This table currently having no new orders.</p>
+          </div>
+        ) :(
           <div className="w-full space-y-3 print:hidden">
             {orders.map((v, i) => (
               <div key={i} className="w-full">
@@ -148,7 +156,7 @@ export default function EachTable() {
             {fall && (
               Object.keys(billData).length ? (
                 <div className="bg-white rounded-3xl p-1 shadow-2xl border border-slate-200">
-                  <Bill orderIds={orderIds} restaurantInfo={billData.restaurantInfo} billInfo={billData.billInfo} orderDetails={billData.orderDetails} billSummary={billData.billSummary}/>
+                  <Bill data={billData} />
                 </div>
               ) : (
                 <div className="text-center py-10 bg-slate-100 rounded-2xl text-slate-400 font-bold border border-slate-200 print:hidden">

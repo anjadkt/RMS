@@ -8,7 +8,7 @@ module.exports = {
   markPaymentCompleted : catchAsync(async (req,res)=>{
     const event = JSON.parse(req.body.toString());
 
-    if(event.event === "qr_code.creditedww"){
+    if(event.event === "qr_code.credited"){
 
       const payment = event.payload?.payment?.entity ;
 
@@ -44,9 +44,11 @@ module.exports = {
         table.isOccupied = false ;
         await table.save();
       }
+
+      console.log("good");
+
+      res.status(200).json({ received: true });
       
     }
-
-    res.status(200).json({ received: true });
   })
 }

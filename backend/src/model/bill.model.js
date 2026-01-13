@@ -5,7 +5,7 @@ const billSchema = new mongoose.Schema({
     type : Number
   },
   billDate : {
-    type : Date
+    type : String
   },
   billId : String,
   orderIds : [
@@ -39,7 +39,9 @@ const billSchema = new mongoose.Schema({
     type : String,
     enum : ["open","closed","expired"]
   },
-  isPrinted : Boolean
+  isPrinted : Boolean,
+  restaurentName : String,
+  location : String
 });
 
 module.exports = mongoose.model("Bill",billSchema);
