@@ -1,7 +1,7 @@
 import Nav from "../components/Nav.jsx";
 import { useEffect, useState } from 'react';
 import api from "../services/axios.js";
-import Bill from "../components/Bill.jsx";
+import WaiterBillComp from "../components/WaiterBillComp.jsx";
 import { Receipt, Loader2 } from 'lucide-react';
 
 export default function WaiterBills() {
@@ -52,7 +52,7 @@ export default function WaiterBills() {
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 items-start justify-items-center">
             {bills.map((v, index) => (
               <div key={v._id || index} className="w-full flex justify-center">
-                 <Bill data={v} />
+                 <WaiterBillComp data={v} />
               </div>
             ))}
           </div>
