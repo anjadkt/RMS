@@ -5,6 +5,8 @@ const Bill = require('../model/bill.model.js');
 const AppError = require('../utils/AppError.js');
 const mongoose = require('mongoose');
 const razorpay = require('../utils/razorPay.js');
+const {getIO} = require('../utils/socket.js');
+const io = getIO();
 
 
 async function getBillId(){
@@ -94,7 +96,9 @@ module.exports = {
 
     const tableIds = table.flatMap(t => t.tableOrders );
 
-    if(!tableIds.length)throw new AppError("No Orders Found!",404);
+    if(!tableIds.length){
+      return res.status(200).json({orders :[]});
+    }
 
     const orderQuery = {
       _id : {$in : tableIds}
@@ -130,7 +134,9 @@ module.exports = {
     );
     if(!order)throw new AppError("Order Cannot be Accepted / already Accepted!",400);
 
-    //notify chef
+    if(order.status === "accepted"){
+      io.to(`cook`).emit('order-accepted',{order});
+    }
 
     res.status(200).json({
       message : `Order ${action} Successfully!`,
@@ -151,7 +157,9 @@ module.exports = {
     );
     if(!order)throw new AppError("Order Updation Failed!",400);
 
-    //update waiter
+    if(order.status === "ready"){
+      io.to(`waiter-${order.waiterId}`).emit('order-ready',{order});
+    }
 
     res.status(200).json({
       message : "Order status updated to " + action ,

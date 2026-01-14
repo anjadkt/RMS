@@ -28,13 +28,14 @@ export default function OrderItems({ data, fetchOrders }) {
       isProcessing: true,
     },
     ready: {
-      color: "bg-green-100 text-green-700 border-green-200",
+      color: "bg-yellow-100 text-gray-700 border-yellow-200",
       btnText: "Mark as Served",
       nextAction: "served",
     },
     served: {
       color: "bg-emerald-100 text-emerald-700 border-emerald-200",
       btnText: "Complete Order",
+      isServed : true,
       nextAction: "completed",
     },
     pending: {
@@ -106,6 +107,18 @@ export default function OrderItems({ data, fetchOrders }) {
           {currentStatus.label}
         </div>
       );
+    }
+
+    if(currentStatus.isServed){
+      return (
+        <button
+          className="w-full flex items-center justify-center gap-2 bg-green-900 hover:bg-green text-white font-bold py-3 px-4 text-sm rounded-xl transition-all shadow-md active:scale-[0.98]"
+          onClick={handleAction}
+        >
+          <CheckCircle size={18} />
+          {currentStatus.btnText}
+        </button>
+      )
     }
 
     // Default Action Button

@@ -38,14 +38,12 @@ module.exports = {
         {runValidators : true}
       );
 
-      const table = await Table.fineOneAndUpdate({_id : bills.tableId},{$pull : {tableOrders : {$in : orderObjectIds}}},{new : true});
+      const table = await Table.findOneAndUpdate({_id : bills.tableId},{$pull : {tableOrders : {$in : orderObjectIds}}},{new : true});
 
       if(table && table.tableOrders.length === 0){
         table.isOccupied = false ;
         await table.save();
       }
-
-      console.log("good");
 
       res.status(200).json({ received: true });
       

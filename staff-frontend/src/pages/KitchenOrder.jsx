@@ -1,12 +1,15 @@
 import Header from "../components/Header";
-import { useEffect,useState } from "react";
+import { useEffect,useState ,useRef} from "react";
 import OrderComp from "../components/OrderComp";
 import api from '../services/axios.js';
+import socket from '../services/socket.js';
 
 export default function KitchenOrders(){
   const [active,setActive] = useState("All");
   const [orders,setOrders] = useState([]);
   const [loading,setLoading] = useState(false);
+
+  const soundElem = useRef(null)
 
 
   async function fetchOrders(status) {
@@ -23,7 +26,30 @@ export default function KitchenOrders(){
 
   useEffect(()=>{
     fetchOrders("all");
-  },[])
+  },[]);
+
+  useEffect(()=>{
+    const handleEvent = ({order})=>{
+      setOrders(pre => {
+        const exist = pre.find(v => v._id === order._id);
+        if(exist)return pre ;
+
+        return [order,...pre];
+      });
+
+      if(soundElem.current){
+        soundElem.current.currentTime = 0;
+        soundElem.current.play().catch(() => {
+        });
+      }
+    }
+
+    socket.on('order-accepted',handleEvent);
+
+    return ()=> {
+      socket.off('order-accepted',handleEvent);
+    }
+  })
 
 
   const filter = [
@@ -77,6 +103,8 @@ export default function KitchenOrders(){
           </main>
         )
       }
+
+      <audio ref={soundElem} preload="auto" src="/sounds/chefNoti.mp3"></audio>
      
     </>
   )

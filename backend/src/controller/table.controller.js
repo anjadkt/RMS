@@ -7,14 +7,17 @@ const mongoose = require('mongoose');
 
 module.exports = {
   createTable : catchAsync(async(req,res)=>{
-    const tableNumber = req.body?.tableNumber
+    const {tableNumber} = req.body
     if(!tableNumber || !tableNumber.includes("TBL-"))throw new AppError("Table Number is Required!",400);
 
     const isTable = await Table.findOne({tableNumber});
-    if(isTable)throw new AppError("Table Already Exist!",409)
+    if(isTable)throw new AppError("Table Already Exist!",409);
+
+    const number = Number(tableNumber.split("-")[1]);
 
     const table = await Table.create({
-      tableNumber
+      tableNumber,
+      tableNo : number
     });
 
     if(!table)throw new AppError("Table Creation Failed!",400);
@@ -124,7 +127,7 @@ module.exports = {
       query.tableNumber = {$regex : q , $options : "i"}
     }
 
-    const tables = await Table.find(query).sort({tableNumber : 1})
+    const tables = await Table.find(query).sort({tableNo : 1});
 
     res.status(200).json(tables);
   }),

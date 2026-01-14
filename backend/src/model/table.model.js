@@ -20,6 +20,9 @@ const tableSchema = new mongoose.Schema({
     type : Boolean,
     default : false
   },
+  tableNo : {
+    type : Number
+  },
 
 
   restaurentId : String,

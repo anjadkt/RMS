@@ -135,6 +135,7 @@ module.exports = {
     res.status(200).json({
       message : "User Data Found!",
       userData : {
+        _id : user._id,
         isBanned : user.isBanned,
         role : user.role,
         cart : user.cart,

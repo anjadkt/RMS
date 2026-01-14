@@ -4,6 +4,9 @@ const User = require('../model/users.model.js');
 const Order = require('../model/order.model.js');
 const Table = require('../model/table.model.js');
 
+const {getIO} = require('../utils/socket.js');
+const io = getIO();
+
 async function getOrderId(){
   const today = new Date().toISOString().slice(0, 10);
   const todayString = today.split("-").join("");
@@ -82,9 +85,9 @@ module.exports = {
     await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : [],name}},{runValidators : true});
 
     if(role === "waiter"){
-      //notify chef
+      io.to(`cook`).emit('order-accepted',{order});
     }else{
-      //notify waiter
+      io.to(`waiter-${table.waiterId}`).emit("new-order",{order});
     }
 
     res.status(201).json({

@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import Nav from "../components/Nav"
 import OrderItems from "../components/OrderItems";
 import api from "../services/axios.js";
+import socket from "../services/socket.js";
 
 export default function Orders(){
   const [orders,setOrders] = useState([]);
   const [loading,setLoading] = useState(false);
   const [active ,setActive] = useState("All");
+
+  const soundElem = useRef(null);
 
   const status = [
     "All","placed","accepted","preparing","ready","served","pending","completed"
@@ -26,7 +29,51 @@ export default function Orders(){
 
   useEffect(()=>{
     fetchOrders("All");
-  },[])
+  },[]);
+
+  useEffect(()=>{
+
+    const eventHandler = ({order})=>{
+      setOrders(pre => {
+        const exist = pre.find(v => v._id === order._id);
+        if(exist)return pre ;
+
+        return [order,...pre]
+      })
+
+      if(soundElem.current){
+        soundElem.current.currentTime = 0;
+        soundElem.current.play().catch(() => {
+        });
+      }
+
+      if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+    }
+
+    const readyEvent = ({order})=>{
+      setOrders(pre =>[order,...pre]);
+
+      if(soundElem.current){
+        soundElem.current.currentTime = 0;
+        soundElem.current.play().catch(() => {
+        });
+      }
+
+      if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+    }
+    socket.on("new-order",eventHandler);
+    socket.on("order-ready",readyEvent);
+
+    return ()=> {
+      socket.off("new-order",eventHandler);
+      socket.off("order-ready",readyEvent);
+    }
+
+  },[]);
 
   return(
     <div className="min-h-screen bg-slate-50">
@@ -80,6 +127,7 @@ export default function Orders(){
         )}
       </main>
       <Nav/>
+      <audio ref={soundElem} src="/sounds/waiterNoti.mp3" preload="auto" />
     </div>
   )
 }

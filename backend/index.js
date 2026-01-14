@@ -3,6 +3,21 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const mongoose = require('mongoose');
+const http = require('http');
+const server = http.createServer(app);
+
+const {PORT,MONGO_DB_URL,USERFRONT_END_URL,STAFFFRONT_END_URL} = process.env ;
+
+app.use(cors({
+  origin : [USERFRONT_END_URL,STAFFFRONT_END_URL],
+  methods : ["GET","POST","PUT","DELETE"],
+  credentials : true
+}));
+
+const {initSocket} = require('./src/utils/socket.js');
+initSocket(server);
+
+
 
 const cookieParser = require('cookie-parser');
 const verifyToken = require('./src/middleware/verifyToken.js');
@@ -35,23 +50,16 @@ const billRouter = require('./src/router/waiter/bills.route.js');
 const cookProductRouter = require('./src/router/cook/product.route.js');
 const cookOrderRouter = require('./src/router/cook/order.route.js');
 
-const {PORT,MONGO_DB_URL,USERFRONT_END_URL,STAFFFRONT_END_URL} = process.env ;
-
-
-
-app.use(cors({
-  origin : [USERFRONT_END_URL,STAFFFRONT_END_URL],
-  methods : ["GET","POST","PUT","DELETE"],
-  credentials : true
-}));
-
 mongoose.connect(MONGO_DB_URL)
 .then(()=>{
   console.log("Mongo DB connected!");
-  app.listen(PORT,()=>{
+
+  server.listen(PORT,()=>{
     console.log("Server is Listening....");
   })
 });
+
+
 
 app.post('/webhooks/razorpay',express.raw({ type: "application/json" }),signatureTest,webhooksController.markPaymentCompleted);
 
