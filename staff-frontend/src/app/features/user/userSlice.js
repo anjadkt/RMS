@@ -51,9 +51,11 @@ export const checkAuth = () => async (dispatch) => {
     if (!socket.connected) {
       socket.connect();
     }
-    socket.emit("user-login",{
-      userId: data.userData._id,
-      role: data.userData.role
+    socket.once("connect", () => {
+      socket.emit("user-login", {
+        userId: data.userData._id,
+        role: data.userData.role
+      });
     });
   } catch (error) {
     dispatch(setFetchFail(error.message));

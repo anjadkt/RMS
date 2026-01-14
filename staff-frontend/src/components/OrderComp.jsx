@@ -1,9 +1,12 @@
 import { useState } from "react";
 import api from "../services/axios";
+import { fetchKitchenOrders } from "../app/features/order/orderSlice";
+import { useDispatch } from "react-redux";
 
-export default function OrderComp({data,setOrders}) {
+export default function OrderComp({data}) {
 
   const [loading,setLoading] = useState(false);
+  const dispatch = useDispatch();
 
   const statusColors = {
     placed: "bg-purple-100 text-purple-700",
@@ -20,7 +23,7 @@ export default function OrderComp({data,setOrders}) {
     try{
       setLoading(true);
       const {data} = await api.post('/orders/cook/',{action,id});
-      setOrders(pre => pre.map(order=> order._id === data.order._id ? data.order : order));
+      dispatch(fetchKitchenOrders("all"));
     }catch(error){
       console.log(error.message);
     }finally{
@@ -29,7 +32,7 @@ export default function OrderComp({data,setOrders}) {
   }
 
   return (
-    <div className="max-w-xs min-w-xs bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 m-4">
+    <div key={data._id} className="max-w-xs min-w-xs bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 m-4">
 
       <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
         <div className="text-left">

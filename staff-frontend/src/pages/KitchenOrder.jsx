@@ -1,56 +1,14 @@
 import Header from "../components/Header";
 import { useEffect,useState ,useRef} from "react";
 import OrderComp from "../components/OrderComp";
-import api from '../services/axios.js';
-import socket from '../services/socket.js';
+import { useSelector , useDispatch } from "react-redux";
+import { fetchKitchenOrders } from "../app/features/order/orderSlice";
 
 export default function KitchenOrders(){
-  const [active,setActive] = useState("All");
-  const [orders,setOrders] = useState([]);
-  const [loading,setLoading] = useState(false);
+  const [active,setActive] = useState("all");
+  const {orders,loading} = useSelector(state => state.orders);
 
-  const soundElem = useRef(null)
-
-
-  async function fetchOrders(status) {
-    try{
-      setLoading(true);
-      const {data} = await api.get(`/orders/cook/${status}`);
-      setOrders(data);
-    }catch(error){
-      console.log(error.message);
-    }finally{
-      setLoading(false);
-    }
-  }
-
-  useEffect(()=>{
-    fetchOrders("all");
-  },[]);
-
-  useEffect(()=>{
-    const handleEvent = ({order})=>{
-      setOrders(pre => {
-        const exist = pre.find(v => v._id === order._id);
-        if(exist)return pre ;
-
-        return [order,...pre];
-      });
-
-      if(soundElem.current){
-        soundElem.current.currentTime = 0;
-        soundElem.current.play().catch(() => {
-        });
-      }
-    }
-
-    socket.on('order-accepted',handleEvent);
-
-    return ()=> {
-      socket.off('order-accepted',handleEvent);
-    }
-  })
-
+  const dispatch = useDispatch();
 
   const filter = [
     {cover : "All" , value :"all" },
@@ -58,6 +16,11 @@ export default function KitchenOrders(){
     {cover : "Preparing" , value :"preparing" },
     {cover : "Ready" , value :"ready" }
   ]
+
+  useEffect(()=>{
+    dispatch(fetchKitchenOrders(active));
+  },[active]);
+
   return(
     <>
      <Header />
@@ -71,8 +34,7 @@ export default function KitchenOrders(){
         filter.map((v,i)=>(
           <div
            onClick={()=>{
-            setActive(v.cover)
-            fetchOrders(v.value)
+            setActive(v.value);
            }}
            key={i}
            className={`
@@ -80,7 +42,7 @@ export default function KitchenOrders(){
               cursor-pointer
               border-r border-gray-500 
               rounded-lg text-sm font-semibold shadow-sm text-center
-              ${active === v.cover ? "bg-black text-white" : "hover:bg-gray-200"}
+              ${active === v.value ? "bg-black text-white" : "hover:bg-gray-200"}
             `}
           >{v.cover}</div>
         ))
@@ -97,14 +59,12 @@ export default function KitchenOrders(){
           <main className="mt-20 ml-34 flex flex-wrap justify-start">
             {
               orders.map(v=>(
-                <OrderComp setOrders={setOrders} data={v} />
+                <OrderComp data={v} />
               ))
             }
           </main>
         )
       }
-
-      <audio ref={soundElem} preload="auto" src="/sounds/chefNoti.mp3"></audio>
      
     </>
   )

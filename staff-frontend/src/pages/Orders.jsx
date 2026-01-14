@@ -1,79 +1,23 @@
 import { useEffect, useRef, useState } from "react"
 import Nav from "../components/Nav"
 import OrderItems from "../components/OrderItems";
-import api from "../services/axios.js";
-import socket from "../services/socket.js";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchWaiterOrders } from "../app/features/order/orderSlice.js";
 
 export default function Orders(){
-  const [orders,setOrders] = useState([]);
-  const [loading,setLoading] = useState(false);
+  const {orders,loading} = useSelector(state => state.orders);
   const [active ,setActive] = useState("All");
 
-  const soundElem = useRef(null);
+  const dispatch = useDispatch();
+  
 
   const status = [
     "All","placed","accepted","preparing","ready","served","pending","completed"
   ]
 
-  async function fetchOrders(status) {
-    try{
-    setLoading(true);
-    const {data} = await api.get(`/waiter/orders?s=${status === "All" ? "" : status}`);
-    setOrders(data.orders);
-    }catch(error){
-      console.log(error.message);
-    }finally{
-      setLoading(false)
-    }
-  } 
-
   useEffect(()=>{
-    fetchOrders("All");
-  },[]);
-
-  useEffect(()=>{
-
-    const eventHandler = ({order})=>{
-      setOrders(pre => {
-        const exist = pre.find(v => v._id === order._id);
-        if(exist)return pre ;
-
-        return [order,...pre]
-      })
-
-      if(soundElem.current){
-        soundElem.current.currentTime = 0;
-        soundElem.current.play().catch(() => {
-        });
-      }
-
-      if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200]);
-      }
-    }
-
-    const readyEvent = ({order})=>{
-      setOrders(pre =>[order,...pre]);
-
-      if(soundElem.current){
-        soundElem.current.currentTime = 0;
-        soundElem.current.play().catch(() => {
-        });
-      }
-
-      if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200]);
-      }
-    }
-    socket.on("new-order",eventHandler);
-    socket.on("order-ready",readyEvent);
-
-    return ()=> {
-      socket.off("new-order",eventHandler);
-      socket.off("order-ready",readyEvent);
-    }
-
-  },[]);
+    dispatch(fetchWaiterOrders(active));
+  },[active]);
 
   return(
     <div className="min-h-screen bg-slate-50">
@@ -91,7 +35,6 @@ export default function Orders(){
             key={i}
             onClick={() => {
               setActive(v);
-              fetchOrders(v);
             }}
             className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-all whitespace-nowrap
             lg:text-sm
@@ -120,14 +63,13 @@ export default function Orders(){
             /* Responsive Grid Layout */
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 max-w-[1600px] mx-auto">
               {orders.map(v => (
-                <OrderItems key={v._id} fetchOrders={fetchOrders} data={v} />
+                <OrderItems key={v._id} data={v} />
               ))}
             </div>
           )
         )}
       </main>
       <Nav/>
-      <audio ref={soundElem} src="/sounds/waiterNoti.mp3" preload="auto" />
     </div>
   )
 }

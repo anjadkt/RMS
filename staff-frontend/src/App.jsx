@@ -2,8 +2,8 @@
 import {Routes, Route , Navigate} from "react-router-dom"
 import LoginPage from "./pages/Login.jsx"
 import Orders from "./pages/Orders.jsx"
-import { useEffect } from "react"
-import {useDispatch} from 'react-redux'
+import { useEffect , useRef } from "react"
+import {useDispatch , useSelector} from 'react-redux'
 import { checkAuth } from "./app/features/user/userSlice.js"
 import PublicRouter from './routeProtecter/PublicRouter.jsx'
 import ProtectedRoute from './routeProtecter/ProtectedRoute.jsx'
@@ -27,14 +27,83 @@ import AdminTables from './pages/AdminTables.jsx'
 import AdminTableDetails from './pages/AdminTableDetails.jsx'
 import AdminSettings from './pages/AdminSettings.jsx'
 import WaiterBills from "./pages/WaiterBills.jsx"
+import socket from "./services/socket.js"
+import {setPlacedOrders,setReadyOrders} from './app/features/order/orderSlice.js'
 
 
 function App() {
   const dispatch = useDispatch();
+  const {role} = useSelector(state => state.user);
+
+  const soundElem = useRef(null);
+  const kitchenNoti = useRef(null);
 
   useEffect(()=>{
     dispatch(checkAuth());
-  },[])
+  },[]);
+
+  useEffect(()=>{
+
+    socket.on("connect", () => {
+      console.log(`🟢 ${role} connected:`, socket.id);
+    });
+
+    const eventHandler = ({order})=>{
+
+      dispatch(setPlacedOrders(order))
+
+      if(soundElem.current){
+        soundElem.current.currentTime = 0;
+        soundElem.current.play().catch(() => {
+        });
+      }
+
+      if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+    }
+
+    const readyEvent = ({order})=>{
+      
+      dispatch(setReadyOrders(order));
+
+      if(soundElem.current){
+        soundElem.current.currentTime = 0;
+        soundElem.current.play().catch(() => {
+        });
+      }
+
+      if (navigator.vibrate) {
+        navigator.vibrate([200, 100, 200]);
+      }
+    }
+
+    const handleEvent = ({order})=>{
+
+      dispatch(setPlacedOrders(order));
+
+      if(kitchenNoti.current){
+        kitchenNoti.current.currentTime = 0;
+        kitchenNoti.current.play().catch(() => {
+        });
+      }
+    }
+
+
+    socket.on("new-order",eventHandler);
+    socket.on("order-ready",readyEvent);
+    socket.on('order-accepted',handleEvent);
+
+    socket.on("disconnect", () => {
+      console.log(`🔴 ${role} disconnected`);
+    });
+
+    return ()=> {
+      socket.off("new-order",eventHandler);
+      socket.off("order-ready",readyEvent);
+      socket.off('order-accepted',handleEvent);
+    }
+  })
 
   return (
     <>
@@ -74,6 +143,10 @@ function App() {
       </Route>     
 
      </Routes>
+
+     <audio ref={soundElem} src="/sounds/waiterNoti.mp3" preload="auto" />
+     <audio ref={kitchenNoti} preload="auto" src="/sounds/chefNoti.mp3" />
+
     </>
   )
 }

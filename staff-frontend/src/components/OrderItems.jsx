@@ -2,13 +2,14 @@ import { useState } from "react";
 import { ChevronDown, ChevronUp, CheckCircle, User, Hash, Clock } from "lucide-react";
 import api from "../services/axios";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { fetchWaiterOrders } from "../app/features/order/orderSlice";
 
-export default function OrderItems({ data, fetchOrders }) {
+export default function OrderItems({ data }) {
   const [fall, setFall] = useState(false);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
-  const total = data.orderItems?.reduce((accum, val) => accum + val.subTotal, 0);
+  const dispatch = useDispatch();
 
   // 1. Centralized Status Styling & Logic
   const STATUS_CONFIG = {
@@ -68,7 +69,7 @@ export default function OrderItems({ data, fetchOrders }) {
         tableNumber: data.tableNumber,
         action: currentStatus.nextAction,
       });
-      fetchOrders("All");
+      dispatch(fetchWaiterOrders("All"));
     } catch (error) {
       console.error(error.message);
     } finally {
@@ -175,7 +176,7 @@ export default function OrderItems({ data, fetchOrders }) {
           ))}
           <div className="flex justify-between items-center pt-2 border-t border-dashed border-slate-200">
             <span className="text-sm font-bold text-slate-800">Total Amount</span>
-            <span className="text-sm font-black text-blue-600">₹{total}</span>
+            <span className="text-sm font-black text-blue-600">₹{data.orderTotal}</span>
           </div>
         </div>
       </div>

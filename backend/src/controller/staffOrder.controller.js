@@ -66,7 +66,7 @@ module.exports = {
       query.status = {$in : ["accepted","preparing","ready"]}
     }
 
-    const orders = await Order.find(query).sort({orderId : -1});
+    const orders = await Order.find(query).sort({orderId : 1, orderNumber : 1});
     res.status(200).json(orders);
   }),
 
