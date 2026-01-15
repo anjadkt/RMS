@@ -1,250 +1,229 @@
-import { useState , useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import api from '../services/axios.js'
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
 import { checkAuth } from '../app/features/user/userSlice.js';
 
-export default function LoginPage () {
+export default function LoginPage() {
   const dispatch = useDispatch();
   const [isAdmin, setIsAdmin] = useState(false);
-  const [error,setError] = useState({});
-  const [loading,setLoading] = useState(false);
-  const [timer,setTimer] = useState(0);
-  const [otpLoading,setOtpLoading] = useState(false);
+  const [error, setError] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [timer, setTimer] = useState(0);
+  const [otpLoading, setOtpLoading] = useState(false);
 
-  useEffect(()=>{
-    if(timer === 0)return;
-
-    const timeOut = setTimeout(()=>{
-      setTimer(pre => pre-1);
-    },1000);
-
+  useEffect(() => {
+    if (timer === 0) return;
+    const timeOut = setTimeout(() => {
+      setTimer(pre => pre - 1);
+    }, 1000);
     return () => clearTimeout(timeOut);
-    
-  },[timer])
+  }, [timer])
 
-
-  const [form , setForm] = useState({
-    staffId : "",
-    password : "",
-    email : "",
-    otp : "",
-    pin : ""
+  const [form, setForm] = useState({
+    staffId: "",
+    password: "",
+    email: "",
+    otp: "",
+    pin: ""
   });
   const navigate = useNavigate();
 
-  const handleChange = (e) =>{
-    setError({});
-    setForm(pre =>(
-      {
-        ...pre , [e.target.name] : e.target.value
-      }
-    ))
+  const handleChange = (e) => {
+    // Clear error for the specific field being typed in
+    setError(prev => ({ ...prev, [e.target.name]: null }));
+    setForm(pre => ({ ...pre, [e.target.name]: e.target.value }));
   }
 
-  const verifyUser = async () =>{
-    if(Object.keys(error).length>0)return ;
-    try{
+  const validateFields = () => {
+    const errorObj = {}
+
+    if (!isAdmin) {
+      if (form.staffId?.trim().length < 6) {
+        errorObj.staffId = "Short ID"
+      }
+
+      // if (!form.staffId.includes("WTR-") && !form.staffId.includes("CHF-")) {
+      //   errorObj.staffId = "Invalid Format"
+      // }
+      if (form.pin?.trim().length < 6) {
+        errorObj.pin = "Min 6 digits"
+      }
+    } else {
+      if (!form.email.includes("@")) {
+        errorObj.email = "Invalid Email"
+      }
+      if (form.otp.trim().length < 6) {
+        errorObj.otp = "6 Digits required"
+      }
+      if (form.password?.trim().length < 6) {
+        errorObj.password = "Short password"
+      }
+    }
+
+    setError(errorObj);
+    return Object.keys(errorObj).length === 0;
+  }
+
+  const verifyUser = async () => {
+    if (!validateFields()) return;
+    try {
       setLoading(true);
-      if(isAdmin){
-        const {data} = await api.post('/auth/admin/login',form);
-        setError({});
+      if (isAdmin) {
+        await api.post('/auth/admin/login', form);
         dispatch(checkAuth());
         navigate('/admin/dashboard');
-      }else{
-        const {data} = await api.post('/auth/staff/login',form);
-        setError({});
+      } else {
+        const { data } = await api.post('/auth/staff/login', form);
         dispatch(checkAuth());
-        navigate( data.role === "waiter" ? '/waiter/orders' : '/kitchen/orders');
+        navigate(data.role === "waiter" ? '/waiter/orders' : '/kitchen/orders');
       }
-    }catch(error){
-      switch(error.status){
-        case 400 :
-          setError({staffId : "Required!",pin : "Required!" , email :"Required", otp : "Required" , password : "Required"});
-          break ;
-        case 404 : 
-          setError({staffId : "Mismatch!", email : "User Not Found!" });
-          break;
-        case 406 :
-          setError({pin : "Wrong Pin!", password : "Wrong Password/otp",otp : "Wrong Password/otp"});
-          break;
-      }
-    }finally{
+    } catch (err) {
+      if (err.status === 400) setError({ common: "All fields required" });
+      else if (err.status === 404) setError({ staffId: "Not Found", email: "Not Found" });
+      else if (err.status === 406) setError({ pin: "Wrong Pin", password: "Wrong Pass", otp: "Wrong OTP" });
+    } finally {
       setLoading(false);
     }
   }
 
   const sendOtp = async () => {
-    if(!form.email) return setError({email : "Required!"})
-    try{
+    if (!form.email) return setError({ email: "Required!" })
+    try {
       setOtpLoading(true);
-      const {data} = await api.post('/auth/admin/otp',{email : form.email});
+      await api.post('/auth/admin/otp', { email: form.email });
       setTimer(30);
-    }catch(error){
-      if(error.status === 400){
-        setError({
-          email : "Required!"
-        })
-      }else if(error.status === 429){
-        setError({
-          common : "Too Many Requests!"
-        })
-      }
-    }finally{
-     setOtpLoading(false);
+    } catch (err) {
+      setError({ email: err.status === 429 ? "Wait a moment" : "Failed" });
+    } finally {
+      setOtpLoading(false);
     }
   }
 
+  // Reusable Error Component for the right side
+  const ErrorLabel = ({ message }) => (
+    message ? <span className="absolute right-0 top-2 text-[8px] font-bold text-red-500 uppercase tracking-tighter">
+      {message}
+    </span> : null
+  );
+
   return (
-    <div className="min-h-screen flex items-center justify-center p-6 font-sans text-slate-900">
-      <div className="bg-white rounded-xl shadow-2xl w-full lg:w-sm max-w-md overflow-hidden border border-slate-100">
-        
-        <div className="py-4 text-center">
-          <h1 className="text-xl font-black tracking-tight">
-            {isAdmin ? 'Admin Portal' : 'Staff Portal'}
+    <div className="min-h-screen bg-gray-300 flex items-center justify-center p-6 font-sans text-slate-900">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100">
+
+        <div className="py-6 text-center">
+          <h1 className="text-2xl font-black tracking-tight">
+            {isAdmin ? 'ADMIN ACCESS' : 'STAFF ACCESS'}
           </h1>
         </div>
 
-        <div className="px-8 mb-8">
+        {/* Tab Switcher */}
+        <div className="px-8 mb-6">
           <div className="bg-slate-100 p-1.5 rounded-2xl flex relative items-center">
-            <div 
-              className={`absolute top-1.5 bottom-1.5 left-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-md transition-transform duration-300 ease-out ${
-                isAdmin ? 'translate-x-full' : 'translate-x-0'
-              }`}
-            />
-            
-            <button 
-              onClick={() => setIsAdmin(false)}
-              className={`relative z-10 flex-1 py-2.5 text-sm font-bold transition-colors duration-300 ${!isAdmin ? 'text-black' : 'text-slate-500'}`}
-            >
-              Staff
-            </button>
-            <button 
-              onClick={() => setIsAdmin(true)}
-              className={`relative z-10 flex-1 py-2.5 text-sm font-bold transition-colors duration-300 ${!isAdmin ? 'text-slate-500' : 'text-black'}`}
-            >
-              Admin
-            </button>
+            <div className={`absolute top-1.5 bottom-1.5 left-1.5 w-[calc(50%-6px)] bg-white rounded-xl shadow-sm transition-transform duration-300 ease-out ${isAdmin ? 'translate-x-full' : 'translate-x-0'}`} />
+            <button onClick={() => { setIsAdmin(false); setError({}) }} className={`relative z-10 flex-1 py-2 text-sm font-bold transition-colors ${!isAdmin ? 'text-black' : 'text-slate-400'}`}>Staff</button>
+            <button onClick={() => { setIsAdmin(true); setError({}) }} className={`relative z-10 flex-1 py-2 text-sm font-bold transition-colors ${isAdmin ? 'text-black' : 'text-slate-400'}`}>Admin</button>
           </div>
         </div>
 
         <div className="px-10 pb-10">
-          {!isAdmin ? (
-            <form 
-              key="staff" 
-              className="space-y-5 animate-in fade-in slide-in-from-bottom-4 duration-500"
-              onSubmit={(e)=>{
-                e.preventDefault();
-                verifyUser();
-              }}
-            >
-              <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase mb-2 ml-1">Staff ID</label>
-                <input 
-                  type="text" 
-                  onChange={handleChange}
-                  name = "staffId"
-                  placeholder={error.staffId || "e.g. WTR-4432"}
-                  className={`w-full px-5 py-2 text-xs font-semibold rounded-xl bg-slate-50 border
-                    ${error.staffId ? "outline-red-600 text-red-600" : "outline-gray-500"}
-                    border-transparent outline-gray-500 outline-1  focus:outline-gray-800`}
-                />
-              </div>
-              <div>
-                <div className="flex justify-between mb-2 ml-1">
-                  <label className="text-xs font-bold text-slate-500 uppercase tracking-widest">PIN</label>
-                  <button type="button" className="text-xs font-bold text-gray-500 hover:text-gray-800">Forgot PIN ?</button>
-                </div>
-                <input 
-                  type="password" 
-                  onChange={handleChange}
-                  name='pin'
-                  placeholder={error.pin || "••••••••"  }
-                  className={`w-full px-5 py-2 text-xs font-semibold rounded-xl bg-slate-50
-                    ${error.pin ? "outline-red-600 text-red-600" : "outline-gray-500"}
-                    border border-transparent  outline-1  focus:outline-gray-800`}
-                />
-              </div>
-              <button 
-              className="w-full cursor-pointer hover:bg-black flex items-center justify-center bg-black/90 text-white font-semibold py-2 rounded-xl shadow-lg mt-2">
-                {loading ? (
-                  <span className="inline-block h-6 w-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
-                ):"Authorize Staff"}
-              </button>
-            </form>
-          ) : (
-            <form 
-            onSubmit={(e)=>{
-              e.preventDefault();
-              verifyUser();
-            }}
-            key="admin" className="space-y-5 ">
-              <div>
-                <label className="block text-xs font-bold text-slate-500 uppercase mb-2 ml-1">
-                  Email Address
-                </label>
-                <div className="relative flex items-center">
-                  <input 
-                    type="email" 
-                    name='email'
+          <form onSubmit={(e) => { e.preventDefault(); verifyUser(); }} className="space-y-4">
+            {!isAdmin ? (
+              <>
+                <div className="relative flex flex-col">
+                  <label className="text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Staff ID</label>
+                  <ErrorLabel message={error.staffId} />
+                  <input
+                    type="text"
+                    name="staffId"
+                    value={form.staffId}
                     onChange={handleChange}
-                    value={error.email ? error.email : form.email}
-                    placeholder={"admin@corp.com"} 
-                    className={`w-full px-4 py-3  rounded-xl border border-black/20 focus:bg-white placeholder:text-slate-300 focus:border-black/50 outline-none transition-all ${error.email ? "text-red-400 bg-red-200" : " bg-slate-50"}`}
-                  />
-                  <button 
-                   onClick={sendOtp}
-                   disabled={timer}
-                   type="button" className="absolute right-3 text-[12px] bg-indigo-50 text-black px-3 py-2 rounded-lg font-black hover:bg-gray-200 cursor-pointer transition-colors">
-                    {otpLoading ? (
-                      <span className="inline-block h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
-                    )  : timer ? timer : "SEND OTP"}
-                  </button>
-                </div>
-              </div>
-              
-              <div className="flex items-center justify-between gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">OTP</label>
-                  <input 
-                    type="text" 
-                    name='otp'
-                    value={error.otp ? error.otp : form.otp}
-                    placeholder={"0000"}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2  rounded-xl border border-black/20 focus:bg-white placeholder:text-slate-300 focus:border-black/50 outline-none transition-all ${error.otp ? "text-red-400 bg-red-200" : "bg-slate-50"}`}
+                    placeholder="WTR-0000"
+                    className={`w-full px-4 py-3 text-sm font-bold rounded-2xl bg-slate-50 border-2 transition-all outline-none ${error.staffId ? "border-red-200 focus:border-red-400" : "border-transparent focus:border-black/10"}`}
                   />
                 </div>
-                 <div>
-                  <label className="block text-xs font-bold text-slate-500 uppercase tracking-widest mb-2 ml-1">Admin Pass</label>
-                  <input 
-                    type={error.password ? "text" : "password" }
-                    name='password'
-                    onChange={handleChange}
-                    value = {error.password ? error.password : form.password}
-                    placeholder={"••••"}
-                    className={`w-full px-4 py-3  rounded-xl border border-black/20 focus:bg-white placeholder:text-slate-300 focus:border-black/50 outline-none transition-all ${error.password ? "text-red-400 bg-red-200" : "bg-slate-50"}`}
-                  />
-                </div>
-              </div>
 
-              <button type='submit' className="w-full bg-black/90 hover:bg-black cursor-pointer text-white font-bold py-2.5 rounded-2xl shadow-xl shadow-black-100 transition-all active:scale-[0.98] mt-2">
-                {
-                  loading ? (
-                    <span className="inline-block h-6 w-6 border-3 border-white border-t-transparent rounded-full animate-spin" />
-
-                  ) : "Authorize Admin"
-                }
-              </button>
-              {error.common && (
-                <div className="mb-4 rounded-lg border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
-                  {error.common}
+                <div className="relative flex flex-col">
+                  <div className="flex justify-between mb-1 ml-1">
+                    <label className="text-xs font-bold text-gray-400 uppercase">PIN</label>
+                  </div>
+                  <ErrorLabel message={error.pin} />
+                  <input
+                    type="password"
+                    name="pin"
+                    value={form.pin}
+                    onChange={handleChange}
+                    placeholder="••••••"
+                    className={`w-full px-4 py-3 text-sm font-bold rounded-2xl bg-slate-50 border-2 transition-all outline-none ${error.pin ? "border-red-200 focus:border-red-400" : "border-transparent focus:border-black/10"}`}
+                  />
                 </div>
-              )}
-           </form>
-          )}
+              </>
+            ) : (
+              <>
+                <div className="relative flex flex-col">
+                  <label className="text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Email</label>
+                  <ErrorLabel message={error.email} />
+                  <div className="relative">
+                    <input
+                      type="email"
+                      name="email"
+                      value={form.email}
+                      onChange={handleChange}
+                      placeholder="admin@hotel.com"
+                      className={`w-full px-4 py-3 text-sm font-bold rounded-2xl bg-slate-50 border-2 transition-all outline-none ${error.email ? "border-red-200" : "border-transparent focus:border-black/10"}`}
+                    />
+                    <button
+                      onClick={sendOtp}
+                      disabled={timer > 0 || otpLoading}
+                      type="button"
+                      className="absolute right-2 top-2 text-[10px] bg-gray-100 text-black px-3 py-1.5 rounded-xl font-bold hover:text-white cursor-pointer hover:bg-gray-800 disabled:bg-slate-200 disabled:text-slate-400 transition-all"
+                    >
+                      {otpLoading ? (
+                        <span className="inline-block text-center text-black h-4 w-4 border-2 border-black border-t-transparent rounded-full animate-spin" />
+                      ) : timer > 0 ? `${timer}s` : "OTP"}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex gap-3">
+                  <div className="relative flex-1">
+                    <label className="text-xs font-bold text-gray-400 uppercase mb-1 ml-1">OTP</label>
+                    <ErrorLabel message={error.otp} />
+                    <input
+                      type="text"
+                      name="otp"
+                      value={form.otp}
+                      onChange={handleChange}
+                      placeholder="123456"
+                      className={`w-full px-4 py-3 text-sm font-bold rounded-2xl bg-slate-50 border-2 transition-all outline-none ${error.otp ? "border-red-200" : "border-transparent focus:border-black/10"}`}
+                    />
+                  </div>
+                  <div className="relative flex-1">
+                    <label className="text-xs font-bold text-gray-400 uppercase mb-1 ml-1">Password</label>
+                    <ErrorLabel message={error.password} />
+                    <input
+                      type="password"
+                      name="password"
+                      value={form.password}
+                      onChange={handleChange}
+                      placeholder="••••••"
+                      className={`w-full px-4 py-3 text-sm font-bold rounded-2xl bg-slate-50 border-2 transition-all outline-none ${error.password ? "border-red-200" : "border-transparent focus:border-black/10"}`}
+                    />
+                  </div>
+                </div>
+              </>
+            )}
+
+            <button className="w-full bg-black cursor-pointer text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-slate-900 transition-all active:scale-95 flex items-center justify-center">
+              {loading ? <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" /> : "AUTHENTICATE"}
+            </button>
+
+            {error.common && (
+              <p className="text-center text-xs font-bold text-red-500 uppercase tracking-widest">{error.common}</p>
+            )}
+          </form>
         </div>
       </div>
     </div>
   );
-};
+}

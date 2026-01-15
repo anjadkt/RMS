@@ -33,7 +33,7 @@ import {setPlacedOrders,setReadyOrders} from './app/features/order/orderSlice.js
 
 function App() {
   const dispatch = useDispatch();
-  const {role} = useSelector(state => state.user);
+  const {role,login,id} = useSelector(state => state.user);
 
   const soundElem = useRef(null);
   const kitchenNoti = useRef(null);
@@ -47,6 +47,7 @@ function App() {
     socket.on("connect", () => {
       console.log(`🟢 ${role} connected:`, socket.id);
     });
+    
 
     const eventHandler = ({order})=>{
 
@@ -79,9 +80,7 @@ function App() {
     }
 
     const handleEvent = ({order})=>{
-
       dispatch(setPlacedOrders(order));
-
       if(kitchenNoti.current){
         kitchenNoti.current.currentTime = 0;
         kitchenNoti.current.play().catch(() => {
@@ -89,7 +88,17 @@ function App() {
       }
     }
 
+    const handleReconnect = () =>{
+      if (login && role) {
+        socket.emit("user-login", {
+          userId : id,
+          role,
+        });
+      }
+    }
 
+
+    socket.on("reconnect",handleReconnect);
     socket.on("new-order",eventHandler);
     socket.on("order-ready",readyEvent);
     socket.on('order-accepted',handleEvent);
@@ -103,7 +112,7 @@ function App() {
       socket.off("order-ready",readyEvent);
       socket.off('order-accepted',handleEvent);
     }
-  })
+  },[]);
 
   return (
     <>

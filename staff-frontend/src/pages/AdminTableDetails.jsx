@@ -41,7 +41,7 @@ export default function AdminTableDetails() {
       try {
         setLoading(true);
         const {data} = await api.get(`/table/admin/${id}`);
-        setTable(data);
+        setTable(data.table);
       } catch (error) {
         console.log(error.message);
       }finally{

@@ -7,8 +7,11 @@ const mongoose = require('mongoose');
 
 module.exports = {
   createTable : catchAsync(async(req,res)=>{
-    const {tableNumber} = req.body
-    if(!tableNumber || !tableNumber.includes("TBL-"))throw new AppError("Table Number is Required!",400);
+    const {tableNumber,waiterId} = req.body
+    if(!tableNumber || !tableNumber.includes("TBL-") || !waiterId)throw new AppError("Table Number / waiter ID is Required!",400);
+
+    const waiter = await User.findOne({_id : waiterId , role : "waiter"});
+    if(!waiter)throw new AppError("Waiter Not found!",404);
 
     const isTable = await Table.findOne({tableNumber});
     if(isTable)throw new AppError("Table Already Exist!",409);
@@ -17,7 +20,8 @@ module.exports = {
 
     const table = await Table.create({
       tableNumber,
-      tableNo : number
+      tableNo : number,
+      waiterId
     });
 
     if(!table)throw new AppError("Table Creation Failed!",400);
@@ -116,9 +120,11 @@ module.exports = {
     const {id} = req.params ;
     const {q} = req.query ;
 
+    const waiters = await User.find({role : "waiter",isWorking : true});
+
     if(id){
       const table = await Table.findOne({_id : id}).populate('tableOrders');
-      return res.status(200).json(table);
+      return res.status(200).json({table,waiters});
     }
 
     const query = {tableNumber : {$exists : true}}
@@ -129,7 +135,7 @@ module.exports = {
 
     const tables = await Table.find(query).sort({tableNo : 1});
 
-    res.status(200).json(tables);
+    res.status(200).json({tables,waiters});
   }),
 
   removeTable : catchAsync(async (req,res)=>{

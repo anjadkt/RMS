@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import api from "../../../services/axios";
 import socket from '../../../services/socket.js'
+import initSocketAuth from '../../../services/initSocketAuth.js'
 
 const userSlice = createSlice({
   name: "user",
@@ -11,20 +12,22 @@ const userSlice = createSlice({
     name : null,
     role : null,
     loading: false,
-    error: null
+    error: null,
+    id : null
   },
   reducers: {
     setfetchStart(state) {
       state.loading = true;
     },
     setfetchSuccess(state, action) {
-      const { isBanned ,name ,isWorking ,role} = action.payload;
+      const { isBanned ,name ,isWorking ,role , _id} = action.payload;
       state.loading = false;
       state.login = true;
       state.name = name ;
       state.role = role ;
       state.isWorking = isWorking ;
       state.isBanned = isBanned || false;
+      state.id = _id ;
     },
     setFetchFail(state, action) {
       state.loading = false;
@@ -48,15 +51,7 @@ export const checkAuth = () => async (dispatch) => {
   try {
     const { data } = await api.get("auth/user");
     dispatch(setfetchSuccess(data.userData));
-    if (!socket.connected) {
-      socket.connect();
-    }
-    socket.once("connect", () => {
-      socket.emit("user-login", {
-        userId: data.userData._id,
-        role: data.userData.role
-      });
-    });
+    initSocketAuth(data.userData);
   } catch (error) {
     dispatch(setFetchFail(error.message));
   }
