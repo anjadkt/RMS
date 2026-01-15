@@ -6,6 +6,7 @@ import {setLogout} from '../app/features/user/userSlice.js'
 export default function AdminHeader() {
   const routes = [
     { name: "Dashboard", link: "/admin/dashboard" },
+    { name: "Bills", link: "/admin/bills" },
     { name: "Orders", link: "/admin/orders" },
     { name: "Products", link: "/admin/products" },
     { name: "Users", link: "/admin/users" },

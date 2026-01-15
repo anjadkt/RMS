@@ -29,6 +29,7 @@ import AdminSettings from './pages/AdminSettings.jsx'
 import WaiterBills from "./pages/WaiterBills.jsx"
 import socket from "./services/socket.js"
 import {setPlacedOrders,setReadyOrders} from './app/features/order/orderSlice.js'
+import AdminBills from "./pages/AdminBills.jsx"
 
 
 function App() {
@@ -149,6 +150,7 @@ function App() {
         <Route path="/admin/tables" element={<AdminTables />} />
         <Route path="/admin/tables/:id" element={<AdminTableDetails/>} />
         <Route path="/admin/settings" element={<AdminSettings/>} />
+        <Route path="/admin/bills" element={<AdminBills/>} />
       </Route>     
 
      </Routes>

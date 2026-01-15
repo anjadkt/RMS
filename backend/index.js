@@ -40,6 +40,7 @@ const adminTableRouter = require('./src/router/admin/table.route.js');
 const adminStaffRouter = require('./src/router/admin/staff.route.js');
 const restoRouter = require('./src/router/admin/resto.route.js');
 const adminOrderRouter = require('./src/router/admin/adminOrder.route.js');
+const billAdminRouter = require('./src/router/admin/bills.route.js');
 
 
 const staffRouter = require('./src/router/waiter/users.route.js');
@@ -94,6 +95,7 @@ app.use('/items/admin',verifyToken,verifyUsers("admin"),adminProductRouter);
 app.use('/table/admin',verifyToken,verifyUsers("admin"),adminTableRouter);
 app.use('/staff/admin',verifyToken,verifyUsers("admin"),adminStaffRouter);
 app.use('/resto/admin',verifyToken,verifyUsers("admin"),restoRouter);
+app.use('/admin/bills',verifyToken,verifyUsers("admin"),billAdminRouter);
 
 //waiter routes
 app.use('/auth/staff',staffRouter);

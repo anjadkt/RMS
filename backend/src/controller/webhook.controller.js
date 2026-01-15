@@ -15,11 +15,13 @@ module.exports = {
       const bills = await Bill.findOneAndUpdate({
         billId : payment.notes.billId,
         razorpayOrderId : payment.notes.razorpayOrderId,
-        paymentStatus: { $ne: "paid" }
+        paymentStatus: { $nin: ["paid","prepaid"] }
        },
        {
         paymentStatus : "paid",
-        paidAmount : payment.amount/100
+        paidAmount : payment.amount/100,
+        paymentMethod : "upi-qr",
+        paidAt : new Date()
        },
        {new : true});
 
@@ -34,7 +36,7 @@ module.exports = {
       
       await Order.updateMany(
         {_id : {$in : orderObjectIds}},
-        {status : "completed",paymentStatus : "paid"},
+        {status : "completed",paymentStatus : "paid",billId : bills._id},
         {runValidators : true}
       );
 

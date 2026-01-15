@@ -289,7 +289,7 @@ module.exports = {
 
       const update = await Order.updateMany(
         {_id : {$in : orderObjectIds}},
-        {status : "pending",billId : bills._id,paymentStatus : "pending"},
+        {status : "pending",billId : bills._id,paymentStatus : "unpaid"},
         {runValidators : true}
       );
 

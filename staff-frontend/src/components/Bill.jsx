@@ -49,7 +49,7 @@ export default function Bill({ data }) {
               
             <div className='flex justify-between items-center'>
               <div className="flex items-center gap-1"><Hash size={12}/>{billData.billId || data.billId}</div>
-              <div className="flex items-center gap-1"><Calendar size={12}/> {billData.billDate || data.date}</div>
+              <div className="flex items-center gap-1"><Calendar size={12}/> {billData.billDate || data.billDate}</div>
             </div>
 
             <div className='flex justify-between items-center'>

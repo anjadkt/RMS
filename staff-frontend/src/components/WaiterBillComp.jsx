@@ -48,7 +48,7 @@ export default function WaiterBillComp({ data }) {
               
             <div className='flex justify-between items-center'>
               <div className="flex items-center gap-1"><Hash size={12}/>{data.billId}</div>
-              <div className="flex items-center gap-1"><Calendar size={12}/> {data.date}</div>
+              <div className="flex items-center gap-1"><Calendar size={12}/> {data.billDate}</div>
             </div>
 
             <div className='flex justify-between items-center'>

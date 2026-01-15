@@ -28,6 +28,10 @@ const billSchema = new mongoose.Schema({
     type : String,
     enum : ["prepaid","unpaid","paid","failed","refunded"]
   },
+  paymentMethod : {
+    type :String,
+    enum : ["upi","upi-qr","in-hand"]
+  },
   razorpayOrderId : String,
   paidAmount : Number,
   paidAt : Date,
