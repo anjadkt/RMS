@@ -17,6 +17,15 @@ module.exports = {
 
     const allOrdersToday = await Order.find({orderDate : today}).countDocuments();
 
+    const allTimeOrders = await Order.find({status : "completed"}).countDocuments();
+    const allTimeGross = await Order.aggregate([
+      {$match : {status : "completed"}},
+      {$group : {
+        _id : null ,
+        total : {$sum : "$orderTotal"}
+      }}
+    ]);
+
     const orderCount = await Order.aggregate([
       {$match : {status : {$nin : ["completed"]}}},
       {$group : {
@@ -60,7 +69,9 @@ module.exports = {
      orderCountToday : orderCount,
      allOrdersCount : allOrdersToday,
      currentTables : tables,
-     totalTableCount : totalTable
+     totalTableCount : totalTable,
+     allTimeOrders,
+     allTimeRevenue : allTimeGross[0]?.total || 0
 
     })
   }),

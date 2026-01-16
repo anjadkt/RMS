@@ -33,9 +33,6 @@ export default function AdminDashboard() {
         <button className="flex cursor-pointer items-center gap-3 w-full text-xs font-bold py-3 px-5 rounded-xl text-slate-600 transition-all hover:bg-white hover:text-black">
           ALL TIME
         </button>
-        <button className="flex cursor-pointer items-center gap-3 w-full text-xs font-bold py-3 px-5 rounded-xl text-slate-600 transition-all hover:bg-white hover:text-black">
-          CHARTS
-        </button>
       </div>
 
       <main className="ml-24 p-8 mt-16">
@@ -58,7 +55,7 @@ export default function AdminDashboard() {
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                     <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">Today's Revenue</p>
                     <div className={`text-3xl font-bold mt-2 text-emerald-600`}>
-                      ₹{data.totalToday}
+                      ₹{data.totalToday?.toLocaleString("en-IN")}
                     </div>
                 </div>
 
@@ -66,14 +63,14 @@ export default function AdminDashboard() {
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                     <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">Pending Revenue</p>
                     <div className={`text-3xl font-bold mt-2 text-amber-600`}>
-                    ₹{data.pendingToday}
+                    ₹{data.pendingToday?.toLocaleString("en-IN")}
                     </div>
                 </div>
 
                 <div className="bg-white p-6 rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow">
                     <p className="text-sm font-medium text-slate-500 uppercase tracking-wider">Incoming Revenue</p>
                     <div className={`text-3xl font-bold mt-2 text-blue-600`}>
-                      ₹{data.progressToday}
+                      ₹{data.progressToday?.toLocaleString("en-IN")}
                     </div>
                 </div>
               </section>
@@ -147,8 +144,45 @@ export default function AdminDashboard() {
             <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
               All Time Summary
             </h1>
-            <p className="text-slate-500 mt-1">Complete Overview of your store's performance..</p>
+            <p className="text-slate-500 mt-1 font-medium">Complete Overview of your store's performance..</p>
           </header>
+
+          {loading ? (
+            <div className="flex items-center justify-center h-40 w-full">
+              <span className="inline-block h-8 w-8 border-4 border-black border-t-transparent rounded-full animate-spin" />
+            </div>
+          ) : (
+            <section className="grid grid-cols-1 sm:grid-cols-2 gap-6 max-w-2xl">
+              {/* Total Orders Card */}
+              <div className="group border-slate-100 bg-white p-8 rounded-2xl border shadow-sm transition-all hover:border-black hover:shadow-xl active:scale-95 cursor-default relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="text-[11px] uppercase font-black text-slate-400 tracking-[0.2em] mb-2">
+                    All Time Orders
+                  </div>
+                  <div className="text-5xl font-black text-slate-900 tracking-tighter">
+                    {data.allTimeOrders}
+                  </div>
+                </div>
+                {/* Decorative background element */}
+                <div className="absolute right-[-10%] bottom-[-20%] text-9xl font-black text-slate-50 opacity-[0.03] select-none">#</div>
+              </div>
+
+              {/* Total Revenue Card */}
+              <div className="group border-slate-100 bg-white p-8 rounded-2xl border shadow-sm transition-all hover:border-black hover:shadow-xl active:scale-95 cursor-default relative overflow-hidden">
+                <div className="relative z-10">
+                  <div className="text-[11px] uppercase font-black text-slate-400 tracking-[0.2em] mb-2">
+                    Total Revenue
+                  </div>
+                  <div className="text-5xl font-black text-slate-900 tracking-tighter">
+                    {/* Replace with your variable: data.totalRevenue */}
+                    ₹{data.allTimeRevenue?.toLocaleString("en-IN")}
+                  </div>
+                </div>
+                {/* Decorative background element */}
+                <div className="absolute right-[-5%] bottom-[-20%] text-9xl font-black text-slate-50 opacity-[0.03] select-none">₹</div>
+              </div>
+            </section>
+          )}
         </div>
 
       </main>
