@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, Hash } from "lucide-react";
 
-export default function TableOrder({ data ,setOrderId}) {
+export default function TableOrder({ orderIds, data ,setOrderId}) {
   const [isOpen, setIsOpen] = useState(false);
-  const [isReady, setIsReady] = useState(false);
-
+  const isIn = orderIds.find(v => v._id === data._id);
+  const [isReady, setIsReady] = useState(isIn);
+  
   const statusColors = {
       placed: "bg-purple-100 text-purple-700",
       accepted: "bg-blue-100 text-blue-700",
@@ -16,14 +17,12 @@ export default function TableOrder({ data ,setOrderId}) {
       default: "bg-slate-100 text-slate-600"
     };
 
-  const total = data.orderItems?.reduce((accum,val)=>accum + val.subTotal,0);
-
   const handleChange = () =>{
     setIsReady(!isReady);
-    if(!isReady){
-      setOrderId(pre => [...pre,data._id]);
+    if(!isIn){
+      setOrderId(pre => [...pre,data]);
     }else{
-      setOrderId(pre => pre.filter(v => v !== data._id));
+      setOrderId(pre => pre.filter(v => v._id !== data._id));
     }
   }
 
@@ -96,7 +95,7 @@ export default function TableOrder({ data ,setOrderId}) {
               Total
             </span>
             <span className="text-[10px] lg:text-sm font-black bg-white px-3 py-1 rounded-lg border border-slate-200 text-black/70 shadow-sm">
-              ₹{total}
+              ₹{data && data.orderTotal}
             </span>
           </div>
         </div>

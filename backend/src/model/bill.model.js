@@ -14,19 +14,19 @@ const billSchema = new mongoose.Schema({
     }
   ],
   tableNumber : String,
-  tableId :  {
+  tableId :  [{
     type : mongoose.Schema.Types.ObjectId,
     ref : "Table"
-  },
-  waiterId : {
+  }],
+  waiterId : [{
     type : mongoose.Schema.Types.ObjectId,
     ref : "User"
-  },
+  }],
   billItems : Array,
   billTotal : Number,
   paymentStatus : {
     type : String,
-    enum : ["prepaid","unpaid","paid","failed","refunded"]
+    enum : ["prepaid","billed","unpaid","paid","failed","refunded"]
   },
   paymentMethod : {
     type :String,

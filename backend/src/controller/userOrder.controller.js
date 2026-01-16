@@ -77,7 +77,8 @@ module.exports = {
       instructions,
       orderTotal,
       createdAt,
-      prepareTime : readyAt
+      prepareTime : readyAt,
+      paymentStatus : "unpaid"
     });
     if(!order)throw new AppError("Order Creation Failed!",400);
 

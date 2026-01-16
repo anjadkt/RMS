@@ -13,7 +13,7 @@ module.exports = {
     const {tableId,paymentStatus,todays,q} = req.body ;
     const today = new Date().toISOString().slice(0, 10);
 
-    if(!["unpaid","paid","all","prepaid"].includes(paymentStatus))throw new AppError("invalid Payment Status",400);
+    if(!["billed","paid","all","prepaid"].includes(paymentStatus))throw new AppError("invalid Payment Status",400);
 
     const query = {}
 
@@ -48,8 +48,6 @@ module.exports = {
     const {_id} = req.user ;
     const {id,password,paymentMethod ,orderIds} = req.body ;
 
-    console.log(req.body);
-
     if(!["upi","upi-qr","in-hand"].includes(paymentMethod))throw new AppError("Method Not allowed!",400);
 
     const user = await User.findOne({_id});
@@ -82,11 +80,13 @@ module.exports = {
       {runValidators : true}
     );
 
-    const table = await Table.findOneAndUpdate({_id : bills.tableId},{$pull : {tableOrders : {$in : orderObjectIds}}},{new : true});
+    for(let v of bills.tableId){
+      const table = await Table.findOneAndUpdate({_id : v},{$pull : {tableOrders : {$in : orderObjectIds}}},{new : true});
 
-    if(table && table.tableOrders.length === 0){
-      table.isOccupied = false ;
-      await table.save();
+      if(table && table.tableOrders.length === 0){
+        table.isOccupied = false ;
+        await table.save();
+      }
     }
 
     res.status(200).json(bills);

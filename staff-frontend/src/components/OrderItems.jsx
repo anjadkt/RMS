@@ -11,7 +11,6 @@ export default function OrderItems({ data }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  // 1. Centralized Status Styling & Logic
   const STATUS_CONFIG = {
     placed: {
       color: "bg-purple-100 text-purple-700 border-purple-200",

@@ -11,6 +11,7 @@ export default function EachTable() {
   const [loading, setLoading] = useState(false);
   const [orders, setOrders] = useState([]);
   const [table, setTables] = useState({});
+  const [error,setError] = useState({});
 
   const [orderIds, setOrderId] = useState([]);
 
@@ -27,18 +28,18 @@ export default function EachTable() {
   async function generateBill() {
     try {
       setLoading(true);
-      const { data } = await api.post('/waiter/orders/bill', { orderIds, tableId: table._id });
+      const { data } = await api.post('/waiter/orders/bill', { orderIds : orderIds.map(v => v._id), tableId: table._id });
       setBillData({...data.billData , orderIds});
       setFall(true);
     } catch (error) {
-      if (error.status === 400) setError({ data: "Select an Order!" });
+      if (error.status === 400)setError({data : "Select one Order"});
     } finally {
       setLoading(false);
     }
   }
 
   useEffect(()=>{
-    if(orderIds.length===0)return ;
+    if(orderIds.length === 0)return setBillData({});
     generateBill();
   },[orderIds])
 
@@ -129,7 +130,7 @@ export default function EachTable() {
                 <div className={`overflow-hidden transition-all duration-300 ${drop.includes(i) ? "max-h-[2000px] mt-4 mb-6" : "max-h-0"}`}>
                   <div className="flex flex-col items-center gap-4">
                     {v.orders?.map(order => (
-                      <TableOrder key={order._id} setOrderId={setOrderId} data={order} />
+                      <TableOrder key={order._id} orderIds={orderIds} setOrderId={setOrderId} data={order} />
                     ))}
                   </div>
                 </div>
@@ -160,7 +161,7 @@ export default function EachTable() {
                 </div>
               ) : (
                 <div className="text-center py-10 bg-slate-100 rounded-2xl text-slate-400 font-bold border border-slate-200 print:hidden">
-                  No Bill Generated Yet
+                  {loading ? "Processing..." : "No Bill Generated Yet"}
                 </div>
               )
             )}

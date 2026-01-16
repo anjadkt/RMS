@@ -6,13 +6,13 @@ import AdminBillComp from '../components/AdminBillComp.jsx'
 
 export default function AdminBills(){
   const [search,setSearch] = useState("");
-  const [active,setAcitve] = useState("unpaid");
+  const [active,setAcitve] = useState("billed");
   const [bills,setBills] = useState([]);
   const [loading,setLoading] = useState(false);
 
   const status = [
     { name: "all" },
-    { name: "unpaid" },
+    { name: "billed" },
     { name: "prepaid" },
     { name: "paid" }
   ]

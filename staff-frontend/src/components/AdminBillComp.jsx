@@ -2,7 +2,7 @@ import { MapPin, Calendar, Hash, ChevronRight, ChevronDown, QrCode } from 'lucid
 import { useEffect, useState } from 'react';
 import AdminBillModal from './AdminBillModal';
 
-export default function WaiterBillComp({ data , fetchBills }) {
+export default function AdminBillComp({ data , fetchBills }) {
   const [print, setPrint] = useState(null);
   const [showQr, setShowQr] = useState(false);
   const [open,setOpen] = useState(false);
@@ -122,22 +122,22 @@ export default function WaiterBillComp({ data , fetchBills }) {
                     </p>
                   </div>
                 )}
-                <button 
-                    onClick={()=>{
-                      setShowQr(true);
-                      if(!load)return ;
-                      if(["paid","prepaid"].includes(data.paymentStatus)){
-                        setPrint(data._id)
-                      }else{
-                        setOpen(true);
-                      }
-                    }}
-                    className="w-[200px] cursor-pointer flex items-center justify-center gap-2 bg-slate-900 border-2 border-slate-200 text-white mt-5 py-3 rounded-lg font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 print:hidden"
-                  >
-                  Confirm & Print Bill
-                </button>
               </div>
             )}
+            <button 
+                onClick={()=>{
+                  setShowQr(true);
+                  if(!load && data.qrImage)return ;
+                  if(["paid","prepaid"].includes(data.paymentStatus)){
+                    setPrint(data._id)
+                  }else{
+                    setOpen(true);
+                  }
+                }}
+                className="w-full cursor-pointer flex items-center justify-center gap-2 bg-slate-900 border-2 border-slate-200 text-white mt-5 py-3 rounded-lg font-bold text-sm hover:bg-slate-800 transition-all active:scale-95 print:hidden"
+              >
+              Confirm & Print Bill
+            </button>
           </div>
 
           {/* Unique Zigzag Bottom Edge */}

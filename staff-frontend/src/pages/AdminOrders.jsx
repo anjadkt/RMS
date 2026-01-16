@@ -3,6 +3,7 @@ import AdminHeader from '../components/AdminHeader.jsx'
 import AdminOrderComp from '../components/AdminOrderComp.jsx'
 import api from '../services/axios.js'
 import {Search} from 'lucide-react'
+import AdminGenBill from '../components/AdminGenBill.jsx'
 
 export default function AdminOrders() {
 
@@ -11,6 +12,9 @@ export default function AdminOrders() {
 
   const [orders,setOrders] = useState([]);
   const [loading ,setLoading] = useState(false);
+  const [billLoading,setBillLoading] = useState(false);
+
+  const [selectedOrders,setSelectedOrders] = useState([]);
 
   const [filter,setFilter] = useState("none");
   const [stat,setStat] = useState("all");
@@ -30,11 +34,24 @@ export default function AdminOrders() {
     { name: "completed" }
   ]
 
+  async function genBill(){
+    try{
+      setBillLoading(true);
+      const {data} = await api.post('/admin/bills/gen',{orderIds : selectedOrders});
+      fetchOrders();
+    }catch(error){
+      console.log(error.message);
+    }finally{
+      setBillLoading(false);
+    }
+  }
+
   async function fetchOrders(){
     try{
       setLoading(true);
       const {data} = await api.get(`admin/orders?q=${search}&f=${filter}&s=${stat}&t=${todays}`);
       setOrders(data);
+      setSelectedOrders([]);
     }catch(error){
       console.log(error.message);
     }finally{
@@ -145,13 +162,13 @@ export default function AdminOrders() {
             ) :
             (
               orders?.map((v,i)=>(
-                <AdminOrderComp fetchOrders={fetchOrders} setOrders={setOrders} data={v} />
+                <AdminOrderComp setSelectedOrders={setSelectedOrders} selectedOrders={selectedOrders} fetchOrders={fetchOrders} setOrders={setOrders} data={v} />
               ))
             )
           }
         </div>
-
       </main>
+      <AdminGenBill genBill={genBill} billLoading={billLoading} selectedOrders={selectedOrders} setSelectedOrders={setSelectedOrders} />
     </div>
   )
 }

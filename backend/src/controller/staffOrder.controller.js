@@ -181,9 +181,9 @@ module.exports = {
     const table = await Table.findOne({_id : new mongoose.Types.ObjectId(tableId) , tableOrders: { $all: orderObjectIds } });
     if(!table)throw new AppError("orders should from same table!",400);
 
-    const orderItemsObj = await Promise.resolve(computeOrder(orderObjectIds));
+    const orderItemsObj = await computeOrder(orderObjectIds);
 
-    const billObj = await Promise.resolve(getBillId());
+    const billObj = await getBillId();
 
     const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
     
@@ -209,16 +209,16 @@ module.exports = {
   }),
 
   orderPayment : catchAsync(async (req,res)=>{
-    const {orderIds,tableId} = req.body ;
+    const {orderIds} = req.body ;
 
-    if (!Array.isArray(orderIds) || orderIds.length === 0 || !tableId)throw new AppError("fields required", 400);
+    if (!Array.isArray(orderIds) || orderIds.length === 0)throw new AppError("fields required", 400);
 
     const orderObjectIds = orderIds.map(
-      id => new mongoose.Types.ObjectId(id)
+      id => new mongoose.Types.ObjectId(id._id)
     );
 
     const existingBill = await Bill.findOne({
-      orderIds: { $all : orderObjectIds }
+      orderIds: { $in : orderObjectIds }
     }).lean();
 
     if (existingBill) {
@@ -232,10 +232,22 @@ module.exports = {
       });
     }
 
-    if(!tableId)throw new AppError("fields required", 400);
+    const tableNumbers = []
+    const tableIds = []
+    const waiterIds = []
+    for(let v of orderIds){
+      if(!tableNumbers.includes(v.tableNumber)){
+        tableNumbers.push(v.tableNumber);
+        tableIds.push(v.tableId);
+      }
+      if(!waiterIds.includes(v.waiterId)){
+        waiterIds.push(v.waiterId);
+      }
+    }
 
-    const table = await Table.findOne({_id : new mongoose.Types.ObjectId(tableId) , tableOrders: { $all: orderObjectIds } });
-    if(!table)throw new AppError("orders should from same table!",400);
+
+    // const table = await Table.findOne({_id : new mongoose.Types.ObjectId(tableId) , tableOrders: { $all: orderObjectIds } });
+    // if(!table)throw new AppError("orders should from same table!",400);
 
     const orderItemsObj = await computeOrder(orderObjectIds);
 
@@ -273,12 +285,12 @@ module.exports = {
         billDate : billObj.billDate,
         billId : billObj.billId,
         orderIds,
-        tableNumber : table.tableNumber,
-        tableId : table._id,
-        waiterId : table.waiterId,
+        tableNumber : tableNumbers.join("|"),
+        tableId : tableIds,
+        waiterId : waiterIds,
         billItems : orderItemsObj.orderDetails,
         billTotal : orderItemsObj.TOTAL,
-        paymentStatus : "unpaid",
+        paymentStatus : "billed",
         razorpayOrderId : order.id,
         qrId : qr.id,
         qrAmount : qr.amount,
@@ -289,7 +301,7 @@ module.exports = {
 
       const update = await Order.updateMany(
         {_id : {$in : orderObjectIds}},
-        {status : "pending",billId : bills._id,paymentStatus : "unpaid"},
+        {status : "pending",billId : bills._id,paymentStatus : "billed"},
         {runValidators : true}
       );
 

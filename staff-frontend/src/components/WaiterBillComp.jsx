@@ -97,7 +97,6 @@ export default function WaiterBillComp({ data }) {
                   Fast Pay <ChevronRight size={14} className="text-slate-400" />
                 </h3>
                 
-                {/* Replace src with your QR generator URL or local component */}
                 <div className="bg-white relative w-36 h-36 lg:w-40 lg:h-40 rounded-lg overflow-hidden flex items-center justify-center mb-4">
                   <img
                     onLoad={()=>setImgLoad(true)}

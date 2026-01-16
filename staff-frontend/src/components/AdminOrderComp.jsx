@@ -1,11 +1,21 @@
 import React, { useState } from 'react';
-import { ChevronDown, ChevronUp, Clock, User, Hash, HandPlatter } from 'lucide-react';
+import { ChevronDown, ChevronUp, Clock, User, Hash, HandPlatter, Check } from 'lucide-react';
 import api from '../services/axios';
 
-export default function AdminOrderComp({data,setOrders,fetchOrders}) {
+export default function AdminOrderComp({data,setOrders,fetchOrders, selectedOrders, setSelectedOrders}) {
 
   const [isOpen, setIsOpen] = useState(false);
   const [loading,setLoading] = useState(false);
+
+  const isSelected = selectedOrders?.find( v => v._id === data._id);
+
+  const toggleSelection = () => {
+    if (isSelected) {
+      setSelectedOrders(prev => prev.filter(id => id._id !== data._id));
+    } else {
+      setSelectedOrders(prev => [...prev, data]);
+    }
+  };
 
   const statusColors = {
     placed: "bg-purple-100 text-purple-700",
@@ -23,8 +33,7 @@ export default function AdminOrderComp({data,setOrders,fetchOrders}) {
     accepted: "preparing",
     preparing: "ready",
     ready: "served",
-    served: "completed",
-    pending : "completed"
+    served: "completed"
   };
 
   const prevStatusMap = {
@@ -32,12 +41,11 @@ export default function AdminOrderComp({data,setOrders,fetchOrders}) {
     accepted: "placed",
     preparing: "accepted",
     ready: "preparing",
-    served: "ready",
-    pending : "served",
-    completed : "pending"
+    served: "ready"
   }
 
   async function changeOrderStatus(status) {
+    if(status === "completed")return toggleSelection();
     try{
       setLoading(true);
       const {data : orderData} = await api.post('/admin/orders',{status,id : data._id , tableId : data.tableId});
@@ -54,7 +62,20 @@ export default function AdminOrderComp({data,setOrders,fetchOrders}) {
   }
 
   return (
-    <div className="max-w-lg w-[320px] border-2 border-gray-200 rounded-xl px-6 py-4 bg-white shadow-sm mt-4">
+    <div className={`max-w-lg w-[320px] border-2 rounded-xl px-6 py-4 bg-white shadow-sm mt-4 relative transition-all duration-200 ${isSelected ? "border-black" : "border-gray-200"}`}>
+      
+      {/* SELECTION CHECKBOX (TOP LEFT) */}
+      {
+        (!["completed","pending"].includes(data.status)) && (
+          <div 
+            onClick={toggleSelection}
+            className={`absolute -top-2 -left-2 w-6 h-6 rounded-md border-2 cursor-pointer flex items-center justify-center transition-all z-10 
+              ${isSelected ? "bg-black border-black text-white" : "bg-white border-gray-300 hover:border-black"}`}
+          >
+            {isSelected && <Check size={14} strokeWidth={4} />}
+          </div>
+        )
+      }
 
       <div className="space-y-4 pt-2">
 
@@ -77,6 +98,9 @@ export default function AdminOrderComp({data,setOrders,fetchOrders}) {
               <span className="font-semibold text-gray-700">{data.orderType}</span>
               <span className={`text-[10px] px-2 py-0.5 rounded-full ${data.isAssisted ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
                 {data.isAssisted ? "Assisted" : "Self"}
+              </span>
+              <span className={`text-[10px] px-2 py-0.5 rounded-full bg-gray-100 text-gray-600`}>
+                {data.paymentStatus}
               </span>
             </div>
           </div>
@@ -127,25 +151,23 @@ export default function AdminOrderComp({data,setOrders,fetchOrders}) {
           <span className="text-xl font-black text-gray-900">₹{data.orderTotal}</span>
         </div>
 
-        <div className="flex items-center justify-between">
-          <button
-           disabled={loading}
-           onClick={()=>changeOrderStatus(prevStatusMap[data.status])}
-           className="px-4 py-2 cursor-pointer border border-red-200 text-red-600 font-semibold rounded-lg hover:bg-red-50 transition-all text-sm">
-            {
-              loading ? (
-                <span className="inline-block h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                 {prevStatusMap[data.status] === "cancel" ? "Cancel Order" : "Mark " + prevStatusMap[data.status]}
-                </>
-              )
-            } 
-          </button>
-          {
-            data.status === "completed" ? (
-              <div className="text-green-700 font-semibold text-sm">[ Order Completed ]</div>
-            ) : (
+        {
+          !["prepaid","paid","billed"].includes(data.paymentStatus) ? (
+            <div className="flex items-center justify-between">
+              <button
+              disabled={loading}
+              onClick={()=>changeOrderStatus(prevStatusMap[data.status])}
+              className="px-4 py-2 cursor-pointer border border-red-200 text-red-600 font-semibold rounded-lg hover:bg-red-50 transition-all text-sm">
+                {
+                  loading ? (
+                    <span className="inline-block h-4 w-4 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                  ) : (
+                    <>
+                    {prevStatusMap[data.status] === "cancel" ? "Cancel Order" : "Mark " + prevStatusMap[data.status]}
+                    </>
+                  )
+                } 
+              </button>
               <button 
                 disabled={loading}
                 onClick={()=>changeOrderStatus(nextStatusMap[data.status])}
@@ -158,9 +180,9 @@ export default function AdminOrderComp({data,setOrders,fetchOrders}) {
                   )
                 }
               </button>
-            )
-          }
-        </div>
+            </div>
+          ) : null
+        }
         
       </div>
     </div>

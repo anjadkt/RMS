@@ -102,32 +102,40 @@ module.exports = {
       query.orderId = {$regex : q.trim() , $options : "i"}
     }
 
-    const orders = await Order.find(query).sort({orderId : -1}).populate("waiterId");
+    const orders = await Order.find(query).sort({orderNumber : -1}).populate("waiterId");
     res.status(200).json(orders);
   }),
 
   changeOrderStatus : catchAsync(async (req,res)=>{
     const {status,id,tableId} = req.body ;
-    if(!["cancel","placed","accepted","preparing","ready","served","pending","completed"].includes(status)){
+    if(!["cancel","placed","accepted","preparing","ready","served"].includes(status)){
       throw new AppError(status +"Not Allowed!",400);
     }
 
+    const order = await Order.findOne({_id : id});
+    if(["prepaid","paid","billed"].includes(order.paymentStatus))throw new AppError("cannot change payment Status",400);
+
     if(status === "cancel"){
       await Order.deleteOne({_id : id});
-      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id} , $set : {isOccupied : false}});
+      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id} });
+      
+      if(update && update.tableOrders.length === 0){
+        update.isOccupied = false ;
+        await update.save();
+      }
       return res.status(200).json({
         message : "Order"+status,
         status : 200
       });
     }
 
-    if(status === "completed"){
-      const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id}},{new : true , runValidators : true});
-      if(update && update.tableOrders.length === 0){
-        update.isOccupied = false ;
-        await update.save();
-      }
-    }
+    // if(status === "completed"){
+    //   const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id}},{new : true , runValidators : true});
+    //   if(update && update.tableOrders.length === 0){
+    //     update.isOccupied = false ;
+    //     await update.save();
+    //   }
+    // }
 
     const update = await Order.findOneAndUpdate({_id : id},{status},{runValidators : true,new : true}).populate("waiterId");
     if(!update)throw new AppError("Update Failed!",400);

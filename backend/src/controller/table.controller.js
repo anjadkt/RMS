@@ -93,7 +93,11 @@ module.exports = {
             status : "$status",
             orderItems : "$orderItems",
             isAssisted : "$isAssisted",
-            customerName : "$customerName"
+            customerName : "$customerName",
+            orderTotal : "$orderTotal",
+            tableId : "$tableId",
+            tableNumber : "$tableNumber",
+            waiterId : "$waiterId"
           }}
         }}
       ]);

@@ -12,7 +12,7 @@ export default function WaiterBills() {
     const fetchBills = async () => {
       try {
         setLoading(true);
-        const { data } = await api.post('/waiter/bills', { paymentStatus: "unpaid" });
+        const { data } = await api.post('/waiter/bills', { paymentStatus: "billed" });
         setBills(data);
       } catch (error) {
         console.log(error.message);

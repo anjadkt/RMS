@@ -53,7 +53,7 @@ const orderSchema = new mongoose.Schema({
   },
   paymentStatus : {
     type :String,
-    enum : ["prepaid","unpaid","paid"]
+    enum : ["prepaid","billed","unpaid","paid"]
   },
   orderDate : {
     type :String,

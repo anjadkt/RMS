@@ -20,7 +20,7 @@ import ToastNotification from "./components/ToastNoti.jsx"
 function App() {
   const dispatch = useDispatch();
 
-  const {status} = useSelector(state => state.website.status);
+  const {status} = useSelector(state => state.website);
 
   useEffect(()=>{
      dispatch(checkAuth());

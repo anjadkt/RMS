@@ -10,7 +10,7 @@ export default function Bill({ data }) {
   const printBill = async () => {
     try{
       setLoading(true);
-      const {data : printBill} = await api.post('/waiter/orders/payment',{orderIds : data.orderIds ,tableId : data?.tableId});
+      const {data : printBill} = await api.post('/waiter/orders/payment',{orderIds : data.orderIds });
       setBillData(printBill.billData);
     }catch(error){
       console.log(error.message);
