@@ -55,8 +55,8 @@ module.exports = {
 
     const number = req.body.number || "" ;
 
-    const user = await User.findOne({phone : number});
-    if(user.isBanned)throw new AppError("User Blocked",403);
+    const user = await User.findOne({phone : number}).lean();
+    if(user && user.isBanned)throw new AppError("User Blocked",403);
 
     if(!number)throw new AppError("Number Required",400);
     if( !/^\+91[0-9]{10}$/.test(number)) throw new AppError("Enter a valid Number",400);
@@ -98,7 +98,7 @@ module.exports = {
 
     const otps = await OTP.findOne({phone : number});
     if(!otps)throw new AppError("OTP Not Found!",404);
-    if(otps.expiresAt < Date.now())throw new AppError("OTP Expired!",);
+    if(otps.expiresAt < Date.now())throw new AppError("OTP Expired!",400);
 
     const isValid = await bcrypt.compare(otp.toString(),otps.otp);
     if(!isValid)throw new AppError("Incorrect OTP!",406);
@@ -246,7 +246,7 @@ module.exports = {
     const {email,password,otp} = req.body;
     if(!isValidEmail(email) || password.trim().length < 8 || !otp)throw new AppError("Invalid Data",400);
 
-    const user = await User.findOne({email});
+    const user = await User.findOne({email,role:"admin"});
     if(!user)throw new AppError("Admin Not Found",404);
     
     const otpDoc = await OTP.findOne({email});
@@ -255,6 +255,8 @@ module.exports = {
     
     const isValid = await bcrypt.compare(otp.toString(),otpDoc.otp);
     if(!isValid)throw new AppError("Incorrect OTP!",406);
+
+    console.log(password);
 
     const isValidPass = await bcrypt.compare(password,user.password);
     if(!isValidPass)throw new AppError("Incorrect Password!",406);

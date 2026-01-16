@@ -22,7 +22,7 @@ export default function Login(){
   const [form,setForm] = useState({
     number : "",
     otp : "",
-    countryCode : "+91"
+    countryCode : "91"
   });
 
   const navigate = useNavigate();
@@ -62,9 +62,7 @@ export default function Login(){
 
       setOtpLoading(true);
 
-      const {data} = await api.post('/auth/customer/otp',{number : form.countryCode?.trim() + form.number?.trim()});
-
-      console.log(data);
+      const {data} = await api.post('/auth/customer/otp',{number : "+" + form.countryCode?.trim() + form.number?.trim()});
 
       setTime(30);
 
@@ -97,6 +95,7 @@ export default function Login(){
 
     }finally{
       setOtpLoading(false);
+      setForm(pre => ({...pre , countryCode :"91" }));
     }
   }
 
@@ -106,7 +105,7 @@ export default function Login(){
 
     try{
       setLoading(true);
-      const {data} = await api.post('/auth/customer/login',{otp : Number(form.otp),number : form.countryCode?.trim() + form.number?.trim()});
+      const {data} = await api.post('/auth/customer/login',{otp : Number(form.otp),number : "+" + form.countryCode?.trim() + form.number?.trim()});
 
       if(data.ok){
         setError({});
@@ -187,8 +186,8 @@ export default function Login(){
 
               <div className="flex gap-2 font-normal">
                 <select onChange={handleChange} name="countryCode" className="rounded-lg border border-gray-300 px-1 py-2 focus:outline-none">
-                  <option className="text-lg">+91</option>
-                  <option className="text-lg">+1</option>
+                  <option value={"+91"} className="text-lg">+91</option>
+                  <option value={"+1"} className="text-lg">+1</option>
                 </select>
                 <input
                   id="number"
