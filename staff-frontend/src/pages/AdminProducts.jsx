@@ -200,7 +200,11 @@ export default function AdminProducts() {
                     </div>
                   </td>
                   <td className="px-6 py-4">
-                    <span className="text-sm font-black text-gray-900">₹{product.price}</span>
+                    {
+                      product.offerPrice && (<span className="text-sm line-through font-semibold text-gray-500">₹{product.orgPrice}</span>)
+                    }
+                    <span className="text-sm font-black text-gray-900"> ₹{product.price}</span>
+                    {product.offerString && (<div className='text-xs font-semibold text-gray-700'>{product.offerString}</div>)}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-center gap-3">

@@ -13,6 +13,8 @@ export default function Items() {
   const navigate = useNavigate();
   const { items } = itemObj;
 
+  console.log(items);
+
   useEffect(() => {
     async function fetchItem() {
       try {
@@ -87,13 +89,11 @@ export default function Items() {
                         src={v.isVeg ? "/icons/veg.png" : "/icons/non-veg.png"} 
                         alt="type" 
                       />
-                      <span className="text-sm font-black text-gray-900">₹{v.price}</span>
+                      {v.offerPrice &&(<span className="text-sm line-through font-semibold text-gray-500">₹{v.orgPrice}</span>)
+                      }
+                      <span className="text-sm font-black text-gray-900"> ₹{v.price}</span>
                     </div>
 
-                    {/* Extra Feature: Small Description */}
-                    <p className="text-[11px] text-gray-400 font-medium leading-relaxed mb-3 line-clamp-2">
-                      {v.description || "Freshly prepared with authentic ingredients and our signature seasoning."}
-                    </p>
                   </div>
 
                   {/* Timing & Offer */}
@@ -103,10 +103,10 @@ export default function Items() {
                       <span>{v.prepTime}-{v.prepTime + 5} min</span>
                     </div>
                     
-                    {v.offer && (
+                    {v.offerString?.trim() && (
                       <div className="flex items-center gap-1 text-[10px] font-black text-[#cd0045] uppercase bg-[#cd0045]/5 px-2 py-0.5 rounded-md">
                         <Info size={10} />
-                        <span>{v.offer}</span>
+                        <span>{v.offerString}</span>
                       </div>
                     )}
                   </div>

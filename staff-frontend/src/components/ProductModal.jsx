@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { X, Upload, Clock, Tag, Leaf } from 'lucide-react';
 import api from '../services/axios.js';
 import uploadImageToCloudinary from '../services/cloudnary.js'
@@ -7,14 +7,54 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
   const [loading,setLoading] = useState(false);
   const [error,setError] = useState({});
 
+  console.log(data);
+
   const [form, setForm] = useState({
     name: data?.name || "",
     image : data?.image || "",
     category: data?.category || "",
-    price: data?.price || "",
+    price: data?.orgPrice || data?.price || "",
     offer: data?.offer || "",
+    offerString : data?.offerString || "",
+    offerPrice : data?.offerPrice || "",
     prepTime: data?.prepTime || 5
   });
+
+  const [offer,setOffer] = useState({
+    offerType : data?.offer.offerType || "",
+    percent : data?.offer.percent || "",
+    flat : data?.offer.flat || ""
+  });
+
+  const handleOffer = (e)=>{
+    setOffer(pre => ({...pre , [e.target.name] : e.target.value}));
+  }
+
+  useEffect(()=>{
+
+    if(!form.price && offer.offerType)setError({price : "Price Needed!"});
+
+    if(offer.offerType === "percent" && offer.percent>0 && offer.percent < 100){
+      setForm(pre => ({
+        ...pre ,
+        offerString : `${offer.percent}% OFF/-`,
+        offerPrice : Math.round(form.price - (form.price * (Number(offer.percent)/100)))
+      }));
+
+    }else if(offer.offerType === "flat" && offer.flat>0 && offer.flat < form.price){
+      setForm(pre => ({
+        ...pre ,
+        offerString : `${offer.flat}₹ OFF/-`,
+        offerPrice : Math.round(form.price - Number(offer.flat))
+      }));
+    }else{
+      setForm(pre => ({
+        ...pre ,
+        offerString : "",
+        offerPrice : ""
+      }));
+    }
+  },[offer])
 
   const [toggle,setToggle] = useState({
     isBest: data?.isBest,
@@ -32,6 +72,8 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
       )
     });
   }
+
+
 
   const validate = ()=>{
     const errorObj = {}
@@ -70,7 +112,7 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
       if (!file) return;
       setLoading(true);
       const url = await uploadImageToCloudinary(file);
-      setError(pre => ({...pre, image: null})); // Clear image error on success
+      setError(pre => ({...pre, image: null})); 
       setForm(pre =>{
         return (
           {...pre , image : url}
@@ -88,12 +130,17 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
     try{
       setLoading(true);
       if(data){
-        await api.post(`/items/admin/${data._id}`,{...form,...toggle});
+        await api.post(`/items/admin/${data._id}`,{...form,...toggle,offer});
       }else{
-        await api.post('/items/admin',{...form,...toggle});
+        await api.post('/items/admin',{...form,...toggle,offer});
       }
       setShow(false);
       setData(null);
+      setOffer({
+        offerType : data?.offer.offerType || "",
+        percent : data?.offer.percent || "",
+        flat : data?.offer.flat || ""
+      })
       fetchProducts();
     }catch(error){
       console.log(error.message);
@@ -102,7 +149,6 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
     }
   }
 
-  // Positioned specifically for your input heights
   const ErrorLabel = ({ message }) => (
     message ? <span className="absolute right-3 top-3.5 text-[9px] font-bold text-red-500 uppercase pointer-events-none">
       {message}
@@ -159,6 +205,7 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
             </label>
 
             <div className="flex-1 space-y-3">
+
               <div className="relative">
                 <ErrorLabel message={error.name} />
                 <input 
@@ -199,10 +246,26 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
                   className={`w-full bg-gray-50 border rounded-xl px-8 py-3 text-sm font-bold focus:ring-2 focus:ring-gray-200 outline-none text-gray-900 ${error.price ? 'border-red-200' : 'border-gray-200'}`}
                 />
               </div>
+
+              <div className="relative">
+                <ErrorLabel message={error.prepTime} />
+                <span className="absolute left-10 top-1/2 -translate-y-1/2 text-gray-400 font-bold text-sm">(Mins) Prepare Time </span>
+                <input 
+                  type="number" 
+                  name="prepTime"
+                  onChange={handleChange}
+                  defaultValue={form.prepTime || 5}
+                  className={`w-full bg-gray-50 border rounded-xl px-4 py-3 text-sm font-bold focus:ring-2 focus:ring-gray-200 outline-none text-gray-900 ${error.prepTime ? 'border-red-200' : 'border-gray-200'}`}
+                />
+              </div>
+
             </div>
           </div>
 
-          <div className="flex items-center justify-between gap-4">
+          <div className='space-y-2'>
+
+            <div className="flex items-center justify-between gap-4">
+
             <div className="space-y-1 flex-1 relative">
               <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Current Offer</label>
               <div className="relative">
@@ -210,27 +273,76 @@ export default function ProductModal({ data, setShow, setData , fetchProducts , 
                 <input 
                   type="text" 
                   name="offer"
-                  onChange={handleChange}
-                  defaultValue={form.offer || ""}
-                  placeholder="e.g. 20% OFF" 
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-10 py-3 text-sm font-semibold focus:ring-2 focus:ring-gray-200 outline-none"
+                  value={form.offerString || "..."}
+                  className={`w-full ${form.offerPrice ? "bg-black text-white" : "bg-gray-50 border border-gray-200"}  rounded-xl px-10 py-3 text-sm font-semibol`}
                 />
               </div>
             </div>
+
             <div className="space-y-1 flex-1 relative">
-              <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Prep Time (Mins)</label>
-              <ErrorLabel message={error.prepTime} />
+              <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Offer Price</label>
               <div className="relative">
-                <Clock size={14} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
                 <input 
-                  type="number" 
-                  name="prepTime"
-                  onChange={handleChange}
-                  defaultValue={form.prepTime || 5}
-                  className={`w-full bg-gray-50 border rounded-xl px-10 py-3 text-sm font-bold focus:ring-2 focus:ring-gray-200 outline-none ${error.prepTime ? 'border-red-200' : 'border-gray-200'}`}
+                  type="text" 
+                  name="offer"
+                  value={form.offerPrice || "..."}
+                  className={`w-full ${form.offerPrice ? "bg-black text-white" : "bg-gray-50 border border-gray-200"}  rounded-xl px-4 py-3 text-sm font-semibol`}
                 />
               </div>
             </div>
+
+            </div>
+
+            <div  className="flex items-center justify-between gap-4">
+              <div>
+                <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Switch Offer</label>
+                <select 
+                  defaultValue={offer.offerType || ""} 
+                  onChange={handleOffer} 
+                  name='offerType' 
+                  className='w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-gray-200 outline-none'
+                >
+                  <option value="">No Offer</option>
+                  <option value="percent"> %x Offer</option>
+                  <option value="flat">Flat ₹x Offer</option>
+                </select>
+              </div>
+              {
+                offer.offerType && (
+                  <div>
+                    <label className="text-[10px] font-bold text-gray-400 uppercase ml-1">Offer Value</label>
+                    <div className="relative">
+                    {
+                      offer.offerType === "percent" && (
+                        <input 
+                          type="number" 
+                          onChange={handleOffer}
+                          name='percent'
+                          defaultValue={offer.percent}
+                          placeholder='X%'
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-gray-200 outline-none"
+                        />
+                      )
+                    }
+                    {
+                      offer.offerType === "flat" && (
+                        <input 
+                          type="number" 
+                          onChange={handleOffer}
+                          name='flat'
+                          defaultValue={offer.flat}
+                          placeholder='X OFF'
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold focus:ring-2 focus:ring-gray-200 outline-none"
+                        />
+                      )
+                    }
+                    </div>
+                  </div>
+                )
+              }
+            </div>
+
+
           </div>
 
           <hr className="border-gray-50" />

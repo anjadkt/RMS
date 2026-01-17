@@ -35,7 +35,12 @@ export default function Item({ item }) {
                 {/* Individual Item Tag (Price/Name) */}
                 <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm border border-gray-100 px-3 py-1 rounded-lg shadow-sm">
                   <p className="text-[10px] font-black text-gray-800 uppercase tracking-tight leading-none">
-                    {v.name} <span className="text-[#cd0045] ml-1">₹{v.price}</span>
+                    {v.name} {
+                      v.offerPrice && (
+                        <span className="text-gray-500 line-through ml-1">₹{v.orgPrice}</span>
+                      )
+                    }
+                    <span className="text-[#cd0045] ml-1">₹{v.price}</span>
                   </p>
                 </div>
 

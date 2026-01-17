@@ -256,8 +256,6 @@ module.exports = {
     const isValid = await bcrypt.compare(otp.toString(),otpDoc.otp);
     if(!isValid)throw new AppError("Incorrect OTP!",406);
 
-    console.log(password);
-
     const isValidPass = await bcrypt.compare(password,user.password);
     if(!isValidPass)throw new AppError("Incorrect Password!",406);
 

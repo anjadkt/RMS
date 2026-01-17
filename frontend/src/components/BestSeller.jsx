@@ -10,8 +10,13 @@ export default function BestSeller({ data }) {
           alt={data?.name}
           className="h-32 w-auto object-contain group-hover:scale-110 transition-transform duration-500"
         />
-        <div className="absolute top-2 right-2 bg-white/90 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">
-           <span className="text-xs font-black text-[#cd0045]">₹{data.price}</span>
+        <div className="absolute top-2 right-2 bg-white/50 backdrop-blur-md px-3 py-1 rounded-full shadow-sm">
+           {
+            data.offerPrice && (
+              <span className="text-xs font-semibold line-through text-gray-500">₹{data.orgPrice}</span>
+            )
+           }
+           <span className="text-xs font-black text-[#cd0045]"> ₹{data.price}</span>
         </div>
       </div>
 

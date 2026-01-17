@@ -9,6 +9,7 @@ const itemSchema = new mongoose.Schema({
     type : Number,
     required : true
   },
+  orgPrice : Number,
   image : {
     type : String,
     required : true
@@ -37,7 +38,13 @@ const itemSchema = new mongoose.Schema({
     type : Boolean,
     default : false
   },
-  offer : String,
+  offerString : String,
+  offerPrice : String,
+  offer : {
+    offerType : String,
+    percent : String,
+    flat : String
+  },
   prepTime : {
     type : Number,
     default : 5

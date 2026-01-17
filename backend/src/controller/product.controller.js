@@ -50,7 +50,10 @@ module.exports = {
               isBest : "$isBest",
               prepTime : "$prepTime",
               isVeg : "$isVeg",
-              offer : "$offer"
+              offer : "$offer",
+              offerPrice : "$offerPrice",
+              offerString : "$offerString",
+              orgPrice : "$orgPrice"
             }
           }
         }
@@ -71,19 +74,22 @@ module.exports = {
   }),
 
   addItem : catchAsync(async (req,res)=>{
-    const {name , price ,image,category,isAvailable,isRemoved , isSpecial ,isBest , offer , isVeg,prepTime} = req.body ;
+    const {name , price ,image,category,isAvailable,isRemoved,offerPrice , offerString , isSpecial ,isBest , offer , isVeg,prepTime} = req.body ;
     if(!name || !price || !image || !category)throw new AppError("fields Required!",400);
 
     const item = await Item.create({
       name,
-      price,
+      price : offerPrice || price,
+      orgPrice : price,
       image,
       category,
       isAvailable,
       isRemoved,
       isSpecial,
       isBest,
-      offer,
+      offerString,
+      offerPrice,
+      offer : offer.offerType ? offer : {...offer , percent : '0' , flat : '0'},
       isVeg,
       prepTime
     });
@@ -94,6 +100,7 @@ module.exports = {
       status : 201
     });
   }),
+
   removeItem : catchAsync(async(req,res)=>{
     const {id} = req.params ;
     const deleted = await Item.deleteOne({_id : id});
@@ -104,24 +111,32 @@ module.exports = {
       status : 200
     });
   }),
+
   editItem : catchAsync(async(req,res)=>{
-    const {name , price ,image,category,isAvailable,isRemoved , isSpecial ,isBest , offer , isVeg,prepTime} = req.body ;
+    const {name , price ,image,category,isAvailable,isRemoved , isSpecial ,isBest ,offerPrice , offerString , offer , isVeg,prepTime} = req.body ;
     const {id} = req.params ;
 
     if(!name || !price || !image || !category)throw new AppError("Field Required!",400);
     const update = await Item.findByIdAndUpdate({_id : id },{
       name,
-      price,
+      price : offerPrice || price,
+      orgPrice : price ,
       image,
       category,
       isAvailable,
       isRemoved,
       isSpecial,
+      offerString,
+      offerPrice,
       isBest,
-      offer,
+      offer : offer.offerType ? offer : {...offer , percent : '0' , flat : '0'},
       isVeg,
       prepTime
     },{new : true , runValidators : true});
+
+    if(!offerPrice || !offerString.trim()){
+      update.price = update.orgPrice ;
+    }
     
     if(!update)throw new AppError("Updation failed!",405);
 
