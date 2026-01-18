@@ -24,6 +24,8 @@ const billSchema = new mongoose.Schema({
   }],
   billItems : Array,
   billTotal : Number,
+  paidTotal : Number,
+  paymentLeft : Number,
   paymentStatus : {
     type : String,
     enum : ["prepaid","billed","unpaid","paid","failed","refunded"]

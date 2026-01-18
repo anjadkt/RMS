@@ -87,7 +87,7 @@ export default function AdminBills(){
         </div>
       </div>
 
-      <div className={`flex flex-wrap ${bills.length < 1 ? "justify-center" : "items-start"} gap-2 gap-y-10 bg-white rounded-xl py-3 px-4 border border-gray-100`}>
+      <div className={`flex flex-wrap ${bills.length < 1 ? "justify-center" : "items-start"} gap-2 gap-y-10 bg-white rounded-xl py-3 px-2 border border-gray-100`}>
         {
           loading ? (
             <div className="flex items-center justify-center h-40 w-full">

@@ -75,8 +75,14 @@ module.exports = {
     );
     
     await Order.updateMany(
-      {_id : {$in : orderObjectIds}},
+      {_id : {$in : orderObjectIds},paymentStatus : {$ne : "prepaid"}},
       {status : "completed",paymentStatus : "paid",billId : bills._id},
+      {runValidators : true}
+    );
+
+    await Order.updateMany(
+      {_id : {$in : orderObjectIds},paymentStatus : "prepaid"},
+      {status : "completed",billId : bills._id},
       {runValidators : true}
     );
 

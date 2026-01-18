@@ -27,7 +27,7 @@ const orderSchema = new mongoose.Schema({
   customerName :String,
   status : {
     type :String,
-    enum : ["placed","accepted","preparing","ready","served","pending","completed"]
+    enum : ["initiated","placed","accepted","preparing","ready","served","pending","completed"]
   },
   orderItems :[
     {
@@ -53,8 +53,12 @@ const orderSchema = new mongoose.Schema({
   },
   paymentStatus : {
     type :String,
-    enum : ["prepaid","billed","unpaid","paid"]
+    enum : ["failed","prepaid","billed","unpaid","paid"]
   },
+  razorpayOrderId : String,
+  razorpayPaymentId : String,
+  paidAmount : Number,
+  paidAt : Date,
   orderDate : {
     type :String,
     require : true

@@ -3,6 +3,7 @@ const AppError = require('../utils/AppError.js');
 const User = require('../model/users.model.js');
 const Order = require('../model/order.model.js');
 const Table = require('../model/table.model.js');
+const razorpay = require('../utils/razorPay.js');
 
 const {getIO} = require('../utils/socket.js');
 const io = getIO();
@@ -27,14 +28,14 @@ module.exports = {
   
   userCreateOrder : catchAsync(async (req,res)=>{
     const {_id,role} = req.user ;
-    const {tableNumber,name,instructions} = req.body ;
+    const {tableNumber,name,instructions,paymentMethod} = req.body ;
 
     if(!tableNumber)throw new AppError("Table Number Required!",400);
 
     const table = await Table.findOne({tableNumber});
     if(!table)throw new AppError("Table Not Found!",404);
 
-    const {orderId,orderNumber,orderDate} = await Promise.resolve(getOrderId());
+    const {orderId,orderNumber,orderDate} = await getOrderId();
 
     const user = await User.findOne({_id}).populate("cart.item");    
     if(!user)throw new AppError("User Not Found!",404);
@@ -61,41 +62,81 @@ module.exports = {
 
     const orderTotal = orderItems.reduce((accum,val)=>accum + val.subTotal,0);
 
-    const order = await Order.create({
-      orderId,
-      orderNumber,
-      orderType : "Dine-in",
-      tableNumber,
-      tableId :table._id,
-      isAssisted : role === "waiter" ? true : false ,
-      customerId : user._id,
-      waiterId : table.waiterId,
-      customerName : name || user.name + ` (${user.role})` ,
-      status : role === "waiter" ? "accepted" : "placed",
-      orderItems,
-      orderDate,
-      instructions,
-      orderTotal,
-      createdAt,
-      prepareTime : readyAt,
-      paymentStatus : "unpaid"
-    });
-    if(!order)throw new AppError("Order Creation Failed!",400);
+    try{
+      let razorpayOrder;
 
-    await Table.updateOne({tableNumber},{$push : {tableOrders : order._id},isOccupied : true},{runValidators : true});
-    await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : [],name}},{runValidators : true});
+      if(paymentMethod === "prepaid"){
+        const options = {
+          amount : orderTotal * 100 ,
+          currency: "INR",
+          receipt: orderId
+        }
+        razorpayOrder = await razorpay.orders.create(options);
+      }
 
-    if(role === "waiter"){
-      io.to(`cook`).emit('order-accepted',{order});
-    }else{
-      io.to(`waiter-${table.waiterId}`).emit("new-order",{order});
+      const order = await Order.create({
+        orderId,
+        orderNumber,
+        orderType : "Dine-in",
+        tableNumber,
+        tableId :table._id,
+        isAssisted : role === "waiter" ? true : false ,
+        customerId : user._id,
+        waiterId : table.waiterId,
+        razorpayOrderId : razorpayOrder ? razorpayOrder.id : null,
+        customerName : name || user.name + ` (${user.role})` ,
+        status : role === "waiter" ? "accepted" : "initiated",
+        orderItems,
+        orderDate,
+        instructions,
+        orderTotal,
+        createdAt,
+        prepareTime : readyAt,
+        paymentStatus : "unpaid"
+      });
+
+      if(!order)throw new AppError("Order Creation Failed!",400);
+
+
+      if(paymentMethod === "prepaid"){
+        return res.status(201).json({
+        message : "Order Created waiting for payment!",
+        status : 201,
+        order,
+        razorpayOrder
+      });
+      }
+
+      order.status = role === "waiter" ? "accepted" : "placed" ;
+      order.save();
+
+      await Table.updateOne({tableNumber},{$push : {tableOrders : order._id},isOccupied : true},{runValidators : true});
+      await User.updateOne({_id},{$push : {orders : order._id}, $set : {cart : [],name}},{runValidators : true});
+
+      if(role === "waiter"){
+        io.to(`cook`).emit('order-accepted',{order});
+      }else{
+        io.to(`waiter-${table.waiterId}`).emit("new-order",{order});
+      }
+
+      res.status(201).json({
+        message : "Order Created Successfully!",
+        status : 201,
+        order
+      });
+
+
+
+    }catch(error){
+      return res.status(500).json({message : error.message});
     }
 
-    res.status(201).json({
-      message : "Order Created Successfully!",
-      status : 201,
-      order
-    });
+  }),
+
+  userCancelOrder : catchAsync(async(req,res)=>{
+    const {id , razorpayOrderId } = req.body ;
+    await Order.deleteOne({_id : id , razorpayOrderId , paymentStatus : {$nin :["prepaid","billed","paid"]}});
+    res.status(200).json({message : "order deleted!"});
   }),
 
   viewOrderSummary : catchAsync(async (req,res)=>{

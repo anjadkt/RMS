@@ -30,7 +30,11 @@ async function computeOrder(orderIds){
   const orderItemsObj = {}
   let orderBillId = ""
 
+  let paidTotal = 0 ;
   for(let order of orders){
+    if(order.paymentStatus === "prepaid"){
+      paidTotal += order.paidAmount ;
+    }
     for(let v of order?.orderItems){
       if(!orderItemsObj[v.itemId]){
         orderItemsObj[v.itemId] = {
@@ -48,7 +52,7 @@ async function computeOrder(orderIds){
   }
   const grandTotal = orders.reduce((acc,val)=>acc+val.orderTotal,0);
 
-  return {orderDetails : Object.values(orderItemsObj),orderBillId,TOTAL :grandTotal}
+  return {orderDetails : Object.values(orderItemsObj),orderBillId,TOTAL : grandTotal , paidTotal , paymentLeft : grandTotal - paidTotal}
 }
 
 module.exports = {
@@ -101,7 +105,8 @@ module.exports = {
     }
 
     const orderQuery = {
-      _id : {$in : tableIds}
+      _id : {$in : tableIds},
+      status : {$nin : ["completed","initiated"]}
     }
 
     if(s){
@@ -202,7 +207,9 @@ module.exports = {
         billId : billObj.billId,
         billItems : orderItemsObj.orderDetails,
         billNumber : billObj.billNumber,
-        billTotal : orderItemsObj.TOTAL
+        billTotal : orderItemsObj.TOTAL,
+        paidTotal : orderItemsObj.paidTotal ,
+        paymentLeft : orderItemsObj.paymentLeft
       }
 
     });
@@ -259,26 +266,29 @@ module.exports = {
 
     const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
 
-    const order = await razorpay.orders.create({
-      amount : orderItemsObj.TOTAL * 100,
-      currency: "INR",
-      receipt: `bill_${billObj.billId}`
-    });
-
     try {
-      const qr = await razorpay.qrCode.create({
-        type: "upi_qr",
-        name: `Bill #${orderItemsObj.orderBillId}`,
-        usage: "single_use",
-        fixed_amount: true,
-        payment_amount: orderItemsObj.TOTAL * 100, // NOTE: Some versions use 'payment_amount'
-        description: `Payment for Bill ${billObj.billId}`,
-        close_by: Math.floor(Date.now() / 1000) + 20 * 60,
-        notes: {
-          billId: billObj.billId,
-          razorpayOrderId: order.id
-        }
-      });
+      let order , qr ;
+      
+      if(orderItemsObj.paymentLeft){
+        order = await razorpay.orders.create({
+          amount : orderItemsObj.paymentLeft * 100,
+          currency: "INR",
+          receipt: `bill_${billObj.billId}`
+        });
+        qr = await razorpay.qrCode.create({
+          type: "upi_qr",
+          name: `Bill #${orderItemsObj.orderBillId}`,
+          usage: "single_use",
+          fixed_amount: true,
+          payment_amount: orderItemsObj.paymentLeft * 100,
+          description: `Payment for Bill ${billObj.billId}`,
+          close_by: Math.floor(Date.now() / 1000) + 20 * 60,
+          notes: {
+            billId: billObj.billId,
+            razorpayOrderId: order.id
+          }
+        });
+      }
 
       const bills = await Bill.create({
         billNumber : billObj.billNumber,
@@ -290,24 +300,32 @@ module.exports = {
         waiterId : waiterIds,
         billItems : orderItemsObj.orderDetails,
         billTotal : orderItemsObj.TOTAL,
-        paymentStatus : "billed",
-        razorpayOrderId : order.id,
-        qrId : qr.id,
-        qrAmount : qr.amount,
-        qrImage : qr.image_url,
+        paidTotal : orderItemsObj.paidTotal ,
+        paymentLeft : orderItemsObj.paymentLeft,
+        paymentStatus : orderItemsObj.paymentLeft ? "billed" : "paid",
+        razorpayOrderId : orderItemsObj.paymentLeft ? order.id : null,
+        qrId : orderItemsObj.paymentLeft ? qr.id : null,
+        qrAmount : orderItemsObj.paymentLeft ? qr.amount : null,
+        qrImage : orderItemsObj.paymentLeft ? qr.image_url : null,
         restaurentName : resto.restaurentName,
         location : resto.location
       });
 
       const update = await Order.updateMany(
-        {_id : {$in : orderObjectIds}},
+        {_id : {$in : orderObjectIds}, paymentStatus : {$ne : "prepaid"}},
         {status : "pending",billId : bills._id,paymentStatus : "billed"},
         {runValidators : true}
       );
 
-      if (update.modifiedCount !== orderIds.length) {
-        throw new AppError("Some orders were not updated", 400);
-      }
+      const update2 = await Order.updateMany(
+        {_id : {$in : orderObjectIds}, paymentStatus : "prepaid"},
+        {status : "completed",billId : bills._id},
+        {runValidators : true}
+      );
+
+      // if (update.modifiedCount !== orderIds.length) {
+      //   throw new AppError("Some orders were not updated", 400);
+      // }
   
       res.status(200).json({
         message : "Bill generated and Changed order status to pending..",

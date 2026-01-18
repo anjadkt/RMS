@@ -7,19 +7,20 @@ import DotLoader from '../components/DotLoader.jsx';
 import api from "../services/axios.js";
 
 export default function Checkout() {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-  const [orderLoading, setOrderLoading] = useState(false);
-  const [form, setForm] = useState({ name: "", tableNumber: "" });
-  const [error, setError] = useState({});
-  const [show,setShow] = useState(false);
-
-  const [searchParams] = useSearchParams();
-  const tableFromUrl = searchParams.get("table");
-
   const { cart, loading } = useSelector(state => state.cart);
   const {name} = useSelector(state => state.user);
   const {tables} = useSelector(state => state.website);
+
+  const [orderLoading, setOrderLoading] = useState(false);
+  const [form, setForm] = useState({ name: name || "", tableNumber: "" , paymentMethod : "postpaid" });
+  const [error, setError] = useState({});
+  const [show,setShow] = useState(false);
+
+   const navigate = useNavigate();
+  const dispatch = useDispatch();
+
+  const [searchParams] = useSearchParams();
+  const tableFromUrl = searchParams.get("table");
 
   const searchTables = tables.filter( v => (v.tableNumber.toUpperCase().includes(form.tableNumber.toUpperCase())));
 
@@ -32,9 +33,39 @@ export default function Checkout() {
   const makeOrder = async () => {
     try {
       setOrderLoading(true);
-      await api.post('/user/order', form);
-      setError({});
-      navigate('/history');
+      const {data} = await api.post('/user/order', form);
+
+      if(data.razorpayOrder){
+        const  options = {
+          key : import.meta.env.VITE_RAZORPAY_KEY_ID ,
+          amount : data.razorpayOrder.amount,
+          currency: "INR",
+          name: "Paragon",
+          description: "Prepaid Order",
+          order_id: data.razorpayOrder.id,
+
+          handler : async function (res){
+            setError({});
+            navigate('/history');
+          },
+          prefill : {
+            name
+          },
+           modal: {
+            ondismiss: async () => {
+              await api.post('/user/order/cancel',{id : data.order._id , razorpayOrderId : data.razorpayOrder.id});
+            }
+          },
+          theme: {
+            color: "#000000"
+          }
+        }
+        new window.Razorpay(options).open();
+      }else{
+        setError({});
+        navigate('/history');
+      }
+
     } catch (error) {
       if (error.status === 400) setError({ tableNumber: "Table Required!" });
       else if (error.status === 404) setError({ tableNumber: "Invalid Table!" });
@@ -55,9 +86,9 @@ export default function Checkout() {
     <div className="min-h-screen bg-[#F8F9FA] pb-10">
       {/* --- TOP NAVIGATION --- */}
       <nav className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-100">
-        <div className="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
+        <div className="max-w-5xl mx-auto px-4 py-4 flex items-center justify-between">
           <button onClick={() => navigate('/')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
-            <img className="h-4 rotate-180" src="/icons/leftArrow.png" alt="back" />
+            <img className="h-4" src="/icons/leftArrow.png" alt="back" />
           </button>
           <h1 className="text-xl font-black text-gray-900 uppercase tracking-tighter font-[REM]"> Checkout</h1>
           <button onClick={() => navigate('/history')} className="p-2 hover:bg-gray-100 rounded-full transition-colors">
@@ -161,8 +192,45 @@ export default function Checkout() {
               <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">Service Details</h2>
               
               <div className="bg-white rounded-[2rem] p-8 shadow-xl border border-gray-50">
+                <div className="space-y-5">
+                  
+                  {/* PAYMENT METHOD TOGGLE (TOP) */}
+                  <div>
+                    <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Payment Method</label>
+                    <div className="relative mt-1 flex p-1 bg-gray-100 rounded-2xl w-full h-12">
+                      {/* Animated Sliding Background */}
+                      <div 
+                        className={`absolute top-1 bottom-1 left-1 w-[calc(50%-4px)] bg-gray-900 rounded-xl transition-transform duration-300 ease-in-out ${
+                          form.paymentMethod === 'prepaid' ? 'translate-x-full' : 'translate-x-0'
+                        }`}
+                      />
 
-                <div className="space-y-2">
+                      <button
+                        type="button"
+                        onClick={() => setForm(prev => ({...prev, paymentMethod: 'postpaid'}))}
+                        className={`relative z-10 flex-1 flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-colors duration-300 ${
+                          form.paymentMethod === 'postpaid' ? 'text-white' : 'text-gray-500'
+                        }`}
+                      >
+                        Postpaid
+                      </button>
+                      
+                      {/* Prepaid Option */}
+                      <button
+                        type="button"
+                        onClick={() => setForm(prev => ({...prev, paymentMethod: 'prepaid'}))}
+                        className={`relative z-10 flex-1 flex items-center justify-center text-[11px] font-black uppercase tracking-widest transition-colors duration-300 ${
+                          form.paymentMethod === 'prepaid' ? 'text-white' : 'text-gray-500'
+                        }`}
+                      >
+                        Prepaid (⚡)
+                      </button>
+
+                      {/* Postpaid Option */}
+                    </div>
+                  </div>
+
+                  {/* YOUR NAME */}
                   <div>
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Your Name</label>
                     <input
@@ -174,12 +242,13 @@ export default function Checkout() {
                     />
                   </div>
 
+                  {/* TABLE SELECTION */}
                   <div>
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Table Selection</label>
                     <div className="flex gap-3 mt-1 relative">
                       <input
                         name="tableNumber"
-                        onChange={(e)=>{
+                        onChange={(e) => {
                           handleChange(e);
                           setShow(true);
                         }}
@@ -187,39 +256,42 @@ export default function Checkout() {
                         placeholder="Table No"
                         className={`flex w-full bg-gray-50 border ${error.tableNumber ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 text-sm outline-none`}
                       />
-                      <div onClick={()=>navigate('/scan')} className="px-3 py-2 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-[#cd0045] transition-colors">
+                      <div 
+                        onClick={() => navigate('/scan')} 
+                        className="px-3 py-2 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-[#cd0045] transition-colors"
+                      >
                         <QrCode size={24} className="text-white" />
                       </div>
+
+                      {/* DROPDOWN RESULTS */}
                       {show && (
-                        <div className="absolute top-10 left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
+                        <div className="absolute top-12 left-0 mt-1 w-full bg-white border border-gray-200 rounded-xl shadow-2xl z-50 overflow-hidden">
                           {form.tableNumber.length > 0 && searchTables.length > 0 ? (
                             <div className="max-h-40 overflow-y-auto">
                               {searchTables.map((v, i) => (
                                 <div
                                   key={i}
-                                  className="px-4 py-3 text-sm text-gray-700 cursor-pointer hover:bg-blue-50 hover:text-black transition-colors duration-150 border-b last:border-b-0 border-gray-100 flex items-center justify-between"
+                                  className="px-4 py-3 text-sm text-gray-700 cursor-pointer hover:bg-gray-50 transition-colors border-b last:border-b-0 border-gray-100 flex items-center justify-between"
                                   onClick={() => {
                                     setForm((pre) => ({ ...pre, tableNumber: v.tableNumber }));
                                     setShow(false);
                                   }}
                                 >
-                                  <span className="font-medium">Table {v.tableNumber}</span>
-                                  <span className="text-xs text-gray-400">Select</span>
+                                  <span className="font-bold">Table {v.tableNumber}</span>
+                                  <span className="text-[10px] bg-gray-100 px-2 py-1 rounded text-gray-500">Select</span>
                                 </div>
                               ))}
                             </div>
                           ) : (
-                            <div className="px-4 py-3 text-sm text-gray-500 italic">
-                              No tables found...
-                            </div>
+                            <div className="px-4 py-3 text-sm text-gray-400 italic">No tables found...</div>
                           )}
                         </div>
                       )}
                     </div>
                     {error.tableNumber && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{error.tableNumber}</p>}
                   </div>
-                </div>
 
+                </div>
                 <div className="mt-2 pt-6 border-t border-gray-50">
                   <button
                     onClick={makeOrder}
@@ -239,9 +311,7 @@ export default function Checkout() {
                     By clicking, a waiter will be notified to assist you.
                   </p>
                 </div>
-
               </div>
-
             </div>
           </div>
 

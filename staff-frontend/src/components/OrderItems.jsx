@@ -138,16 +138,23 @@ export default function OrderItems({ data }) {
       {/* Header */}
       <div className="p-4 border-b border-slate-100 bg-slate-50/30">
         <div className="flex justify-between items-start mb-3">
+
           <div onClick={() => navigate(`/waiter/tables/${data.tableId}`)} className="cursor-pointer">
             <div className="flex items-center gap-1.5 text-lg font-bold text-slate-800">
               <Hash size={18} className="text-blue-600" />
               <span>Table {data.tableNumber}</span>
             </div>
-            <p className="text-[10px] text-slate-400 font-mono mt-0.5">#{data.orderId.slice(-6)}</p>
+            <p className="text-[14px] text-slate-400 font-mono mt-0.5"># {data.orderId}</p>
           </div>
-          <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${currentStatus.color}`}>
-            {data.status}
-          </span>
+
+          <div className="flex flex-col items-center">
+            <div className={`text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${currentStatus.color}`}>
+              {data.status}
+            </div>
+            <div className="text-xs bg-gray-200 px-2 mt-1 py-1 rounded-sm font-semibold">
+              {data.paymentStatus}
+            </div>
+          </div>
         </div>
         <div className="flex items-center gap-2 text-sm text-slate-600 bg-white p-2 rounded-lg border border-slate-100">
           <User size={14} className="text-slate-400" />

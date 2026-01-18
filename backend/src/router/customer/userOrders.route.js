@@ -5,6 +5,7 @@ const userController = require('../../controller/user.controller.js');
 
 router.post('/',orderController.userCreateOrder);
 router.get('/',orderController.viewOrderSummary);
+router.post('/cancel',orderController.userCancelOrder);
 router.get('/notification/:id',userController.removeNotification);
 
 

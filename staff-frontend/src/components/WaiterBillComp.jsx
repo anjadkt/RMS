@@ -81,10 +81,18 @@ export default function WaiterBillComp({ data }) {
           </table>
 
           {/* Summary */}
-          <div className="border-t-2 border-slate-900 pt-4 mb-8">
+          <div className="border-t-2 border-slate-900 pt-4 mb-8 ">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-black text-slate-900 uppercase tracking-tight">Total Amount</span>
-              <span className="text-base font-black text-slate-900">₹{data.billTotal?.toFixed(2)}</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-tight">Total Amount</span>
+              <span className="text-base font-semibold text-slate-500">₹{data.billTotal}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-tight">Total Paid</span>
+              <span className="text-base font-semibold text-slate-500">₹{data.paidTotal}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-sm font-black text-slate-900 uppercase tracking-tight">To be Paid</span>
+              <span className="text-base font-black text-slate-900">₹{data.paymentLeft?.toFixed(2)}</span>
             </div>
           </div>
 

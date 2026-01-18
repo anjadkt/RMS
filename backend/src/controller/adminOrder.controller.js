@@ -15,7 +15,7 @@ module.exports = {
       }}
     ]);
 
-    const allOrdersToday = await Order.find({orderDate : today}).countDocuments();
+    const allOrdersToday = await Order.find({orderDate : today , status : {$ne : "initiated"}}).countDocuments();
 
     const allTimeOrders = await Order.find({status : "completed"}).countDocuments();
     const allTimeGross = await Order.aggregate([
@@ -27,7 +27,7 @@ module.exports = {
     ]);
 
     const orderCount = await Order.aggregate([
-      {$match : {status : {$nin : ["completed"]}}},
+      {$match : {status : {$nin : ["completed","initiated"]}}},
       {$group : {
         _id : "$status",
         orderCount : {$sum : 1}
@@ -43,7 +43,7 @@ module.exports = {
     ]);
 
     const incoming = await Order.aggregate([
-      {$match : {status : {$nin : ["pending","completed"]}}},
+      {$match : {status : {$nin : ["pending","completed","initiated"]}}},
       {$group : {
         _id : null ,
         total : {$sum : "$orderTotal"}
@@ -118,6 +118,7 @@ module.exports = {
     if(status === "cancel"){
       await Order.deleteOne({_id : id});
       const update = await Table.findOneAndUpdate({_id : tableId},{ $pull : {tableOrders : id} });
+      await User.findOneAndUpdate({_id : order.customerId},{$pull : {orders : id}})
       
       if(update && update.tableOrders.length === 0){
         update.isOccupied = false ;

@@ -12,6 +12,7 @@ export default function Bill({ data }) {
       setLoading(true);
       const {data : printBill} = await api.post('/waiter/orders/payment',{orderIds : data.orderIds });
       setBillData(printBill.billData);
+      if(!printBill.billData.qrImage)window.print();
     }catch(error){
       console.log(error.message);
     }finally{
@@ -53,7 +54,7 @@ export default function Bill({ data }) {
             </div>
 
             <div className='flex justify-between items-center'>
-              <div className="text-slate-800 font-bold">TABLE : {data.tableNumber}</div>
+              <div className="text-slate-800 font-bold">{data.tableNumber}</div>
               <div className={`px-2 py-0.5 rounded text-[9px] font-bold tracking-widest ${
                 data.paymentStatus === 'paid' ? 'bg-green-100 text-green-700' : 'bg-amber-100 text-amber-700'
               }`}>
@@ -84,10 +85,18 @@ export default function Bill({ data }) {
           </table>
 
           {/* Summary */}
-          <div className="border-t-2 border-slate-900 pt-4 mb-8">
+          <div className="border-t-2 border-slate-900 pt-4 mb-8 ">
             <div className="flex justify-between items-center">
-              <span className="text-sm font-black text-slate-900 uppercase tracking-tight">Total Amount</span>
-              <span className="text-base font-black text-slate-900">₹{billData.billTotal || data.billTotal?.toFixed(2)}</span>
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-tight">Total Amount</span>
+              <span className="text-base font-semibold text-slate-500">₹{billData.billTotal || data.billTotal}</span>
+            </div>
+            <div className="flex justify-between items-center">
+              <span className="text-xs font-semibold text-slate-500 uppercase tracking-tight">Total Paid</span>
+              <span className="text-base font-semibold text-slate-500">₹{billData.paidTotal || data.paidTotal}</span>
+            </div>
+             <div className="flex justify-between items-center">
+              <span className="text-sm font-black text-slate-900 uppercase tracking-tight">To be Paid</span>
+              <span className="text-base font-black text-slate-900">₹{billData.paymentLeft || data.paymentLeft?.toFixed(2)}</span>
             </div>
           </div>
 
