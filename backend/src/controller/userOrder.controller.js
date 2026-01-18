@@ -84,7 +84,7 @@ module.exports = {
         customerId : user._id,
         waiterId : table.waiterId,
         razorpayOrderId : razorpayOrder ? razorpayOrder.id : null,
-        customerName : name || user.name + ` (${user.role})` ,
+        customerName : (name || user.name) + ` (${user.role})` ,
         status : role === "waiter" ? "accepted" : "initiated",
         orderItems,
         orderDate,

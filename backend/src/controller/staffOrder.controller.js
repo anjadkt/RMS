@@ -201,7 +201,7 @@ module.exports = {
         gstn : "32PQRSX5678L1Z2",
         date : billObj.billDate,
         orderNumbers : orderItemsObj.orderBillId,
-        paymentStatus : "",
+        paymentStatus : "unpaid",
         tableNumber : table.tableNumber,
         tableId : table._id,
         billId : billObj.billId,
@@ -242,6 +242,7 @@ module.exports = {
     const tableNumbers = []
     const tableIds = []
     const waiterIds = []
+
     for(let v of orderIds){
       if(!tableNumbers.includes(v.tableNumber)){
         tableNumbers.push(v.tableNumber);
@@ -267,7 +268,8 @@ module.exports = {
     const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
 
     try {
-      let order , qr ;
+      let order;
+      let qr ;
       
       if(orderItemsObj.paymentLeft){
         order = await razorpay.orders.create({
@@ -282,7 +284,7 @@ module.exports = {
           fixed_amount: true,
           payment_amount: orderItemsObj.paymentLeft * 100,
           description: `Payment for Bill ${billObj.billId}`,
-          close_by: Math.floor(Date.now() / 1000) + 20 * 60,
+          close_by: Math.floor(Date.now() / 1000) + 30 * 60,
           notes: {
             billId: billObj.billId,
             razorpayOrderId: order.id
@@ -311,17 +313,28 @@ module.exports = {
         location : resto.location
       });
 
-      const update = await Order.updateMany(
+      await Order.updateMany(
         {_id : {$in : orderObjectIds}, paymentStatus : {$ne : "prepaid"}},
         {status : "pending",billId : bills._id,paymentStatus : "billed"},
         {runValidators : true}
       );
 
-      const update2 = await Order.updateMany(
+      await Order.updateMany(
         {_id : {$in : orderObjectIds}, paymentStatus : "prepaid"},
         {status : "completed",billId : bills._id},
         {runValidators : true}
       );
+
+      if(!orderItemsObj.paymentLeft){
+        for(let v of tableIds){
+          const table = await Table.findOneAndUpdate({_id : v},{$pull : {tableOrders : {$in : orderObjectIds}}},{new : true});
+
+          if(table && table.tableOrders.length === 0){
+            table.isOccupied = false ;
+            await table.save();
+          }
+        }
+      }
 
       // if (update.modifiedCount !== orderIds.length) {
       //   throw new AppError("Some orders were not updated", 400);
