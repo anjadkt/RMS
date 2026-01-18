@@ -28,7 +28,7 @@ const orderSlice = createSlice({
       }
     },
     setReadyOrders(state,action){
-      state.orders = [action.payload , ...state.orders.filter(v => v._id !== action.payload)]
+      state.orders = [action.payload , ...state.orders.filter(v => v._id !== action.payload._id)]
     }
   }
 });

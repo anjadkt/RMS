@@ -88,9 +88,20 @@ export default function AdminBillModal({ data, setOpen , setPrint }) {
                 </div>
               ))}
             </div>
-            <div className="mt-4 pt-4 border-t-2 border-dashed border-gray-200 flex justify-between items-center">
-              <span className="text-lg font-black text-gray-900 uppercase italic">Grand Total</span>
-              <span className="text-2xl font-black text-gray-900 tracking-tighter">₹{data.billTotal}</span>
+            
+            <div className="mt-4 pt-4 border-t-2 border-dashed border-gray-200 flex flex-col">
+              <div className="flex justify-between items-center">
+                <div className="text-xs font-semibold text-gray-500 uppercase">Grand Total</div>
+                <div className="text-sm font-semibold text-gray-500">₹{data.billTotal}</div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="text-xs font-semibold text-gray-500 uppercase">Total Paid</div>
+                <div className="text-sm font-semibold text-gray-500">₹{data.paidTotal}</div>
+              </div>
+              <div className="flex justify-between items-center">
+                <div className="text-lg font-black text-gray-900 uppercase">Grand Total</div>
+                <div className="text-2xl font-black text-gray-900 tracking-tighter">₹{data.paymentLeft}</div>
+              </div>
             </div>
           </div>
 
