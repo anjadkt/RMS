@@ -2,6 +2,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchCart, addToCart, removeFromCart } from "../app/features/cart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect, useState } from "react";
+import {QrCode} from 'lucide-react'
 import DotLoader from '../components/DotLoader.jsx';
 import api from "../services/axios.js";
 
@@ -11,11 +12,17 @@ export default function Checkout() {
   const [orderLoading, setOrderLoading] = useState(false);
   const [form, setForm] = useState({ name: "", tableNumber: "" });
   const [error, setError] = useState({});
+  const [show,setShow] = useState(false);
 
   const [searchParams] = useSearchParams();
   const tableFromUrl = searchParams.get("table");
 
   const { cart, loading } = useSelector(state => state.cart);
+  const {name} = useSelector(state => state.user);
+  const {tables} = useSelector(state => state.website);
+
+  const searchTables = tables.filter( v => (v.tableNumber.toUpperCase().includes(form.tableNumber.toUpperCase())));
+
   const calcTotal = cart.reduce((accum, val) => accum + (val.item.price * val.quantity), 0);
 
   const handleChange = (e) => {
@@ -87,7 +94,6 @@ export default function Checkout() {
                     !v.item.isAvailable ? "bg-gray-50 overflow-hidden" : "bg-white"
                     }`}
                     >
-                    {/* --- UNAVAILABLE OVERLAY --- */}
                     {!v.item.isAvailable && (
                     <div className="absolute inset-0 z-20 bg-white/60 backdrop-blur-[1px] flex items-center justify-center px-6">
                     {/* Visual Warning Label */}
@@ -160,6 +166,7 @@ export default function Checkout() {
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Your Name</label>
                     <input
                       name="name"
+                      defaultValue={name || ""}
                       onChange={handleChange}
                       placeholder="Enter your name"
                       className="w-full mt-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#cd0045]/10 focus:border-[#cd0045] outline-none transition-all"
@@ -168,17 +175,45 @@ export default function Checkout() {
 
                   <div>
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Table Selection</label>
-                    <div className="flex gap-3 mt-1">
+                    <div className="flex gap-3 mt-1 relative">
                       <input
                         name="tableNumber"
-                        onChange={handleChange}
-                        defaultValue={tableFromUrl || ""}
+                        onChange={(e)=>{
+                          handleChange(e);
+                          setShow(true);
+                        }}
+                        value={tableFromUrl || form.tableNumber || ""}
                         placeholder="Table No"
                         className={`flex-grow bg-gray-50 border ${error.tableNumber ? 'border-red-500' : 'border-gray-100'} rounded-xl px-4 py-3 text-sm outline-none`}
                       />
-                      <div className="w-14 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-[#cd0045] transition-colors">
-                        <img className="h-5 invert" src="/icons/searchfood.png" alt="scan" />
+                      <div onClick={()=>navigate('/scan')} className="w-14 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-[#cd0045] transition-colors">
+                        <QrCode size={26} className="text-white" />
                       </div>
+                      {show && (
+                        <div className="absolute top-10 left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
+                          {form.tableNumber.length > 0 && searchTables.length > 0 ? (
+                            <div className="max-h-40 overflow-y-auto">
+                              {searchTables.map((v, i) => (
+                                <div
+                                  key={i}
+                                  className="px-4 py-3 text-sm text-gray-700 cursor-pointer hover:bg-blue-50 hover:text-black transition-colors duration-150 border-b last:border-b-0 border-gray-100 flex items-center justify-between"
+                                  onClick={() => {
+                                    setForm((pre) => ({ ...pre, tableNumber: v.tableNumber }));
+                                    setShow(false);
+                                  }}
+                                >
+                                  <span className="font-medium">Table {v.tableNumber}</span>
+                                  <span className="text-xs text-gray-400">Select</span>
+                                </div>
+                              ))}
+                            </div>
+                          ) : (
+                            <div className="px-4 py-3 text-sm text-gray-500 italic">
+                              No tables found...
+                            </div>
+                          )}
+                        </div>
+                      )}
                     </div>
                     {error.tableNumber && <p className="text-[10px] text-red-500 font-bold mt-1 ml-1">{error.tableNumber}</p>}
                   </div>

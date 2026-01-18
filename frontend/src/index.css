@@ -11,3 +11,21 @@ body {
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+#qr-scanner {
+  position: relative;
+  width: 260px;
+  height: 260px;
+  overflow: hidden;
+  border-radius: 16px;
+}
+
+#qr-scanner video,
+#qr-scanner canvas {
+  position: absolute !important;
+  top: 0;
+  left: 0;
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+}

@@ -8,7 +8,7 @@ const OTP = require('../model/otp.model.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const transporter = require('../utils/email.js');
-const client = require('../utils/send_sms.js');
+const sendSMS = require('../utils/send_sms.js');
 
 const {SECRET_KEY,SECRET_REFRESH_KEY,TWILIO_PHONE} = process.env ;
 
@@ -71,24 +71,13 @@ module.exports = {
     },{upsert : true,runValidators : true});
 
 
-    const message = await client.messages.create({
-      body: `Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`,
-      from: TWILIO_PHONE,
-      to: number
-    });
+    const message = await sendSMS(number,`Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`);
 
     res.status(201).json({
-      message : `otp send to ${message.to}`,
+      message : `otp sended`,
       ok : true ,
       status : 201
     });
-
-    // res.status(201).json({
-    //   otp,
-    //   message : `otp send to `,
-    //   ok : true ,
-    //   status : 201
-    // });
   }),
 
   verifyUser : catchAsync(async (req,res)=>{

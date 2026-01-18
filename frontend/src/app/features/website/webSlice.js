@@ -12,7 +12,8 @@ const webSlice = createSlice({
     status : "open",
     error : null,
     offer : null,
-    isVisible : true
+    isVisible : true,
+    tables : []
   },
   reducers : {
     startfetching(state){
@@ -26,6 +27,7 @@ const webSlice = createSlice({
       state.loading = false ;
       state.offer = action.payload.mainOffer ;
       state.isVisible = true;
+      state.tables = action.payload.tables ;
     },
     setScroll(state,action){
       state.scroll = action.payload ;
@@ -43,7 +45,7 @@ const webSlice = createSlice({
 export const getWebsiteData = () => async (dispatch) => {
   try{
     dispatch(startfetching());
-    const {data : websiteData} = await api.get('/resto?settings=true&best=true&special=true');
+    const {data : websiteData} = await api.get('/resto?settings=true&best=true&special=true&tables=true');
     const mainOffer = websiteData.settings.offers.filter(v => v.isMain === true);
     dispatch(setWebsiteData({...websiteData,mainOffer : mainOffer[0]}));
   }catch(error){

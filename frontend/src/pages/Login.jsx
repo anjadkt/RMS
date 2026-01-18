@@ -132,6 +132,8 @@ export default function Login(){
         case 403 :
           newError.common = "User Blocked!"
           break;
+        case 500 :
+          newError.common = "OTP NOT SEND!"
       }
       setError(newError);
 
@@ -146,6 +148,7 @@ export default function Login(){
 
   useEffect(()=>{
     if(time===0)return ;
+    inputElem.current.otp?.focus();
     const timeout = setTimeout(()=>{
       setTime(pre => pre-1);
     },1000)
@@ -210,7 +213,6 @@ export default function Login(){
                   type="button"
                   onClick={()=>{
                     sendOtp();
-                    inputElem.current.otp?.focus();
                   }}
                   className="w-full bg-[#cd0045] mt-4 cursor-pointer text-white font-semibold py-1.5 rounded-lg transition"
                 > 

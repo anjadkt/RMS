@@ -50,7 +50,7 @@ module.exports = {
   }),
 
   getWebsiteData : catchAsync(async(req,res)=>{
-    const {settings,best,special,categories} = req.query ;
+    const {settings,best,special,categories,tables} = req.query ;
     const data = {}
 
     if(settings){
@@ -71,6 +71,11 @@ module.exports = {
     if(categories){
       const resto = await Table.findOne({restaurentId : "REST-20251221-XGQIW9"});
       data.categories = resto.categories ;
+    }
+
+    if(tables){
+      const tableNumbers = await Table.find({tableNumber : {$exists : true}},{tableNumber : 1});
+      data.tables = tableNumbers;
     }
 
     res.status(200).json({

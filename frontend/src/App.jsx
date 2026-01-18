@@ -15,6 +15,7 @@ import ClosedStoreOverlay from './components/ClosedStoreOverlay.jsx'
 import MainOfferWrapper from './components/MainOffer.jsx'
 import {getWebsiteData} from './app/features/website/webSlice.js'
 import ToastNotification from "./components/ToastNoti.jsx"
+import QrScanner from "./pages/QrScanner.jsx"
 
 
 function App() {
@@ -42,6 +43,7 @@ function App() {
         <Route path="/cart" element = {<ProtectedRoute ><Checkout/></ProtectedRoute>} />
         <Route path="/search" element = {<Search/>} />
         <Route path="/history" element = {<ProtectedRoute><History/></ProtectedRoute>} />
+        <Route path="/scan" element = {<ProtectedRoute><QrScanner/></ProtectedRoute>} />
       </Routes>
     </>
   )
