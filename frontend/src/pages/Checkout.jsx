@@ -161,7 +161,8 @@ export default function Checkout() {
               <h2 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-6">Service Details</h2>
               
               <div className="bg-white rounded-[2rem] p-8 shadow-xl border border-gray-50">
-                <div className="space-y-5">
+
+                <div className="space-y-2">
                   <div>
                     <label className="text-[10px] font-black text-gray-400 uppercase ml-1">Your Name</label>
                     <input
@@ -169,7 +170,7 @@ export default function Checkout() {
                       defaultValue={name || ""}
                       onChange={handleChange}
                       placeholder="Enter your name"
-                      className="w-full mt-1 bg-gray-50 border border-gray-100 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#cd0045]/10 focus:border-[#cd0045] outline-none transition-all"
+                      className="w-full mt-1 bg-gray-50 border border-gray-300 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-[#cd0045]/10 focus:border-[#cd0045] outline-none transition-all"
                     />
                   </div>
 
@@ -184,10 +185,10 @@ export default function Checkout() {
                         }}
                         value={tableFromUrl || form.tableNumber || ""}
                         placeholder="Table No"
-                        className={`flex-grow bg-gray-50 border ${error.tableNumber ? 'border-red-500' : 'border-gray-100'} rounded-xl px-4 py-3 text-sm outline-none`}
+                        className={`flex w-full bg-gray-50 border ${error.tableNumber ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 text-sm outline-none`}
                       />
-                      <div onClick={()=>navigate('/scan')} className="w-14 h-12 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-[#cd0045] transition-colors">
-                        <QrCode size={26} className="text-white" />
+                      <div onClick={()=>navigate('/scan')} className="px-3 py-2 bg-gray-900 rounded-xl flex items-center justify-center flex-shrink-0 cursor-pointer hover:bg-[#cd0045] transition-colors">
+                        <QrCode size={24} className="text-white" />
                       </div>
                       {show && (
                         <div className="absolute top-10 left-0 mt-1 w-full bg-white border border-gray-200 rounded-lg shadow-xl z-50 overflow-hidden">
@@ -219,7 +220,7 @@ export default function Checkout() {
                   </div>
                 </div>
 
-                <div className="mt-8 pt-6 border-t border-gray-50">
+                <div className="mt-2 pt-6 border-t border-gray-50">
                   <button
                     onClick={makeOrder}
                     disabled={orderLoading || cart.length === 0}
@@ -238,7 +239,9 @@ export default function Checkout() {
                     By clicking, a waiter will be notified to assist you.
                   </p>
                 </div>
+
               </div>
+
             </div>
           </div>
 
