@@ -532,7 +532,11 @@ module.exports = {
   setUserLogout : catchAsync(async (req,res)=>{
     const {_id} = req.user ;
     await User.findOneAndUpdate({_id},{refreshToken : ""});
-    res.clearCookie("access_token")
+    res.clearCookie("access_token",{
+      httpOnly: true,
+      secure: true,
+      sameSite: "none"   
+    })
 
     res.clearCookie("refresh_token",{
       httpOnly: true,
