@@ -106,15 +106,15 @@ module.exports = {
 
     res.cookie("access_token",accessToken,{
       httpOnly: true,
-      secure: true,
-      sameSite: "none",
+  secure: false, 
+  sameSite: 'lax', 
       maxAge : 1000 * 60 * 30
     });
 
     res.cookie("refresh_token",refreshToken,{
-      httpOnly: true,
-      secure: true,          
-      sameSite: "none",      
+       httpOnly: true,
+  secure: false, 
+  sameSite: 'lax',       
       maxAge : 1000 * 60 * 60 * 24 * 30
     });
 
@@ -169,9 +169,9 @@ module.exports = {
       const newAccessToken = getAccessToken(user);
 
       res.cookie("access_token",newAccessToken,{
-        httpOnly: true,
-        secure: true,        
-        sameSite: "none",    
+         httpOnly: true,
+  secure: false, 
+  sameSite: 'lax',     
         maxAge : 1000 * 60 * 30
       });
 
@@ -272,16 +272,16 @@ module.exports = {
     await user.save();
 
     res.cookie("access_token",accessToken,{
-      httpOnly: true,
-      secure: true,       
-      sameSite: "none",    
+       httpOnly: true,
+  secure: false, 
+  sameSite: 'lax',     
       maxAge : 1000 * 60 * 30
     });
 
     res.cookie("refresh_token",refreshToken,{
-      httpOnly: true,
-      secure: true,       
-      sameSite: "none", 
+       httpOnly: true,
+  secure: false, 
+  sameSite: 'lax', 
       maxAge : 1000 * 60 * 60 * 24 * 30
     });
 
@@ -412,16 +412,16 @@ module.exports = {
     await user.save();
 
     res.cookie("access_token",accessToken,{
-      httpOnly: true,
-      secure: true,        
-      sameSite: "none",      
+       httpOnly: true,
+  secure: false, 
+  sameSite: 'lax',       
       maxAge : 1000 * 60 * 30
     });
 
     res.cookie("refresh_token",refreshToken,{
-      httpOnly: true,
-      secure: true,         
-      sameSite: "none",      
+       httpOnly: true,
+  secure: false, 
+  sameSite: 'lax',     
       maxAge : 1000 * 60 * 60 * 24 * 7
     });
 
@@ -531,15 +531,15 @@ module.exports = {
     const {_id} = req.user ;
     await User.findOneAndUpdate({_id},{refreshToken : ""});
     res.clearCookie("access_token",{
-      httpOnly: true,
-      secure: true,
-      sameSite: "none"   
+       httpOnly: true,
+  secure: false, 
+  sameSite: 'lax',    
     })
 
     res.clearCookie("refresh_token",{
-      httpOnly: true,
-      secure: true,
-      sameSite: "none"      
+       httpOnly: true,
+  secure: false, 
+  sameSite: 'lax',      
     });
 
     res.status(200).json({
