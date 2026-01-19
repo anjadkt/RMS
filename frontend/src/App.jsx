@@ -16,6 +16,10 @@ import MainOfferWrapper from './components/MainOffer.jsx'
 import {getWebsiteData} from './app/features/website/webSlice.js'
 import ToastNotification from "./components/ToastNoti.jsx"
 import QrScanner from "./pages/QrScanner.jsx"
+import Privacy from "./pages/Privacy.jsx"
+import Terms from "./pages/Terms.jsx"
+import Refund from "./pages/Refund.jsx"
+import Contact from "./pages/Contact.jsx"
 
 
 function App() {
@@ -44,6 +48,10 @@ function App() {
         <Route path="/search" element = {<Search/>} />
         <Route path="/history" element = {<ProtectedRoute><History/></ProtectedRoute>} />
         <Route path="/scan" element = {<ProtectedRoute><QrScanner/></ProtectedRoute>} />
+        <Route path="/privacy-policy" element={<Privacy/>} />
+        <Route path="/terms" element={<Terms/>} />
+        <Route path="/refund" element={<Refund/>} />
+        <Route path="/contact" element={<Contact/>} />
       </Routes>
     </>
   )
