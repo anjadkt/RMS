@@ -97,7 +97,8 @@ module.exports = {
             orderTotal : "$orderTotal",
             tableId : "$tableId",
             tableNumber : "$tableNumber",
-            waiterId : "$waiterId"
+            waiterId : "$waiterId",
+            paymentStatus : "$paymentStatus"
           }}
         }}
       ]);

@@ -28,10 +28,11 @@ export default function TableOrder({ orderIds, data ,setOrderId}) {
 
   return (
     <div className={`transition-all duration-300 border rounded-xl py-2 mb-4 bg-white
-      ${isReady ? 'border-emerald-500 shadow-sm' : 'border-slate-200 shadow-sm'} w-[300px]
+      ${isReady ? 'border-emerald-500 shadow-sm' : 'border-slate-200 shadow-sm'} w-[280px]
        lg:w-[400px]`}>
       
-      <div className="flex items-center justify-between px-3 py-1 lg:p-5">
+      <div className="flex items-center justify-around px-2 py-1 lg:p-5">
+
         <div className="flex items-center gap-3">
           <label className="relative flex items-center cursor-pointer">
             <input 
@@ -51,14 +52,19 @@ export default function TableOrder({ orderIds, data ,setOrderId}) {
 
           <div className="flex flex-col">
             <span className="text-[10px] lg:text-xs font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1">
-              <Hash size={10} /> ID : {data.orderId || "ODR-000000-0"}
+              <Hash size={10} />{data.orderId || "ODR-000000-0"}
             </span>
           </div>
+        </div>
+
+        <div className={`px-2 py-1 rounded-full bg-gray-200 text-gray-800 text-[8px] lg:text-[8px] font-bold uppercase tracking-tighter`}>
+          {data.paymentStatus}
         </div>
 
         <div className={`px-3 py-1 rounded-full  ${statusColors[data.status]} text-[10px] lg:text-xs font-bold uppercase tracking-tighter`}>
           {data.status}
         </div>
+
       </div>
 
       <div 

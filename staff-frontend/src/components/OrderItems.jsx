@@ -4,10 +4,13 @@ import api from "../services/axios";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { fetchWaiterOrders } from "../app/features/order/orderSlice";
+import ConfirmationModal from "./ConfirmationModal";
+import { useConfirm } from "../services/useConfirm";
 
 export default function OrderItems({ data }) {
   const [fall, setFall] = useState(false);
   const [loading, setLoading] = useState(false);
+  const {close,ask,config} = useConfirm();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -125,7 +128,7 @@ export default function OrderItems({ data }) {
     return (
       <button
         className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white font-bold py-3 px-4 text-sm rounded-xl transition-all shadow-md active:scale-[0.98]"
-        onClick={handleAction}
+        onClick={()=>ask(`${currentStatus.btnText} ORDER`,`By clicking ${currentStatus.btnText} Order will be marked as ${currentStatus.nextAction}`,handleAction)}
       >
         <CheckCircle size={18} />
         {currentStatus.btnText}
@@ -134,63 +137,64 @@ export default function OrderItems({ data }) {
   };
 
   return (
-    <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow h-fit w-full max-w-md mx-auto overflow-hidden">
-      {/* Header */}
-      <div className="p-4 border-b border-slate-100 bg-slate-50/30">
-        <div className="flex justify-between items-start mb-3">
+    <>
+     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm hover:shadow-md transition-shadow h-fit w-full max-w-md mx-auto overflow-hidden">
+        <div className="p-4 border-b border-slate-100 bg-slate-50/30">
+          <div className="flex justify-between items-start mb-3">
 
-          <div onClick={() => navigate(`/waiter/tables/${data.tableId}`)} className="cursor-pointer">
-            <div className="flex items-center gap-1.5 text-lg font-bold text-slate-800">
-              <Hash size={18} className="text-blue-600" />
-              <span>Table {data.tableNumber}</span>
+            <div onClick={() => navigate(`/waiter/tables/${data.tableId}`)} className="cursor-pointer">
+              <div className="flex items-center gap-1.5 text-lg font-bold text-slate-800">
+                <Hash size={18} className="text-blue-600" />
+                <span>Table {data.tableNumber}</span>
+              </div>
+              <p className="text-[14px] text-slate-400 font-mono mt-0.5"># {data.orderId}</p>
             </div>
-            <p className="text-[14px] text-slate-400 font-mono mt-0.5"># {data.orderId}</p>
+
+            <div className="flex flex-col items-center">
+              <div className={`text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${currentStatus.color}`}>
+                {data.status}
+              </div>
+              <div className="text-xs bg-gray-200 text-gray-800 px-2 mt-1 py-1 rounded-sm font-semibold">
+                {data.paymentStatus}
+              </div>
+            </div>
           </div>
+          <div className="flex items-center gap-2 text-sm text-slate-600 bg-white p-2 rounded-lg border border-slate-100">
+            <User size={14} className="text-slate-400" />
+            <span className="font-medium truncate">{data.customerName || "Guest Customer"}</span>
+          </div>
+        </div>
 
-          <div className="flex flex-col items-center">
-            <div className={`text-[10px] font-bold px-2.5 py-1 rounded-full border uppercase tracking-wider ${currentStatus.color}`}>
-              {data.status}
+        <div className="p-4">
+          <button onClick={() => setFall(!fall)} className="flex justify-between items-center w-full group py-1">
+            <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+              Items ({data.orderItems?.length || 0})
+            </h3>
+            <div className="text-slate-400 group-hover:text-slate-600 transition-colors">
+              {fall ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
             </div>
-            <div className="text-xs bg-gray-200 px-2 mt-1 py-1 rounded-sm font-semibold">
-              {data.paymentStatus}
+          </button>
+
+          <div className={`${fall ? "max-h-96 opacity-100 mt-3" : "max-h-0 opacity-0"} overflow-hidden transition-all duration-300 space-y-2`}>
+            {data.orderItems?.map((v, index) => (
+              <div key={index} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
+                <span className="text-sm text-slate-700 font-medium">{v.name}</span>
+                <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">x{v.quantity}</span>
+              </div>
+            ))}
+            <div className="flex justify-between items-center pt-2 border-t border-dashed border-slate-200">
+              <span className="text-sm font-bold text-slate-800">Total Amount</span>
+              <span className="text-sm font-black text-blue-600">₹{data.orderTotal}</span>
             </div>
           </div>
         </div>
-        <div className="flex items-center gap-2 text-sm text-slate-600 bg-white p-2 rounded-lg border border-slate-100">
-          <User size={14} className="text-slate-400" />
-          <span className="font-medium truncate">{data.customerName || "Guest Customer"}</span>
+
+        <div className="p-4 pt-0">
+          {renderFooter()}
         </div>
-      </div>
 
-      {/* Items Section */}
-      <div className="p-4">
-        <button onClick={() => setFall(!fall)} className="flex justify-between items-center w-full group py-1">
-          <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-            Items ({data.orderItems?.length || 0})
-          </h3>
-          <div className="text-slate-400 group-hover:text-slate-600 transition-colors">
-            {fall ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
-          </div>
-        </button>
-
-        <div className={`${fall ? "max-h-96 opacity-100 mt-3" : "max-h-0 opacity-0"} overflow-hidden transition-all duration-300 space-y-2`}>
-          {data.orderItems?.map((v, index) => (
-            <div key={index} className="flex justify-between items-center bg-slate-50 px-3 py-2 rounded-xl border border-slate-100">
-              <span className="text-sm text-slate-700 font-medium">{v.name}</span>
-              <span className="text-xs font-bold text-slate-500 bg-white px-2 py-0.5 rounded border border-slate-200">x{v.quantity}</span>
-            </div>
-          ))}
-          <div className="flex justify-between items-center pt-2 border-t border-dashed border-slate-200">
-            <span className="text-sm font-bold text-slate-800">Total Amount</span>
-            <span className="text-sm font-black text-blue-600">₹{data.orderTotal}</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Action Footer */}
-      <div className="p-4 pt-0">
-        {renderFooter()}
-      </div>
-    </div>
+     </div>
+     <ConfirmationModal {...config} onCancel={close}/>
+    </>
   );
 }

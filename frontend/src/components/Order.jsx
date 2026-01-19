@@ -35,11 +35,18 @@ export default function OrderHistory({ data }) {
       <div className="px-6 pt-6 pb-4 flex justify-between items-start">
         <div className="flex flex-col">
           <span className="text-[10px] font-bold text-gray-400 uppercase tracking-[0.2em]">Reference</span>
-          <span className="text-sm lg:text-lg font-black text-gray-800 font-[REM] leading-none">#{data.orderId}</span>
+          <span className="text-xs lg:text-xs font-black text-gray-800 font-[REM] leading-none">#{data.orderId}</span>
         </div>
-        <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border ${statusColors[data.status] || "bg-gray-50 text-gray-500"}`}>
-          {data.status}
+
+        <div className="flex gap-2 items-center">
+          <div className={`px-4 py-1 text-[12px] font-extrabold uppercase ${data.paymentStatus === "paid" || data.paymentStatus === "prepaid" ? "text-green-700" : "text-gray-800"}`}>
+            {data.paymentStatus}
+          </div>
+          <div className={`px-4 py-1.5 rounded-full text-[10px] font-bold uppercase border ${statusColors[data.status] || "bg-gray-50 text-gray-500"}`}>
+            {data.status}
+          </div>
         </div>
+
       </div>
 
       {/* 2. Info Bar: High Contrast & Improved Visibility */}

@@ -26,7 +26,7 @@ export default function Bill({ data }) {
   },[imgLoad]);
 
   return (
-    <div key={data.billId} className="flex flex-col gap-6 justify-center items-center m-4">
+    <div key={data.billId} className="flex flex-col gap-6 justify-center px-4 items-center m-4">
 
       <div id={'bill-print'} className="bg-white w-lg max-w-xs border border-slate-200 rounded-sm overflow-hidden flex flex-col relative">
         

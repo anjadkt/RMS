@@ -5,6 +5,8 @@ import { useState , useEffect } from "react";
 import api from '../services/axios.js';
 import { useNavigate } from "react-router-dom";
 import QrComp from '../components/QrComp.jsx'
+import ConfirmationModal from '../components/ConfirmationModal.jsx'
+import {useConfirm} from '../services/useConfirm.js'
 
 export default function AdminTableDetails() {
   const { id } = useParams();
@@ -12,6 +14,7 @@ export default function AdminTableDetails() {
   const [table,setTable] = useState({});
   const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
+  const {close,config,ask} = useConfirm();
 
   const statusColors = {
     placed: "bg-purple-100 text-purple-700",
@@ -85,7 +88,7 @@ export default function AdminTableDetails() {
 
                 <div className="pt-4 border-t border-gray-50 flex justify-center">
                   <button
-                  onClick={removeTable}
+                  onClick={()=>ask("REMOVE TABLE",`Do you want to remove ${table.tableNumber}?`,removeTable)}
                   className={`px-6 py-2.5 hover:bg-red-50 hover:text-red-600 bg-red-600 text-white cursor-pointer font-bold rounded-xl transition-all text-sm`}>
                     Remove Table
                   </button>
@@ -107,7 +110,22 @@ export default function AdminTableDetails() {
             </div>
 
             <div className="space-y-4">
-              {table?.tableOrders?.map((order, idx) => (
+              {
+
+                table?.tableOrders?.length === 0 ? (
+                  <div className="flex flex-col items-center justify-center py-16 px-6 border border-dashed     border-gray-300 rounded-xl bg-gray-50 text-center">
+                      <div className="mb-4 flex items-center justify-center w-14 h-14 rounded-full bg-gray-200 text-gray-600">
+                        📭
+                      </div>
+                      <h2 className="text-lg font-semibold text-gray-700">
+                        No Orders Yet
+                      </h2>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Orders will appear here once customers/waiters place them.
+                      </p>
+                  </div>
+                ) : 
+              table?.tableOrders?.map((order, idx) => (
                 <div key={idx} className={`bg-white rounded-3xl overflow-hidden transition-all`}>
                   
                   <div 
@@ -165,6 +183,7 @@ export default function AdminTableDetails() {
 
         </div>
       </main>
+      <ConfirmationModal {...config} onCancel={close} />
     </>
   );
 }

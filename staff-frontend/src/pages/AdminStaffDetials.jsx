@@ -3,6 +3,8 @@ import { useParams , useNavigate } from 'react-router-dom'
 import AdminHeader from "../components/AdminHeader";
 import { User, Phone,Mail, MapPin, ShieldCheck, ShieldAlert, Table, ShoppingBag, Trash2, PlusCircle, CheckCircle2 } from "lucide-react";
 import api from "../services/axios";
+import ConfirmationModal from '../components/ConfirmationModal.jsx'
+import {useConfirm} from '../services/useConfirm.js'
 
 export default function AdminStaffDetails() {
   const [data, setData] = useState({});
@@ -11,6 +13,7 @@ export default function AdminStaffDetails() {
   const [selectedTables, setSelectedTables] = useState([]);
   const { id } = useParams();
   const navigate = useNavigate();
+  const {close,config,ask} = useConfirm();
 
   const statusColors = {
     placed: "bg-purple-100 text-purple-700",
@@ -128,7 +131,7 @@ export default function AdminStaffDetails() {
 
             <div className="pt-4 border-t border-gray-50 flex justify-between">
               <button
-               onClick={()=>removeStaff(data.user._id)}
+               onClick={()=>ask("REMOVE STAFF",`Do you want to REMOVE ${data.user.name}?`,()=>removeStaff(data.user._id))}
                className={`px-6 py-2.5 hover:bg-red-50 hover:text-red-600 bg-red-600 text-white cursor-pointer font-bold rounded-xl transition-all text-sm`}>
                 Remove Staff
               </button>
@@ -263,6 +266,7 @@ export default function AdminStaffDetails() {
         </div>
 
       </main>
+      <ConfirmationModal {...config} onCancel={close} />
     </>
   );
 }

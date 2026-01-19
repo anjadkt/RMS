@@ -98,7 +98,7 @@ export default function AdminCustomerDetails() {
                   <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Contact</span>
                   <div className="flex items-center gap-2 text-sm font-bold text-gray-800">
                     <Phone size={14} className="text-indigo-500" />
-                    +{data.user?.number}
+                    {data.user?.number}
                   </div>
                 </div>
               </div>
@@ -131,7 +131,21 @@ export default function AdminCustomerDetails() {
             </div>
 
             <div className="space-y-4">
-              {data.user?.orders?.map((order, idx) => (
+              {
+                data.user?.orders.length < 1 ? (
+                  <div className="flex flex-col items-center justify-center py-16 px-6 border border-dashed     border-gray-300 rounded-xl bg-gray-50 text-center">
+                      <div className="mb-4 flex items-center justify-center w-14 h-14 rounded-full bg-gray-200 text-gray-600">
+                        📭
+                      </div>
+                      <h2 className="text-lg font-semibold text-gray-700">
+                        No Orders Yet
+                      </h2>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Orders will appear here.
+                      </p>
+                  </div>
+                ) :
+                data.user?.orders?.map((order, idx) => (
                 <div 
                   key={idx} 
                   className={`group bg-white border rounded-3xl overflow-hidden transition-all duration-300 ${

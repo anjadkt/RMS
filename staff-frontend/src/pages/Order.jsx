@@ -4,6 +4,8 @@ import Nav from "../components/Nav";
 import api from "../services/axios.js";
 import { useDispatch, useSelector } from "react-redux"
 import { fetchCart, addToCart, removeFromCart } from "../app/features/cart/cartSlice.js";
+import {useConfirm} from '../services/useConfirm.js'
+import ConfirmationModal from '../components/ConfirmationModal.jsx'
 
 export default function Order() {
   const [query, setQuery] = useState("");
@@ -11,6 +13,8 @@ export default function Order() {
   const [error, setError] = useState("");
   const [tableNumber, setTableNumber] = useState("");
   const [orderLoading, setOrderLoading] = useState(false);
+  const [tables,setTables] = useState([]);
+  const {ask,close,config} = useConfirm()
 
   const dispatch = useDispatch();
   const { cart, loading } = useSelector(state => state.cart);
@@ -35,6 +39,15 @@ export default function Order() {
   }
 
   useEffect(() => {
+    const fetchTables = async()=>{
+      try{
+        const {data} = await api.get('/resto?tables=true');
+        setTables(data.tables);
+      }catch(error){
+        console.log(error.message);
+      }
+    }
+    fetchTables();
     dispatch(fetchCart())
   }, []);
 
@@ -173,8 +186,8 @@ export default function Order() {
                   className="w-full pl-10 pr-4 py-3 bg-slate-800 border border-slate-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/40 font-bold text-white appearance-none"
                 >
                   <option value="">Assign Table</option>
-                  {[...Array(9)].map((_, i) => (
-                    <option key={i} value={"TBL-0" + (i + 1)}>Table 0{i + 1}</option>
+                  {tables.map((v,i) => (
+                    <option key={i} value={v.tableNumber}>{v.tableNumber}</option>
                   ))}
                 </select>
               </div>
@@ -182,7 +195,7 @@ export default function Order() {
               <button 
                 className="w-full sm:w-auto sm:px-12 bg-blue-600 hover:bg-blue-500 text-white font-bold py-3 rounded-xl transition-all shadow-lg shadow-blue-900/20 disabled:bg-slate-700 disabled:text-slate-400 flex items-center justify-center gap-2"
                 disabled={orderLoading || cart?.length === 0}
-                onClick={makeOrder}
+                onClick={()=>ask("ORDER CREATION","Are you sure you want to proceed?",makeOrder)}
               >
                 {orderLoading ? (
                   <span className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
@@ -202,6 +215,7 @@ export default function Order() {
 
       </main>
       <Nav />
+      <ConfirmationModal {...config} onCancel={close} />
     </div>
   );
 }

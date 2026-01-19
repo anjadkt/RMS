@@ -2,11 +2,14 @@ import { useState } from "react";
 import api from "../services/axios";
 import { fetchKitchenOrders } from "../app/features/order/orderSlice";
 import { useDispatch } from "react-redux";
+import {useConfirm} from '../services/useConfirm.js'
+import ConfirmationModal from '../components/ConfirmationModal.jsx'
 
 export default function OrderComp({data}) {
 
   const [loading,setLoading] = useState(false);
   const dispatch = useDispatch();
+  const {ask,close,config} = useConfirm();
 
   const statusColors = {
     placed: "bg-purple-100 text-purple-700",
@@ -32,64 +35,69 @@ export default function OrderComp({data}) {
   }
 
   return (
-    <div key={data._id} className="max-w-xs min-w-xs bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 m-4">
+    <>
+     <div key={data._id} className="max-w-xs min-w-xs bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 m-4">
 
-      <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
-        <div className="text-left">
-          <p className="text-xs text-gray-500 uppercase font-bold ">Order ID</p>
-          <p className="text-sm font-mono text-gray-600">#{data.orderId}</p>
+        <div className="bg-gray-50 p-4 border-b border-gray-200 flex justify-between items-center">
+          <div className="text-left">
+            <p className="text-xs text-gray-500 uppercase font-bold ">Order ID</p>
+            <p className="text-sm font-mono text-gray-600">#{data.orderId}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-xs text-gray-500 uppercase font-bold ">Table</p>
+            <p className="text-sm font-semibold text-gray-800">{data.tableNumber}</p>
+          </div>
         </div>
-        <div className="text-right">
-          <p className="text-xs text-gray-500 uppercase font-bold ">Table</p>
-          <p className="text-sm font-semibold text-gray-800">{data.tableNumber}</p>
+
+        <div className="p-4 flex justify-between items-center bg-white">
+          <span className="px-3 py-0.5 rounded-full text-xs font-semibold bg-gray-700 text-white">
+            {data.orderType}
+          </span>
+          <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[data.status]} uppercase`}>
+            {data.status}
+          </span>
         </div>
-      </div>
 
-      <div className="p-4 flex justify-between items-center bg-white">
-        <span className="px-3 py-0.5 rounded-full text-xs font-semibold bg-gray-700 text-white">
-          {data.orderType}
-        </span>
-        <span className={`px-3 py-1 rounded-full text-xs font-semibold ${statusColors[data.status]} uppercase`}>
-          {data.status}
-        </span>
-      </div>
+        <hr className="mx-4" />
 
-      <hr className="mx-4" />
-
-      <div className="p-4 space-y-4">
-        {data.orderItems?.map((item,i) => (
-          <div key={item._id} className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="font-medium text-gray-900">{item.name}</p>
+        <div className="p-4 space-y-4">
+          {data.orderItems?.map((item,i) => (
+            <div key={item._id} className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div>
+                  <p className="font-medium text-gray-900">{item.name}</p>
+                </div>
+              </div>
+              <div className="text-gray-600 font-medium">
+                x{item.quantity}
               </div>
             </div>
-            <div className="text-gray-600 font-medium">
-              x{item.quantity}
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
+
+        <div className="p-4 bg-gray-50 border-t border-gray-200">
+          {
+            data.status === "ready" ? (
+              <span
+              className="text-sm text-center font-semibold text-green-700"
+              >[ Order Ready ]</span>
+            ) : (
+              <button 
+                onClick={()=>ask(`MARK ${data.status === "accepted" ? "Mark Preparing.." : "Mark Ready.."}`,`Are you sure ?`,()=>setOrderStatus(data.status,data._id))}
+
+                className="w-full bg-black/80 hover:bg-black text-white font-bold py-1.5 rounded-lg transition-colors duration-200 shadow-sm cursor-pointer">
+                {loading ?
+                  (<span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />) : data.status === "accepted" ? "Mark Preparing.." : "Mark Ready.."
+                }
+              </button>
+            )
+          }
+        </div>
+
       </div>
 
-      <div className="p-4 bg-gray-50 border-t border-gray-200">
-        {
-          data.status === "ready" ? (
-             <span
-             className="text-sm text-center font-semibold text-green-700"
-            >[ Order Ready ]</span>
-          ) : (
-            <button 
-              onClick={()=>setOrderStatus(data.status,data._id)}
-              className="w-full bg-black/80 hover:bg-black text-white font-bold py-1.5 rounded-lg transition-colors duration-200 shadow-sm cursor-pointer">
-              {loading ?
-                (<span className="inline-block h-4 w-4 border-2 border-white border-t-transparent rounded-full animate-spin" />) : data.status === "accepted" ? "Mark Preparing.." : "Mark Ready.."
-              }
-            </button>
-          )
-        }
-      </div>
-
-    </div>
+      <ConfirmationModal {...config} onCancel={close} />
+    </>
   );
 }
 

@@ -3,6 +3,8 @@ import AdminHeader from '../components/AdminHeader.jsx'
 import { Search, Plus, Edit, Trash2, MoreVertical } from 'lucide-react'
 import ProductModal from "../components/ProductModal.jsx"
 import api from '../services/axios.js';
+import ConfirmationModal from '../components/ConfirmationModal.jsx'
+import {useConfirm} from '../services/useConfirm.js'
 
 export default function AdminProducts() {
 
@@ -15,6 +17,7 @@ export default function AdminProducts() {
     q : "",
     category : "all"
   });
+  const {close,config,ask} = useConfirm();
 
   async function fetchProducts() {
     try {
@@ -217,7 +220,7 @@ export default function AdminProducts() {
                         <Edit size={18} />
                       </button>
                       <button
-                       onClick={()=>deleteProduct(product._id)}
+                       onClick={()=>ask("DELETE PRODUCT!",`Are you sure want to DELETE ${product.name}?`,()=>deleteProduct(product._id))}
                        className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-all cursor-pointer">
                         <Trash2 size={18} />
                       </button>
@@ -245,6 +248,8 @@ export default function AdminProducts() {
           <></>
         )
       }
+
+      <ConfirmationModal {...config} onCancel={close} />
 
     </>
   )
