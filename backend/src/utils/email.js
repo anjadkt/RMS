@@ -10,6 +10,7 @@
 
 // module.exports = transporter;
 
+require('dotenv').config();
 const SibApiV3Sdk = require("sib-api-v3-sdk");
 
 const client = SibApiV3Sdk.ApiClient.instance;
@@ -24,7 +25,7 @@ const sendEmail = async (email,message) =>{
     subject: "Your OTP Code",
     sender: {
       name: "WEB RESTO",
-      email: "anjad076@gmail.com"
+      email: process.env.EMAIL_USER
     },
     to: [{ email }],
     htmlContent: message
