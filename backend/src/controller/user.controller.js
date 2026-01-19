@@ -7,7 +7,7 @@ const catchAsync = require('../utils/catchAsync.js');
 const OTP = require('../model/otp.model.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const transporter = require('../utils/email.js');
+const sendEmail = require('../utils/email.js');
 const sendSMS = require('../utils/send_sms.js');
 
 const {SECRET_KEY,SECRET_REFRESH_KEY,TWILIO_PHONE} = process.env ;
@@ -207,13 +207,7 @@ module.exports = {
       email
     },{upsert : true});
 
-    console.log("OTP route hit");
-
-    const mailOptions = {
-      from: `<webResto>`,
-      to: email,
-      subject: "Your OTP Code",
-      html: `
+    const message = `
           <h2>Email Verification</h2>
 
           <p>Hello,</p>
@@ -237,19 +231,12 @@ module.exports = {
           </p>
       `
 
-    };
-
-    console.log("OTP made");
-
     try {
-      await transporter.sendMail(mailOptions);
-      console.log("OTP send");
+      sendEmail(email,message);
     } catch (error) {
       console.error("MAIL ERROR 👉", error);
       throw new AppError("Failed to send OTP email", 500);
     }
-
-    console.log("OTP send");
 
     res.status(200).json({
       message : "admin otp send success!",
@@ -334,11 +321,7 @@ module.exports = {
 
     const token = jwt.sign({_id : user._id , email},process.env.STAFF_PASS_KEY,{expiresIn : "5m"});
 
-    const mailOptions = {
-      from: `<PARAGON>`,
-      to: email,
-      subject: "Welcome to the Team – Set Your Password",
-      html: `
+    const message = `
         <html>
           <body style="font-family: Arial, sans-serif; color:#111; line-height:1.5;">
           
@@ -375,9 +358,12 @@ module.exports = {
       
       `
 
-    };
-
-    await transporter.sendMail(mailOptions);
+    try {
+      sendEmail(email,message);
+    } catch (error) {
+      console.error("MAIL ERROR 👉", error);
+      throw new AppError("Failed to send OTP email", 500);
+    }
 
     res.status(201).json({
       message : "staff creation successfull!",
