@@ -210,7 +210,7 @@ module.exports = {
     console.log("OTP route hit");
 
     const mailOptions = {
-      from: `<ROMS>`,
+      from: `<webResto>`,
       to: email,
       subject: "Your OTP Code",
       html: `
@@ -233,7 +233,7 @@ module.exports = {
           </p>
 
           <p>
-          — ROMS
+          — WEBRESTO
           </p>
       `
 
@@ -241,7 +241,13 @@ module.exports = {
 
     console.log("OTP made");
 
-    await transporter.sendMail(mailOptions);
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log("OTP send");
+    } catch (error) {
+      console.error("MAIL ERROR 👉", error);
+      throw new AppError("Failed to send OTP email", 500);
+    }
 
     console.log("OTP send");
 
