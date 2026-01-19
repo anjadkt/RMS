@@ -1,6 +1,6 @@
 import Header from "../components/Header";
 import {useState , useEffect} from 'react'
-import ProductComp from "../components/productComp";
+import ProductComp from "../components/ProductComp.jsx";
 import api from "../services/axios";
 
 export default function KitchenProducts(){

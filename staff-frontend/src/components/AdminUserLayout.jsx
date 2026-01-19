@@ -1,6 +1,4 @@
 import { NavLink, Outlet } from "react-router-dom";
-import api from "../services/axios";
-import {useState,useEffect} from "react"
 
 export default function AdminUsersLayout() {
 

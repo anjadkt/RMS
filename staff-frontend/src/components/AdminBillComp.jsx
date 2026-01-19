@@ -1,6 +1,6 @@
 import { MapPin, Calendar, Hash, ChevronRight, ChevronDown, QrCode } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import AdminBillModal from './AdminBillModal';
+import AdminBillModal from './AdminBillModal.jsx';
 
 export default function AdminBillComp({ data , fetchBills }) {
   const [print, setPrint] = useState(null);

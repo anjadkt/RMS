@@ -1,6 +1,5 @@
 import {QRCodeCanvas} from 'qrcode.react'
 import {toPng} from 'html-to-image'
-import api from '../services/axios.js'
 import {useRef} from 'react'
 import {QrCode ,Download} from 'lucide-react'
 

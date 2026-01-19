@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
-import Nav from "../components/Nav"
-import OrderItems from "../components/OrderItems";
+import Nav from "../components/Nav.jsx"
+import OrderItems from "../components/OrderItems.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchWaiterOrders } from "../app/features/order/orderSlice.js";
 

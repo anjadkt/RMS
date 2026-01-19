@@ -1,6 +1,6 @@
 import { useState } from "react";
-import api from "../services/axios";
-import { fetchKitchenOrders } from "../app/features/order/orderSlice";
+import api from "../services/axios.js";
+import { fetchKitchenOrders } from "../app/features/order/orderSlice.js";
 import { useDispatch } from "react-redux";
 import {useConfirm} from '../services/useConfirm.js'
 import ConfirmationModal from '../components/ConfirmationModal.jsx'

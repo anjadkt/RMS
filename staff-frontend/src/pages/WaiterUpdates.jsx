@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Bell, Utensils, ShieldCheck, User, X } from 'lucide-react';
-import Nav from '../components/Nav';
+import Nav from '../components/Nav.jsx';
 
 const WaiterUpdates = () => {
   const [updates, setUpdates] = useState([

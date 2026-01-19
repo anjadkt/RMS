@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useParams , useNavigate } from 'react-router-dom'
-import AdminHeader from "../components/AdminHeader";
+import AdminHeader from "../components/AdminHeader.jsx";
 import { User, Phone,Mail, MapPin, ShieldCheck, ShieldAlert, Table, ShoppingBag, Trash2, PlusCircle, CheckCircle2 } from "lucide-react";
 import api from "../services/axios";
 import ConfirmationModal from '../components/ConfirmationModal.jsx'

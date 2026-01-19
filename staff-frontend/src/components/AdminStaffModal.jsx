@@ -1,6 +1,6 @@
 import { useState } from "react"
 import uploadImageToCloudinary from '../services/cloudnary.js'
-import api from "../services/axios";
+import api from "../services/axios.js";
 
 export default function AdminStaffModal({setShow,fetchUsers}){
   const [form,setForm] = useState({

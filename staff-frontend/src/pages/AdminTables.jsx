@@ -1,6 +1,6 @@
-import AdminHeader from "../components/AdminHeader";
+import AdminHeader from "../components/AdminHeader.jsx";
 import { Search, Plus, Hash, X } from 'lucide-react' // Added X icon
-import AdminTableComp from "../components/AdminTableComp";
+import AdminTableComp from "../components/AdminTableComp.jsx";
 import { useEffect, useState } from "react";
 import api from '../services/axios.js'
 

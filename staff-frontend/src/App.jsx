@@ -12,7 +12,7 @@ import EachTable from "./pages/EachTable.jsx"
 import Order from "./pages/Order.jsx"
 import Updates from './pages/WaiterUpdates.jsx'
 import KitchenOrders from './pages/KitchenOrder.jsx'
-import KitchenProducts from "./pages/kitchenProducts.jsx"
+import KitchenProducts from "./pages/KitchenOrder.jsx"
 import RootRedirect from './routeProtecter/RootRedirect.jsx'
 import AdminDashboard from "./pages/AdminDashboard.jsx"
 import AdminOrders from "./pages/AdminOrders.jsx"

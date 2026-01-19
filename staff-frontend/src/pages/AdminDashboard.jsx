@@ -1,5 +1,5 @@
 import { useEffect , useState } from "react";
-import AdminHeader from "../components/AdminHeader";
+import AdminHeader from "../components/AdminHeader.jsx";
 import api from "../services/axios";
 
 export default function AdminDashboard() {

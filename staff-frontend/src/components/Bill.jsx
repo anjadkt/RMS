@@ -1,6 +1,6 @@
 import { Printer, MapPin, Calendar, Hash, ChevronRight, QrCode } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import api from '../services/axios';
+import api from '../services/axios.js';
 
 export default function Bill({ data }) {
   const [loading,setLoading] = useState(false);

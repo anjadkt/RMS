@@ -3,7 +3,7 @@ import { useParams } from "react-router-dom"
 import api from "../services/axios";
 import TableOrder from "../components/TableOrder.jsx";
 import { ChevronDown, ChevronUp, ArrowLeft, Receipt, Users } from "lucide-react";
-import Bill from "../components/Bill";
+import Bill from "../components/Bill.jsx";
 
 export default function EachTable() {
   const [fall, setFall] = useState(false);

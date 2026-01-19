@@ -1,4 +1,3 @@
-import React from 'react';
 import { User, ShieldCheck, ShieldX, ChevronRight, IdCard, Briefcase } from 'lucide-react';
 import {useNavigate} from 'react-router-dom'
 

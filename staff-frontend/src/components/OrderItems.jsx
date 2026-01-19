@@ -1,11 +1,11 @@
 import { useState } from "react";
 import { ChevronDown, ChevronUp, CheckCircle, User, Hash, Clock } from "lucide-react";
-import api from "../services/axios";
+import api from "../services/axios.js";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { fetchWaiterOrders } from "../app/features/order/orderSlice";
-import ConfirmationModal from "./ConfirmationModal";
-import { useConfirm } from "../services/useConfirm";
+import { fetchWaiterOrders } from "../app/features/order/orderSlice.js";
+import ConfirmationModal from "./ConfirmationModal.jsx";
+import { useConfirm } from "../services/useConfirm.js";
 
 export default function OrderItems({ data }) {
   const [fall, setFall] = useState(false);

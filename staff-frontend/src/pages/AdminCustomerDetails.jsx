@@ -1,8 +1,8 @@
 import { ShieldCheck, ShieldAlert, User, Phone, MapPin, ShoppingBag, ChevronDown, Package } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import AdminHeader from '../components/AdminHeader';
+import AdminHeader from '../components/AdminHeader.jsx';
 import { useParams } from 'react-router-dom';
-import api from '../services/axios';
+import api from '../services/axios.js';
 
 export default function AdminCustomerDetails() {
   const [expandedOrder, setExpandedOrder] = useState(null);

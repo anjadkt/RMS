@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronUp, Clock, User, Hash, HandPlatter, Check } from 'lucide-react';
-import api from '../services/axios';
+import api from '../services/axios.js';
 
 export default function AdminOrderComp({data,setOrders,fetchOrders, selectedOrders, setSelectedOrders}) {
 

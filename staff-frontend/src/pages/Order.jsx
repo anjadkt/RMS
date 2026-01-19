@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Search, Plus, Minus, Utensils, ShoppingBag, X, Info } from "lucide-react";
-import Nav from "../components/Nav";
+import Nav from "../components/Nav.jsx";
 import api from "../services/axios.js";
 import { useDispatch, useSelector } from "react-redux"
 import { fetchCart, addToCart, removeFromCart } from "../app/features/cart/cartSlice.js";

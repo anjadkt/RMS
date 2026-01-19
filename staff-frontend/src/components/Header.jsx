@@ -1,6 +1,5 @@
 import { LogOut, Package, ShoppingCart } from "lucide-react";
 import { NavLink , useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
 import {setLogout} from '../app/features/user/userSlice.js'
 import {useDispatch} from 'react-redux'
 import api from '../services/axios.js'

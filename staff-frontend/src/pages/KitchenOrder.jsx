@@ -1,8 +1,8 @@
-import Header from "../components/Header";
+import Header from "../components/Header.jsx";
 import { useEffect, useState } from "react";
-import OrderComp from "../components/OrderComp";
+import OrderComp from "../components/OrderComp.jsx";
 import { useSelector, useDispatch } from "react-redux";
-import { fetchKitchenOrders } from "../app/features/order/orderSlice";
+import { fetchKitchenOrders } from "../app/features/order/orderSlice.js";
 import { Inbox } from "lucide-react"; // Optional: adding an icon for better UI
 
 export default function KitchenOrders() {

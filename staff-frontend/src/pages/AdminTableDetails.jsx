@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import AdminHeader from "../components/AdminHeader";
+import AdminHeader from "../components/AdminHeader.jsx";
 import { Hash, Utensils, QrCode, ChevronDown, Package, Printer, Download } from "lucide-react";
 import { useState , useEffect } from "react";
 import api from '../services/axios.js';

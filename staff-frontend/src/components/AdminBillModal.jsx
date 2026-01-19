@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { X, ShieldCheck, CreditCard, ReceiptText, AlertCircle } from "lucide-react";
-import api from "../services/axios";
+import api from "../services/axios.js";
 
 export default function AdminBillModal({ data, setOpen , setPrint }) {
   const [password, setPassword] = useState("");

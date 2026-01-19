@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Lock, ArrowRight, ShieldCheck, Timer } from 'lucide-react';
 import { useParams, useNavigate } from 'react-router-dom';
-import api from '../services/axios';
+import api from '../services/axios.js';
 
 export default function StaffSetPassword() {
   const [password, setPassword] = useState("");
