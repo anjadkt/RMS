@@ -207,6 +207,8 @@ module.exports = {
       email
     },{upsert : true});
 
+    console.log("OTP route hit");
+
     const mailOptions = {
       from: `<ROMS>`,
       to: email,
@@ -237,7 +239,11 @@ module.exports = {
 
     };
 
+    console.log("OTP made");
+
     await transporter.sendMail(mailOptions);
+
+    console.log("OTP send");
 
     res.status(200).json({
       message : "admin otp send success!",
