@@ -5,11 +5,14 @@ import { useState } from "react";
 import api from "../services/axios";
 import { setLogout } from '../app/features/user/userSlice.js';
 import { useEffect } from "react";
+import ConfirmationModal from './ConfirmationModal.jsx'
+import {useConfirm} from '../services/useConfirm.js'
 
 export default function Header() {
   const { login } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const settings = useSelector(state => state.website.settings);
+  const {close,config,ask} = useConfirm();
 
   const [notifications,setNotifications] = useState([]);
   const navigate = useNavigate();
@@ -58,7 +61,8 @@ export default function Header() {
   },[])
 
   return (
-    <header className="fixed top-0 left-0 z-50 w-full bg-white backdrop-blur-md border-b border-rose-100 px-4 py-2 flex items-center justify-between shadow-sm">
+    <>
+     <header className="fixed top-0 left-0 z-50 w-full bg-white backdrop-blur-md border-b border-rose-100 px-4 py-2 flex items-center justify-between shadow-sm">
       <div onClick={()=>navigate('/home')} className="flex items-center">
         <img src={settings.logo} alt="logo" className="h-10 lg:h-12 w-auto object-contain" />
       </div>
@@ -138,7 +142,7 @@ export default function Header() {
             <div className="h-8 w-[1px] bg-slate-200 mx-1 hidden sm:block"></div>
             
             <button 
-              onClick={setUserLogout}
+              onClick={()=>ask("Do you want to Leave?","",setUserLogout)}
               className="flex items-center cursor-pointer justify-center gap-2 pl-2 pr-4 py-2 rounded-full bg-rose-50 text-[#cd0045] font-bold text-xs hover:bg-rose-100 transition-all"
             >
               {loading ? (
@@ -164,5 +168,7 @@ export default function Header() {
         )}
       </div>
     </header>
+    <ConfirmationModal {...config} onCancel={close} />
+    </>
   );
 }
