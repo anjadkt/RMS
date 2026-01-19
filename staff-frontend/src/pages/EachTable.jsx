@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom"
 import api from "../services/axios";
-import TableOrder from "../components/tableOrder";
+import TableOrder from "../components/TableOrder.jsx";
 import { ChevronDown, ChevronUp, ArrowLeft, Receipt, Users } from "lucide-react";
 import Bill from "../components/Bill";
 

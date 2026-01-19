@@ -1,5 +1,5 @@
 import Nav from '../components/Nav.jsx'
-import TableComp from '../components/tableComp.jsx'
+import TableComp from '../components/TableComp.jsx'
 import { useEffect, useState } from 'react'
 import api from '../services/axios.js';
 
