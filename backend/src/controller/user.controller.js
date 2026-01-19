@@ -104,9 +104,19 @@ module.exports = {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});
+    res.cookie("access_token",accessToken,{
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge : 1000 * 60 * 30
+    });
 
-    res.cookie("refresh_token",refreshToken,{maxAge : 1000 * 60 * 60 * 24 * 30, httpOnly : true});
+    res.cookie("refresh_token",refreshToken,{
+      httpOnly: true,
+      secure: true,          
+      sameSite: "none",      
+      maxAge : 1000 * 60 * 60 * 24 * 30
+    });
 
     res.status(201).json({
       message : "User login Successfull!",
@@ -158,7 +168,12 @@ module.exports = {
 
       const newAccessToken = getAccessToken(user);
 
-      res.cookie("access_token",newAccessToken,{maxAge : 1000 * 60 * 30});
+      res.cookie("access_token",newAccessToken,{
+        httpOnly: true,
+        secure: true,        
+        sameSite: "none",    
+        maxAge : 1000 * 60 * 30
+      });
 
       res.status(201).json({
         message : `new access token created for ${user.role} !`,
@@ -257,9 +272,19 @@ module.exports = {
 
     await user.save();
 
-    res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});
+    res.cookie("access_token",accessToken,{
+      httpOnly: true,
+      secure: true,       
+      sameSite: "none",    
+      maxAge : 1000 * 60 * 30
+    });
 
-    res.cookie("refresh_token",refreshToken,{maxAge : 1000 * 60 * 60 * 24 * 30, httpOnly : true});
+    res.cookie("refresh_token",refreshToken,{
+      httpOnly: true,
+      secure: true,       
+      sameSite: "none", 
+      maxAge : 1000 * 60 * 60 * 24 * 30
+    });
 
     res.status(200).json({
       message : "admin login successfull!",
@@ -388,9 +413,19 @@ module.exports = {
     
     await user.save();
 
-    res.cookie("access_token",accessToken,{maxAge : 1000 * 60 * 30});
+    res.cookie("access_token",accessToken,{
+      httpOnly: true,
+      secure: true,        
+      sameSite: "none",      
+      maxAge : 1000 * 60 * 30
+    });
 
-    res.cookie("refresh_token",refreshToken,{maxAge : 1000 * 60 * 60 * 24 * 7, httpOnly : true});
+    res.cookie("refresh_token",refreshToken,{
+      httpOnly: true,
+      secure: true,         
+      sameSite: "none",      
+      maxAge : 1000 * 60 * 60 * 24 * 7
+    });
 
     res.status(200).json({
       message : "staff login successfull!",
@@ -501,6 +536,8 @@ module.exports = {
 
     res.clearCookie("refresh_token",{
       httpOnly: true,
+      secure: true,
+      sameSite: "none"      
     });
 
     res.status(200).json({
