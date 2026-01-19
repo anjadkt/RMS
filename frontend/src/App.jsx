@@ -49,9 +49,9 @@ function App() {
         <Route path="/history" element = {<ProtectedRoute><History/></ProtectedRoute>} />
         <Route path="/scan" element = {<ProtectedRoute><QrScanner/></ProtectedRoute>} />
         <Route path="/privacy-policy" element={<Privacy/>} />
-        <Route path="/terms" element={<Terms/>} />
-        <Route path="/refund" element={<Refund/>} />
-        <Route path="/contact" element={<Contact/>} />
+        <Route path="/terms-and-conditions" element={<Terms/>} />
+        <Route path="/refund-policy" element={<Refund/>} />
+        <Route path="/shipping-policy" element={<Contact/>} />
       </Routes>
     </>
   )
