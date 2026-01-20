@@ -108,13 +108,19 @@ module.exports = {
       httpOnly: true,
       secure: true,
       sameSite: "none",
+      partitioned: true,
+      path: "/",
       maxAge : 1000 * 60 * 30
     });
+
+    
 
     res.cookie("refresh_token",refreshToken,{
       httpOnly: true,
       secure: true,
-      sameSite: "none",       
+      sameSite: "none",
+      partitioned: true,
+      path: "/",      
       maxAge : 1000 * 60 * 60 * 24 * 30
     });
 
@@ -171,7 +177,9 @@ module.exports = {
       res.cookie("access_token",newAccessToken,{
         httpOnly: true,
         secure: true,
-        sameSite: "none",    
+        sameSite: "none",
+        partitioned: true,
+        path: "/",   
         maxAge : 1000 * 60 * 30
       });
 
@@ -274,7 +282,9 @@ module.exports = {
     res.cookie("access_token",accessToken,{
       httpOnly: true,
       secure: true,
-      sameSite: "none",     
+      sameSite: "none",
+      partitioned: true,
+      path: "/",    
       maxAge : 1000 * 60 * 30
     });
 
@@ -413,14 +423,18 @@ module.exports = {
     res.cookie("access_token",accessToken,{
       httpOnly: true,
       secure: true,
-      sameSite: "none",      
+      sameSite: "none",
+      partitioned: true,
+      path: "/",   
       maxAge : 1000 * 60 * 30
     });
 
     res.cookie("refresh_token",refreshToken,{
       httpOnly: true,
       secure: true,
-      sameSite: "none",    
+      sameSite: "none",
+      partitioned: true,
+      path: "/",   
       maxAge : 1000 * 60 * 60 * 24 * 7
     });
 
@@ -532,13 +546,17 @@ module.exports = {
     res.clearCookie("access_token",{
       httpOnly: true,
       secure: true,
-      sameSite: "none",   
+      sameSite: "none",
+      partitioned: true,
+      path: "/",  
     })
 
     res.clearCookie("refresh_token",{
       httpOnly: true,
       secure: true,
-      sameSite: "none",     
+      sameSite: "none",
+      partitioned: true,
+      path: "/",    
     });
 
     res.status(200).json({
