@@ -34,7 +34,6 @@ const initSocket = (server) => {
       }
 
       const decoded = jwt.verify(token, process.env.SECRET_KEY);
-      console.log(decoded)
       socket.user = decoded;
 
       next();
