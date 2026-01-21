@@ -22,6 +22,7 @@ import Refund from "./pages/Refund.jsx"
 import Contact from "./pages/Contact.jsx"
 import socket from './services/socket.js'
 import {showNotification} from './app/features/user/userSlice.js'
+import Message from './pages/Message.jsx'
 
 function App() {
   const dispatch = useDispatch();
@@ -90,6 +91,7 @@ function App() {
         <Route path="/terms-and-conditions" element={<Terms/>} />
         <Route path="/refund-policy" element={<Refund/>} />
         <Route path="/shipping-policy" element={<Contact/>} />
+        <Route path='/message' element={<Message/>} />
       </Routes>
 
       <audio ref={soundElem} src="/sound/customerNoti.mp3" preload="auto" />
