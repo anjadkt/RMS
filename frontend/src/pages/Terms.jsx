@@ -1,4 +1,7 @@
-<div className="space-y-6 text-slate-700">
+
+export default function Terms() {
+  return (
+    <div className="space-y-6 text-slate-700">
 
 <p>
 This website is operated by <strong>WebResto</strong>, India. 
@@ -47,3 +50,5 @@ Email: support@webresto.com
 </p>
 
 </div>
+  );
+}
