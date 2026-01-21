@@ -116,7 +116,7 @@ module.exports = {
       if(role === "waiter"){
         io.to(`cook`).emit('order-accepted',{order});
       }else{
-        io.to(table.waiterId).emit("new-order",{order});
+        io.to(table.waiterId?.toString()).emit("new-order",{order});
       }
 
       res.status(201).json({

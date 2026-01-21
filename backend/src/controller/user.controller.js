@@ -121,7 +121,7 @@ module.exports = {
     await user.save();
 
     if(!exist){
-      io.to(user._id).emit('new-noti',{notiData});
+      io.to(user._id?.toString()).emit('new-noti',{notiData});
     }
 
     res.cookie("access_token",accessToken,{

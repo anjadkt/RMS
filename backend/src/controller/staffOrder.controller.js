@@ -172,11 +172,11 @@ module.exports = {
         link : process.env.USERFRONT_END_URL + "/history"
       }
       await User.findOneAndUpdate({_id : order.customerId },{$push : {notification : notiData}});
-      io.to(order.customerId).emit('new-noti',{notiData});
+      io.to(order.customerId?.toString()).emit('new-noti',{notiData});
     }
 
     if(order.status === "ready"){
-      io.to(order.waiterId).emit('order-ready',{order});
+      io.to(order.waiterId?.toString()).emit('order-ready',{order});
     }
 
     res.status(200).json({

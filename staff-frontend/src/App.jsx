@@ -61,6 +61,7 @@ function App() {
     const eventHandler = ({order})=>{
 
       dispatch(setPlacedOrders(order))
+      console.log(order);
 
       if(soundElem.current){
         soundElem.current.currentTime = 0;

@@ -34,6 +34,7 @@ const initSocket = (server) => {
       }
 
       const decoded = jwt.verify(token, process.env.SECRET_KEY);
+      console.log(decoded)
       socket.user = decoded;
 
       next();
@@ -45,7 +46,7 @@ const initSocket = (server) => {
   io.on("connection", (socket) => {
     console.log("✅ user connected:", socket.id);
 
-    const { _id, role } = socket.user;
+    const { _id, role , id} = socket.user;
 
     if (role === "cook") {
       socket.join("cook");
