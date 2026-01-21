@@ -1,7 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 import api from "../../../services/axios";
-import socket from '../../../services/socket.js'
-import initSocketAuth from '../../../services/initSocketAuth.js'
 
 const userSlice = createSlice({
   name: "user",
@@ -51,7 +49,6 @@ export const checkAuth = () => async (dispatch) => {
   try {
     const { data } = await api.get("auth/user");
     dispatch(setfetchSuccess(data.userData));
-    initSocketAuth(data.userData);
   } catch (error) {
     dispatch(setFetchFail(error.message));
   }

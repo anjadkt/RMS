@@ -43,10 +43,18 @@ function App() {
     dispatch(checkAuth());
   },[]);
 
+  useEffect(() => {
+    if (login) {
+      socket.connect();
+    } else {
+      socket.disconnect();
+    }
+  }, [login]);
+
   useEffect(()=>{
 
     socket.on("connect", () => {
-      console.log(`🟢 ${role} connected:`, socket.id);
+      console.log(`🟢 socket connected:`, socket.id);
     });
     
 
@@ -61,7 +69,7 @@ function App() {
       }
 
       if (navigator.vibrate) {
-        navigator.vibrate([200, 100, 200]);
+        navigator.vibrate([600, 200, 600, 200, 600]);
       }
     }
 
@@ -89,29 +97,20 @@ function App() {
       }
     }
 
-    const handleReconnect = () =>{
-      if (login && role) {
-        socket.emit("user-login", {
-          userId : id,
-          role,
-        });
-      }
+    const onDisconnect = () => {
+      console.log(`🔴 socket disconnected`);
     }
 
-
-    socket.on("reconnect",handleReconnect);
     socket.on("new-order",eventHandler);
     socket.on("order-ready",readyEvent);
     socket.on('order-accepted',handleEvent);
-
-    socket.on("disconnect", () => {
-      console.log(`🔴 ${role} disconnected`);
-    });
+    socket.on("disconnect", onDisconnect);
 
     return ()=> {
       socket.off("new-order",eventHandler);
       socket.off("order-ready",readyEvent);
       socket.off('order-accepted',handleEvent);
+      socket.off("disconnect", onDisconnect);
     }
   },[]);
 

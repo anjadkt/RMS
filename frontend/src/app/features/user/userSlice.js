@@ -1,25 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
-import api from "../../../services/axios";
+import api from "../../../services/axios.js";
 
 const userSlice = createSlice({
   name: "user",
   initialState: {
     login: null,
+    role : null,
     isBanned: false,
     loading: false,
     name : null,
-    error: null
+    error: null,
+    notification : []
   },
   reducers: {
     setfetchStart(state) {
       state.loading = true;
     },
     setfetchSuccess(state, action) {
-      const { isBanned , name } = action.payload;
+      const { isBanned , name , role } = action.payload;
       state.loading = false;
       state.login = true;
       state.isBanned = isBanned || false;
       state.name = name ;
+      state.role = role ;
     },
     setFetchFail(state, action) {
       state.loading = false;
@@ -31,6 +34,12 @@ const userSlice = createSlice({
       state.isBanned = false,
       state.loading = false,
       state.error = null
+    },
+    setNotification(state,action){
+       state.notification = [action.payload,...state.notification] ;
+    },
+    removeNotification(state,action){
+      state.notification = state.notification.filter(v => v._id !== action.payload);
     }
   },
 });
@@ -49,8 +58,15 @@ export const checkAuth = () => async (dispatch) => {
   }
 };
 
+export const showNotification = (notiData) => async (dispatch) =>{
+  dispatch(setNotification(notiData));
+  setTimeout(()=>{
+    dispatch(removeNotification(notiData._id));
+  },8000);
+}
 
-export const { setfetchSuccess, setfetchStart, setFetchFail , setLogout } =
+
+export const { setfetchSuccess, setfetchStart, setFetchFail , setLogout, setNotification , removeNotification } =
   userSlice.actions;
 
 export default userSlice.reducer;

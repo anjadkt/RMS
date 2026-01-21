@@ -20,16 +20,54 @@ import Privacy from "./pages/Privacy.jsx"
 import Terms from "./pages/Terms.jsx"
 import Refund from "./pages/Refund.jsx"
 import Contact from "./pages/Contact.jsx"
-
+import socket from './services/socket.js'
+import {showNotification} from './app/features/user/userSlice.js'
 
 function App() {
   const dispatch = useDispatch();
+  const soundElem = useRef(null);
 
+  const {login} = useSelector(state => state.user);
   const {status} = useSelector(state => state.website);
 
+  useEffect(() => {
+    if (login) {
+      socket.connect();
+    } else {
+      socket.disconnect();
+    }
+  }, [login]);
+
   useEffect(()=>{
-     dispatch(checkAuth());
-     dispatch(getWebsiteData());
+    dispatch(checkAuth());
+    dispatch(getWebsiteData());
+
+    socket.on("connect", () => {
+     console.log(`🟢 socket connected:`, socket.id);
+    });
+
+    const handleNoti = ({notiData}) =>{
+      dispatch(showNotification(notiData));
+      if(soundElem.current){
+        soundElem.current.currentTime = 0;
+        soundElem.current.play().catch(() => {
+        });
+      }
+    }
+
+    const onDisconnect = () => {
+     console.log(`🔴 socket disconnected:`);
+    }
+
+    socket.on("new-noti",handleNoti);
+
+    socket.on("disconnect", onDisconnect);
+
+    return ()=>{
+      socket.off("new-noti",handleNoti);
+      socket.off("disconnect", onDisconnect);
+    }
+
   },[]);
 
   if(status === "closed")return (
@@ -38,7 +76,7 @@ function App() {
 
   return (
     <>
-      {/* <ToastNotification /> */}
+      <ToastNotification />
       <Routes>
         <Route path ="/" element={<Menu/>}/>
         <Route path ="/home" element={<MainOfferWrapper><Home/></MainOfferWrapper>}/>
@@ -53,6 +91,8 @@ function App() {
         <Route path="/refund-policy" element={<Refund/>} />
         <Route path="/shipping-policy" element={<Contact/>} />
       </Routes>
+
+      <audio ref={soundElem} src="/sound/customerNoti.mp3" preload="auto" />
     </>
   )
 }

@@ -9,8 +9,10 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/email.js');
 const sendSMS = require('../utils/send_sms.js');
+const {getIO} = require('../utils/socket.js');
+const io = getIO();
 
-const {SECRET_KEY,SECRET_REFRESH_KEY,TWILIO_PHONE} = process.env ;
+const {SECRET_KEY,SECRET_REFRESH_KEY} = process.env ;
 
 function getOtp(){
   return Math.floor(Math.random() * 900000 + 100000);
@@ -94,7 +96,21 @@ module.exports = {
 
     await OTP.deleteMany({phone : number});
 
-    const user = await User.findOneAndUpdate({phone : number},{$setOnInsert : {phone : number,role : "customer"}},{upsert : true,new : true , runValidators : true});
+    const notiData = {
+      from : "Manager",
+      message : "👋 Welcome! We’re glad to have you here.",
+      link : process.env.USERFRONT_END_URL
+    }
+
+    const exist = await User.findOne({phone : number});
+
+    const user = await User.findOneAndUpdate({phone : number},{$setOnInsert : {
+        phone : number,
+        role : "customer",
+        notification : [notiData]
+      }},
+      {upsert : true,new : true , runValidators : true}
+    );
     if(user.isBanned)throw new AppError("User Blocked",403);
 
     const accessToken = getAccessToken(user);
@@ -103,6 +119,10 @@ module.exports = {
 
     user.refreshToken = refreshToken;
     await user.save();
+
+    if(!exist){
+      io.to(user._id).emit('new-noti',{notiData});
+    }
 
     res.cookie("access_token",accessToken,{
       httpOnly: true,
@@ -326,7 +346,11 @@ module.exports = {
         photo : details.photo
       },
       staffId : createStaffId(),
-      isWorking : false
+      isWorking : false,
+      notification : [{
+        from : "Manager",
+        message : "👋 Welcome! We’re glad to have you here."
+      }]
     });
 
     const token = jwt.sign({_id : user._id , email},process.env.STAFF_PASS_KEY,{expiresIn : "5m"});
@@ -488,7 +512,8 @@ module.exports = {
         isWorking : user.isWorking,
         role : user.role,
         staffId : user.staffId,
-        _id : user._id
+        _id : user._id,
+        notification : user.notification
       },
       tables,
       allTables,
@@ -508,7 +533,8 @@ module.exports = {
         isBanned : user.isBanned,
         role : user.role,
         orders : user.orders,
-        _id : user._id
+        _id : user._id,
+        notification : user.notification
       }
     });
   }),

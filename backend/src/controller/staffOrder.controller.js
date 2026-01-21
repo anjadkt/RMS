@@ -3,6 +3,7 @@ const Table = require('../model/table.model.js');
 const Order = require('../model/order.model.js');
 const Bill = require('../model/bill.model.js');
 const AppError = require('../utils/AppError.js');
+const User = require('../model/users.model.js');
 const mongoose = require('mongoose');
 const razorpay = require('../utils/razorPay.js');
 const {getIO} = require('../utils/socket.js');
@@ -162,8 +163,20 @@ module.exports = {
     );
     if(!order)throw new AppError("Order Updation Failed!",400);
 
+    if(order.customerId ){
+      const notiData = {
+        from : "kitchen",
+        message : order.status === "preparing" ? 
+          `🔥 We’ve started preparing your order. ID:${order.orderId.slice(-7)}..` :
+          `🍽️ Your order (ID: ${order.orderId}) is ready`,
+        link : process.env.USERFRONT_END_URL + "/history"
+      }
+      await User.findOneAndUpdate({_id : order.customerId },{$push : {notification : notiData}});
+      io.to(order.customerId).emit('new-noti',{notiData});
+    }
+
     if(order.status === "ready"){
-      io.to(`waiter-${order.waiterId}`).emit('order-ready',{order});
+      io.to(order.waiterId).emit('order-ready',{order});
     }
 
     res.status(200).json({

@@ -13,8 +13,6 @@ export default function Items() {
   const navigate = useNavigate();
   const { items } = itemObj;
 
-  console.log(items);
-
   useEffect(() => {
     async function fetchItem() {
       try {

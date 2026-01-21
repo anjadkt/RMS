@@ -57,6 +57,7 @@ const userSchema = new mongoose.Schema({
     {
       from : String,
       message : String,
+      link : String
 
     }
   ],
