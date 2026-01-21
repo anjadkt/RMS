@@ -1,34 +1,49 @@
-import { FileText } from 'lucide-react';
+<div className="space-y-6 text-slate-700">
 
-export default function Terms() {
-  return (
-    <div className="min-h-screen bg-slate-50 py-12 px-6">
-      <div className="max-w-3xl mx-auto bg-white shadow-sm rounded-3xl p-8 md:p-12 text-slate-900">
-        <div className="flex justify-between items-start mb-10">
-          <div>
-            <h1 className="text-4xl font-extrabold mb-2">Terms & Conditions</h1>
-            <p className="text-slate-500">Agreement of Service</p>
-          </div>
-          <FileText size={40} className="text-slate-200" />
-        </div>
+<p>
+This website is operated by <strong>WebResto</strong>, India. 
+By accessing or using our services, you agree to be bound by these Terms and Conditions.
+</p>
 
-        <div className="space-y-8 divide-y divide-slate-100">
-          <div className="pt-0">
-            <h2 className="text-lg font-bold mb-3">1. Use of Service</h2>
-            <p className="text-slate-600 leading-relaxed">Our services are intended for personal use. You agree not to misuse the platform for fraudulent bookings or orders.</p>
-          </div>
-          
-          <div className="pt-6">
-            <h2 className="text-lg font-bold mb-3">2. Pricing & Payment</h2>
-            <p className="text-slate-600 leading-relaxed">All prices are in INR and include applicable taxes. Payments are processed securely via Razorpay.</p>
-          </div>
+<h2>1. Use of Service</h2>
+<p>
+Our services are intended for personal food ordering purposes only.
+You agree not to misuse the platform for fraudulent or illegal activities.
+</p>
 
-          <div className="pt-6">
-            <h2 className="text-lg font-bold mb-3">3. Accuracy of Information</h2>
-            <p className="text-slate-600 leading-relaxed">We strive to keep our menu updated. However, slight variations in the actual dish vs. images may occur.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
+<h2>2. Pricing & Payments</h2>
+<p>
+All prices are listed in Indian Rupees (INR) and include applicable taxes.
+Payments are securely processed through Razorpay.
+</p>
+
+<h2>3. Cancellation & Refund Policy</h2>
+<p>
+Orders once confirmed cannot be cancelled after preparation begins.
+If a refund is applicable, it will be processed within 5–7 business days to the original payment method.
+</p>
+
+<h2>4. Limitation of Liability</h2>
+<p>
+WebResto shall not be liable for any indirect or consequential damages arising from use of the service.
+</p>
+
+<h2>5. Accuracy of Information</h2>
+<p>
+We attempt to ensure all information including menu and pricing is accurate,
+however minor variations may occur.
+</p>
+
+<h2>6. Governing Law</h2>
+<p>
+These terms shall be governed and interpreted in accordance with the laws of India.
+</p>
+
+<h2>7. Contact Information</h2>
+<p>
+For any queries, please contact us at:
+<br />
+Email: support@webresto.com
+</p>
+
+</div>
