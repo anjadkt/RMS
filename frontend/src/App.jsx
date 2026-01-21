@@ -89,7 +89,7 @@ function App() {
         <Route path="/scan" element = {<ProtectedRoute><QrScanner/></ProtectedRoute>} />
         <Route path="/privacy-policy" element={<Privacy/>} />
         <Route path="/terms-and-conditions" element={<Terms/>} />
-        <Route path="/refund-policy" element={<Refund/>} />
+        <Route path="/refund" element={<Refund/>} />
         <Route path="/shipping-policy" element={<Contact/>} />
         <Route path='/message' element={<Message/>} />
       </Routes>
