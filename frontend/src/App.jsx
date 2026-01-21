@@ -5,7 +5,7 @@ import Login from "./pages/Login.jsx"
 import ProtectedRoute from './routeProtucter/protectRoute.jsx'
 import PublicRoute from "./routeProtucter/publicRoute.jsx"
 import { useDispatch , useSelector } from "react-redux"
-import { useEffect, useState } from "react"
+import { useEffect, useRef } from "react"
 import { checkAuth } from "./app/features/user/userSlice.js"
 import Items from "./pages/Items.jsx"
 import Checkout from './pages/Checkout.jsx'
