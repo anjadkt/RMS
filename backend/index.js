@@ -56,7 +56,7 @@ mongoose.connect(MONGO_DB_URL)
 .then(()=>{
   console.log("Mongo DB connected!");
 
-  server.listen(PORT,()=>{
+  server.listen(PORT,'0.0.0.0',()=>{
     console.log("Server is Listening....");
   })
 });
@@ -74,6 +74,10 @@ app.get('/auth/refresh',refreshController.handleRefreshToken);
 app.get('/items/category',itemsController.getItemsCategory);
 app.get('/auth/user',verifyToken,refreshController.getUserData);
 app.get('/user/logout',verifyToken,refreshController.setUserLogout);
+
+app.get('/',()=>{
+  res.status(200).json({message : "server is running"});
+})
 
 
 //customer routes
