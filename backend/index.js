@@ -74,8 +74,7 @@ app.get('/auth/refresh',refreshController.handleRefreshToken);
 app.get('/items/category',itemsController.getItemsCategory);
 app.get('/auth/user',verifyToken,refreshController.getUserData);
 app.get('/user/logout',verifyToken,refreshController.setUserLogout);
-
-app.get('/',()=>{
+app.get('/',(req,res)=>{
   res.status(200).json({message : "server is running"});
 })
 
