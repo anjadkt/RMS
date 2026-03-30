@@ -143,51 +143,43 @@ cd frontend && npm run dev
 cd staff-frontend && npm run dev
 ```
 
+---
+
 ## 📡 API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-
 | GET | / | Check server status |
-
 | GET | /auth/refresh | Refresh access token |
 | GET | /auth/user | Get logged-in user data |
 | GET | /user/logout | Logout user |
-
 | GET | /items/category | Get item categories |
 | GET | /items | Get all items |
-
 | POST | /auth/customer/otp | Send OTP to customer |
 | POST | /auth/customer/login | Customer login |
-
 | GET | /resto | Get restaurant website data |
-
 | GET | /user/cart | Get cart items |
 | GET | /user/cart/add/:id | Add item to cart |
 | GET | /user/cart/remove/:id | Remove item from cart |
-
 | POST | /user/order | Create order |
 | GET | /user/order | View user orders |
 | POST | /user/order/cancel | Cancel order |
 | GET | /user/order/notification/:id | Remove notification |
-
 | POST | /auth/admin/login | Admin login |
-
 | GET | /admin/orders | Get all orders (admin) |
 | GET | /items/admin | Manage items (admin) |
 | GET | /table/admin | Manage tables (admin) |
 | GET | /staff/admin | Manage staff (admin) |
 | GET | /resto/admin | Manage restaurant data |
 | GET | /admin/bills | Manage bills |
-
 | POST | /auth/staff/login | Staff login |
-
 | GET | /waiter/table | Manage tables (waiter/admin) |
 | GET | /waiter/orders | Manage orders (waiter/admin) |
 | GET | /waiter/bills | Manage bills (waiter/admin) |
-
 | GET | /items/cook | Get items for kitchen |
 | GET | /orders/cook | Manage orders (cook/admin) |
+
+---
 
 ## 🖥 Screenshots
 ![customer ui](/screenshots/image-1.png)
