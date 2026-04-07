@@ -96,7 +96,7 @@ It features multiple user roles with dedicated interfaces, ensuring smooth coord
 
 ### Clone the repository & install dependencies
 ```bash
-  git clone <your-repo-link>
+  git clone <https://github.com/anjadkt/RMS.git>
   cd webresto
   npm install
 ```
