@@ -4,12 +4,12 @@ const Table = require('../model/table.model.js');
 const Order = require('../model/order.model.js');
 const AppError = require('../utils/AppError.js');
 const catchAsync = require('../utils/catchAsync.js');
-const OTP = require('../model/otp.model.js');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const sendEmail = require('../utils/email.js');
 const sendSMS = require('../utils/send_sms.js');
 const {getIO} = require('../utils/socket.js');
+const { redisClient } = require('../config/redis.js');
 const io = getIO();
 
 const {SECRET_KEY,SECRET_REFRESH_KEY} = process.env ;
@@ -66,14 +66,11 @@ module.exports = {
     const otp = getOtp();
 
     const hashedOtp = await bcrypt.hash(otp.toString(),10);
-    await OTP.updateOne({phone : number},{
-      otp : hashedOtp,
-      expiresAt : new Date(Date.now() + 5 * 60 * 1000),
-      phone : number
-    },{upsert : true,runValidators : true});
+
+    await redisClient.set(`otp:${number}`, hashedOtp , { EX: 300 });
 
 
-    const message = await sendSMS(number,`Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`);
+    await sendSMS(number,`Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`);
 
     res.status(201).json({
       message : `otp sended`,
@@ -87,14 +84,14 @@ module.exports = {
     const {otp,number} = req.body ;
     if(!otp || !number)throw new AppError("Fields Required",400);
 
-    const otps = await OTP.findOne({phone : number});
-    if(!otps)throw new AppError("OTP Not Found!",404);
-    if(otps.expiresAt < Date.now())throw new AppError("OTP Expired!",400);
+    const hashedOtp = await redisClient.get(`otp:${number}`);
 
-    const isValid = await bcrypt.compare(otp.toString(),otps.otp);
+    if(!hashedOtp)throw new AppError("OTP Not Found!",404);
+
+    const isValid = await bcrypt.compare(otp.toString(),hashedOtp);
     if(!isValid)throw new AppError("Incorrect OTP!",406);
 
-    await OTP.deleteMany({phone : number});
+    await redisClient.del(`otp:${number}`);
 
     const notiData = {
       from : "Manager",
@@ -132,7 +129,6 @@ module.exports = {
       path: "/",
       maxAge : 1000 * 60 * 30
     });
-
     
 
     res.cookie("refresh_token",refreshToken,{
@@ -212,16 +208,6 @@ module.exports = {
 
   }),
 
-  // adminRegister : catchAsync(async (req,res)=>{
-  //   const hashedPassword = await bcrypt.hash("admin1234",10);
-  //   await User.create({
-  //     name : "Admin",
-  //     password : hashedPassword ,
-  //     email : "anjad076@gmail.com",
-  //     role : "admin"
-  //   })
-  // })
-
   sendAdminOtp : catchAsync(async(req,res)=>{
     const email = req.body.email;
     if(!isValidEmail(email))throw new AppError("Email is Not provided",400);
@@ -229,11 +215,8 @@ module.exports = {
     const otp = getOtp();
 
     const hashedOtp = await bcrypt.hash(otp.toString(),10);
-    await OTP.updateOne({email},{
-      otp : hashedOtp,
-      expiresAt : new Date(Date.now() + 5 * 60 * 1000),
-      email
-    },{upsert : true});
+
+    await redisClient.set(`otp:${email}`,hashedOtp, { EX : 300 });
 
     const message = `
           <h2>Email Verification</h2>
@@ -280,17 +263,16 @@ module.exports = {
     const user = await User.findOne({email,role:"admin"});
     if(!user)throw new AppError("Admin Not Found",404);
     
-    const otpDoc = await OTP.findOne({email});
-    if(!otpDoc)throw new AppError("OTP Not Found Or Expired!",404);
-    if(otpDoc.otp.expiresAt < Date.now())throw new AppError("OTP Expired!",);
+    const hashedOtp = await redisClient.get(`otp:${email}`);
+    if(!hashedOtp)throw new AppError("OTP Not Found Or Expired!",404);
     
-    const isValid = await bcrypt.compare(otp.toString(),otpDoc.otp);
+    const isValid = await bcrypt.compare(otp.toString(),hashedOtp);
     if(!isValid)throw new AppError("Incorrect OTP!",406);
 
     const isValidPass = await bcrypt.compare(password,user.password);
     if(!isValidPass)throw new AppError("Incorrect Password!",406);
 
-    await OTP.deleteMany({email});
+    await redisClient.del(`otp:${email}`);
 
     const accessToken = getAccessToken(user);
     const refreshToken = getRefreshToken(user);

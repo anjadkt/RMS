@@ -6,6 +6,8 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const http = require('http');
 const server = http.createServer(app);
+const { connectRedis } = require('./src/config/redis.js');
+
 
 const {PORT,MONGO_DB_URL,USERFRONT_END_URL,STAFFFRONT_END_URL} = process.env ;
 
@@ -55,6 +57,8 @@ const cookOrderRouter = require('./src/router/cook/order.route.js');
 mongoose.connect(MONGO_DB_URL)
 .then(()=>{
   console.log("Mongo DB connected!");
+
+  connectRedis();
 
   server.listen(PORT,'0.0.0.0',()=>{
     console.log("Server is Listening....");

@@ -1,6 +1,7 @@
 const catchAsync = require('../utils/catchAsync.js');
 const AppError = require('../utils/AppError.js');
 const Item = require('../model/items.model.js');
+const { redisClient } = require('../config/redis.js');
 
 module.exports = {
   getItems : catchAsync(async (req,res)=>{
@@ -27,8 +28,20 @@ module.exports = {
   }),
 
   getItemsCategory : catchAsync(async(req,res)=>{
-    const {c} = req.query ;
+
+    const c = req.query.c ;
+
+    if(!c?.trim()){
+      const stringItems = await redisClient.get('items');
+      const items = JSON.parse(stringItems);
+
+      if(items && items.length){
+        return res.status(200).json(items)
+      }
+    }
+
     const match = {$match : {isRemoved : false}}
+
     if(c){
       match.$match.category = {$regex : c , $options : "i"}
     }
@@ -68,8 +81,11 @@ module.exports = {
           category : 1
         }
       }
-    ])
-    if(!items)throw new AppError("items cannot be accessble!",400);
+    ]);
+    if(!items.length)throw new AppError("items cannot be accessble!",400);
+
+    if(!c) await redisClient.set('items' , JSON.stringify(items));
+
     res.status(200).json(items)
   }),
 
@@ -94,6 +110,8 @@ module.exports = {
       prepTime
     });
 
+    await redisClient.del('items');
+
     res.status(201).json({
       message : "Product created Successfully!",
       item,
@@ -103,8 +121,10 @@ module.exports = {
 
   removeItem : catchAsync(async(req,res)=>{
     const {id} = req.params ;
-    const deleted = await Item.deleteOne({_id : id});
-    if(!deleted.deletedCount)throw new AppError("Item Can't be removed!",400);
+    const deleted = await Item.findOneAndDelete({_id : id});
+    if(!deleted)throw new AppError("Item Can't be removed!",400);
+
+    await redisClient.del('items'); 
 
     res.status(200).json({
       message : "product deleted successfully",
@@ -140,6 +160,8 @@ module.exports = {
     
     if(!update)throw new AppError("Updation failed!",405);
 
+    await redisClient.del('items'); 
+
     res.status(200).json({
       message : "product updated!",
       status : 200,
@@ -155,6 +177,8 @@ module.exports = {
 
     const update = await Item.findByIdAndUpdate({_id : id },{isAvailable},{new : true , runValidators : true});
     if(!update)throw new AppError("Updation failed!",405);
+
+    await redisClient.del('items');
 
     res.status(200).json({
       message : `Item ${update.isAvailable ? "available" : "not available"}!`,
