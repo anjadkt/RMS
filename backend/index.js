@@ -79,7 +79,7 @@ app.get('/items/category',itemsController.getItemsCategory);
 app.get('/auth/user',verifyToken,refreshController.getUserData);
 app.get('/user/logout',verifyToken,refreshController.setUserLogout);
 app.get('/',(req,res)=>{
-  res.status(200).json({message : "server is running"});
+  res.status(200).json({message : "server is running ☺"});
 })
 
 
