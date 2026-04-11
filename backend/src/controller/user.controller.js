@@ -123,7 +123,7 @@ module.exports = {
 
     res.cookie("access_token",accessToken,{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       partitioned: true,
       path: "/",
@@ -133,7 +133,7 @@ module.exports = {
 
     res.cookie("refresh_token",refreshToken,{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       partitioned: true,
       path: "/",      
@@ -283,7 +283,7 @@ module.exports = {
 
     res.cookie("access_token",accessToken,{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       partitioned: true,
       path: "/",    
@@ -292,7 +292,7 @@ module.exports = {
 
     res.cookie("refresh_token",refreshToken,{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none", 
       maxAge : 1000 * 60 * 60 * 24 * 30
     });
@@ -428,7 +428,7 @@ module.exports = {
 
     res.cookie("access_token",accessToken,{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       partitioned: true,
       path: "/",   
@@ -437,7 +437,7 @@ module.exports = {
 
     res.cookie("refresh_token",refreshToken,{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       partitioned: true,
       path: "/",   
@@ -553,7 +553,7 @@ module.exports = {
     await User.findOneAndUpdate({_id},{refreshToken : ""});
     res.clearCookie("access_token",{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       partitioned: true,
       path: "/",  
@@ -561,7 +561,7 @@ module.exports = {
 
     res.clearCookie("refresh_token",{
       httpOnly: true,
-      secure: true,
+      secure: process.env.NODE_ENV === "production",
       sameSite: "none",
       partitioned: true,
       path: "/",    
