@@ -5,6 +5,8 @@ app.set("trust proxy", 1);
 const cors = require('cors');
 const mongoose = require('mongoose');
 const http = require('http');
+const helmet = require('helmet');
+const morgan = require('morgan');
 const server = http.createServer(app);
 const { connectRedis } = require('./src/config/redis.js');
 
@@ -71,6 +73,8 @@ app.post('/webhooks/razorpay',express.raw({ type: "application/json" }),signatur
 
 //system middlewares
 app.use(express.json());
+app.use(helmet());
+app.use(morgan('dev'));
 app.use(express.urlencoded({extended : true}));
 app.use(cookieParser());
 
@@ -89,12 +93,6 @@ app.use('/items',productRouter);
 app.use('/resto',restoDataRouter);
 app.use('/user/cart',verifyToken,verifyUsers("customer","waiter"),userCartRouter);
 app.use('/user/order',verifyToken,verifyUsers("customer","waiter"),userOrderRouter);
-
-// const Table = require('./src/model/table.model.js');
-// const Item = require('./src/model/items.model.js');
-// app.get('/add',async (req,res)=>{
-//   await Table.updateMany({},{ $unset: { qrCode: "" } });
-// })
 
 //admin routes
 app.use('/auth/admin',adminRouter);
