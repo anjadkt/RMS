@@ -70,11 +70,10 @@ const orderSchema = new mongoose.Schema({
   orderTotal : Number,
   prepareTime : {
     type : Date
-  },
-  createdAt : {
-    type : Date
   }
-});
+},{timestamps : true});
+
+orderSchema.index({orderNumber : -1, createdAt:-1 })
 
 
 module.exports = mongoose.model("Order",orderSchema);

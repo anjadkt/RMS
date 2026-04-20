@@ -48,6 +48,8 @@ const billSchema = new mongoose.Schema({
   isPrinted : Boolean,
   restaurentName : String,
   location : String
-});
+},{timestamps:true});
+
+billSchema.index({billNumber : -1 ,createdAt : -1})
 
 module.exports = mongoose.model("Bill",billSchema);

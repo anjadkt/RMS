@@ -181,29 +181,42 @@ module.exports = {
     const user = await User.findOne({refreshToken});
     if(!user)throw new AppError("Invalid Refresh Token!",403);
 
-    jwt.verify(refreshToken,SECRET_REFRESH_KEY,(error,data)=>{
-      if(error)throw new AppError("Refresh Token Expired!",403);
+    const decoded = jwt.verify(refreshToken,SECRET_REFRESH_KEY,);
+    if(!decoded)throw new ApiError("Refresh Token Expired!",403);
 
-      if (user._id.toString() !== data._id) {
-        throw new AppError("Token mismatch", 403);
-      }
+    if (user._id.toString() !== decoded._id) {
+      throw new AppError("Token mismatch", 403);
+    }
 
-      const newAccessToken = getAccessToken(user);
+    const newAccessToken = getAccessToken(user);
 
-      res.cookie("access_token",newAccessToken,{
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "none",
-        partitioned: true,
-        path: "/",   
-        maxAge : 1000 * 60 * 30
-      });
+    const newRefreshToken = getRefreshToken(user);
 
-      res.status(201).json({
-        message : `new access token created for ${user.role} !`,
-        status : 201,
-        accessToken : newAccessToken
-      })
+    user.refreshToken = newRefreshToken;
+    await user.save();
+
+    res.cookies("refresh_token",newRefreshToken,{
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      partitioned: true,
+      path: "/",   
+      maxAge : 1000 * 60 * 30
+    });
+
+    res.cookie("access_token",newAccessToken,{
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "none",
+      partitioned: true,
+      path: "/",   
+      maxAge : 1000 * 60 * 30
+    });
+
+    res.status(201).json({
+      message : `new access token created for ${user.role} !`,
+      status : 201,
+      accessToken : newAccessToken
     })
 
   }),

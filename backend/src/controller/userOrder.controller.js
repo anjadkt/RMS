@@ -90,7 +90,6 @@ module.exports = {
         orderDate,
         instructions,
         orderTotal,
-        createdAt,
         prepareTime : readyAt,
         paymentStatus : "unpaid"
       });
