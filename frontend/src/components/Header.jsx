@@ -4,7 +4,7 @@ import { Bell, LogOut, User, X } from "lucide-react"; // Added X icon
 import { useState } from "react";
 import api from "../services/axios";
 import { setLogout } from '../app/features/user/userSlice.js';
-import { useEffect } from "react";
+import React,{ useEffect } from "react";
 import ConfirmationModal from './ConfirmationModal.jsx'
 import {useConfirm} from '../services/useConfirm.js'
 import Notifications from './Notifications.jsx'

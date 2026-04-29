@@ -1,5 +1,5 @@
 import { NavLink } from "react-router-dom";
-import { useState,useEffect } from "react";
+import React,{ useState,useEffect } from "react";
 import {useDispatch,useSelector} from 'react-redux'
 import {setScroll} from '../app/features/website/webSlice.js'
 

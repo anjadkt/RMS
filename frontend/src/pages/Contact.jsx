@@ -1,4 +1,5 @@
 import { Truck, MapPin, Clock } from 'lucide-react';
+import React from 'react'
 
 function Contact() {
   return (
