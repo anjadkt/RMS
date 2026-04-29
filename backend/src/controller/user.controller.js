@@ -65,8 +65,6 @@ module.exports = {
 
     const otp = getOtp();
 
-    console.log(otp);
-
     const hashedOtp = await bcrypt.hash(otp.toString(),10);
 
     await redisClient.set(`otp:${number}`, hashedOtp , { EX: 300 });
