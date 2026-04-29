@@ -32,7 +32,6 @@ export default function History() {
     <div className="min-h-screen bg-gray-50 lg:mt-16">
       <Header />
 
-      {/* MOBILE HEADER */}
       <div className="bg-white sticky top-0 z-40 px-5 py-4 lg:hidden border-b border-gray-100 flex items-center justify-between">
         <button onClick={() => navigate('/')} className="p-2 -ml-2 hover:bg-gray-100 rounded-full transition-colors">
           <img className="h-4 rotate-180" src="/icons/leftArrow.png" alt="back" />

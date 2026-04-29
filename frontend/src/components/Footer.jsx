@@ -3,7 +3,7 @@ import api from '../services/axios.js';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom'; // Ensure you have react-router-dom installed
 
-export default function Footer() {
+ function Footer() {
   const { settings } = useSelector(state => state.website);
 
   return (
@@ -61,3 +61,5 @@ export default function Footer() {
     </footer>
   );
 }
+
+export default React.memo(Footer) ;

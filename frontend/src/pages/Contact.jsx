@@ -1,6 +1,6 @@
 import { Truck, MapPin, Clock } from 'lucide-react';
 
-export default function Contact() {
+function Contact() {
   return (
     <div className="min-h-screen bg-slate-50 py-12 px-6 text-slate-900">
       <div className="max-w-3xl mx-auto">
@@ -37,3 +37,5 @@ export default function Contact() {
     </div>
   );
 }
+
+export default React.memo(Contact)

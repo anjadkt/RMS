@@ -9,7 +9,7 @@ import ConfirmationModal from './ConfirmationModal.jsx'
 import {useConfirm} from '../services/useConfirm.js'
 import Notifications from './Notifications.jsx'
 
-export default function Header() {
+function Header() {
   const { login } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const settings = useSelector(state => state.website.settings);
@@ -108,3 +108,5 @@ export default function Header() {
     </>
   );
 }
+
+export default React.memo(Header);

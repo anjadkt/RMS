@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState,useEffect } from "react";
 import api from "../services/axios";
 
-export default function Category() {
+function Category() {
   const navigate = useNavigate();
   const [categories,setCategories] = useState([]);
   
@@ -46,3 +46,5 @@ export default function Category() {
     </div>
   );
 }
+
+export default React.memo(Category)

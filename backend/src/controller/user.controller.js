@@ -69,7 +69,8 @@ module.exports = {
 
     await redisClient.set(`otp:${number}`, hashedOtp , { EX: 300 });
 
-
+    console.log(otp);
+    
     await sendSMS(number,`Your OTP for verification is ${otp}.\nIt is valid for 5 minutes. Do not share this code with anyone.`);
 
     res.status(201).json({

@@ -3,7 +3,7 @@ import { useState,useEffect } from "react";
 import {useDispatch,useSelector} from 'react-redux'
 import {setScroll} from '../app/features/website/webSlice.js'
 
-export default function Nav() {
+function Nav() {
   const [show, setShow] = useState(true);
   const dispatch = useDispatch();
   const {scroll :lastScrollY} = useSelector(state=> state.website);
@@ -84,3 +84,5 @@ export default function Nav() {
     </div>
   );
 }
+
+export default React.memo(Nav);

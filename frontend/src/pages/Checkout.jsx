@@ -1,7 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchCart, addToCart, removeFromCart } from "../app/features/cart/cartSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {QrCode} from 'lucide-react'
 import DotLoader from '../components/DotLoader.jsx';
 import api from "../services/axios.js";
@@ -16,7 +16,7 @@ export default function Checkout() {
   const [error, setError] = useState({});
   const [show,setShow] = useState(false);
 
-   const navigate = useNavigate();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   const [searchParams] = useSearchParams();
@@ -24,7 +24,9 @@ export default function Checkout() {
 
   const searchTables = tables.filter( v => (v.tableNumber.toUpperCase().includes(form.tableNumber.toUpperCase())));
 
-  const calcTotal = cart.reduce((accum, val) => accum + (val.item.price * val.quantity), 0);
+  const calcTotal = useMemo(()=>{
+    return cart.reduce((accum, val) => accum + (val.item.price * val.quantity), 0);
+  },[cart])
 
   const handleChange = (e) => {
     setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -76,8 +78,10 @@ export default function Checkout() {
   };
 
   useEffect(() => {
+
     dispatch(fetchCart());
     if (tableFromUrl) setForm(prev => ({ ...prev, tableNumber: tableFromUrl }));
+
   }, [dispatch, tableFromUrl]);
 
   if (loading) return <DotLoader />;

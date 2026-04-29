@@ -3,7 +3,7 @@ import { useSelector , useDispatch } from "react-redux";
 import {fetchCart} from '../app/features/cart/cartSlice.js'
 import {useNavigate} from 'react-router-dom'
 
-export default function Cart({isItems}) {
+function Cart({isItems}) {
   const { scroll } = useSelector((state) => state.website);
   const {cart} = useSelector(state => state.cart);
   const dispatch = useDispatch();
@@ -59,3 +59,5 @@ export default function Cart({isItems}) {
     </>
   );
 }
+
+export default React.memo(Cart)
