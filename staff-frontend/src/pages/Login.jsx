@@ -70,7 +70,8 @@ export default function LoginPage() {
     try {
       setLoading(true);
       if (isAdmin) {
-        await api.post('/auth/admin/login', form);
+        const { data } = await api.post('/auth/admin/login', form);
+        console.log(data);
         dispatch(checkAuth());
         navigate('/admin/dashboard');
       } else {
