@@ -264,6 +264,7 @@ module.exports = {
 
     res.status(200).json({
       message : "admin otp send success!",
+      otp,
       status : 200
     })
 
